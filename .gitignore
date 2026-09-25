@@ -4,6 +4,8 @@ secrets.yaml
 .cloud/
 .HA_VERSION
 .uuid
+.ha_run.lock
+.cache/
 *.db
 *.db-shm
 *.db-wal
