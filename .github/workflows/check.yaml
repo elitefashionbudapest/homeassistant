@@ -9,10 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Fake secrets
-        run: cp secrets.example.yaml secrets.yaml
+      # Az action maga másolja a mintát ./secrets.yaml-ként
       - uses: frenck/action-home-assistant@v1
         with:
           path: "."
-          secrets: secrets.yaml
+          secrets: secrets.example.yaml
           version: stable
