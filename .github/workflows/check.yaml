@@ -1,0 +1,18 @@
+name: Home Assistant config check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fake secrets
+        run: cp secrets.example.yaml secrets.yaml
+      - uses: frenck/action-home-assistant@v1
+        with:
+          path: "."
+          secrets: secrets.yaml
+          version: stable

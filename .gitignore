@@ -1,0 +1,22 @@
+# Titkok és a Pi-n keletkező futásidejű adatok – soha ne kerüljenek Gitbe
+secrets.yaml
+.storage/
+.cloud/
+.HA_VERSION
+.uuid
+*.db
+*.db-shm
+*.db-wal
+*.log
+*.log.*
+home-assistant.log*
+deps/
+tts/
+backups/
+www/
+image/
+custom_components/
+blueprints/
+zigbee2mqtt/
+esphome/
+.ssh/
