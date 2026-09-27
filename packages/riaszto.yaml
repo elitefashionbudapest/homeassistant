@@ -20,27 +20,32 @@ script:
         target:
           entity_id: alarm_control_panel.vaskut14_otthon
 
-# Esti emlékeztető: ha 22:00-kor a riasztó nincs éjszakai (vagy távol) módban, push Ádámnak.
+# Esti emlékeztető: ha 21:30-kor valamelyik telefon az otthoni Wi-Fin van, és a riasztó nincs éjszakai
+# vagy (teljes) távol módban, push Ádámnak.
 # Kritikus értesítés, mert ilyenkor a telefonja Ne zavarjanak módban van. Magától nem élesít,
 # csak a push gombjára (vagy a dashboardon) kapcsol éjszakai módba.
 automation:
   - id: riaszto_esti_emlekezteto
-    alias: "Riasztó – 22:00 emlékeztető, ha nincs éjszakai módban"
+    alias: "Riasztó – 21:30 emlékeztető, ha nincs éjszakai módban"
     mode: single
     triggers:
       - trigger: time
-        at: "22:00:00"
+        at: "21:30:00"
     conditions:
       - condition: not
         conditions:
           - condition: state
             entity_id: alarm_control_panel.vaskut14_otthon
             state: [armed_night, armed_away, arming]
+      # valaki itthon van: legalább az egyik telefon az otthoni Wi-Fin
+      - condition: template
+        value_template: >-
+          {{ 'Vaskut14' in [states('sensor.adam_2_ssid'), states('sensor.noyaflage_iphone_keszuleke_2_ssid')] }}
     actions:
       - action: notify.mobile_app_adam_2
         data:
           title: "🛡️ A riasztó nincs éjszakai módban"
-          message: "Már 10 óra van, de a riasztó még nincs bekapcsolva éjszakára. Bekapcsoljam?"
+          message: "Fél tíz van, de a riasztó még nincs bekapcsolva éjszakára. Bekapcsoljam?"
           data:
             tag: riaszto_este
             url: /otthon-homerseklet/otthon
