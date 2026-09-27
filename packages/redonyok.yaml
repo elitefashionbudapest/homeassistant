@@ -289,3 +289,122 @@ template:
             data:
               device: haloszoba_2
               command: stop
+
+# Minden redőny egyszerre. A Broadlink egyszerre egy jelet tud küldeni, ezért egymás után mennek.
+script:
+  redonyok_mind_fel:
+    alias: "Minden redőny fel"
+    icon: mdi:arrow-up-bold-box-outline
+    mode: single
+    sequence:
+      - action: cover.open_cover
+        target:
+          entity_id: cover.redony_nappali_terasz_1
+      - delay:
+          milliseconds: 700
+      - action: cover.open_cover
+        target:
+          entity_id: cover.redony_nappali_terasz_2
+      - delay:
+          milliseconds: 700
+      - action: cover.open_cover
+        target:
+          entity_id: cover.redony_nappali_ablak_1
+      - delay:
+          milliseconds: 700
+      - action: cover.open_cover
+        target:
+          entity_id: cover.redony_nappali_ablak_2
+      - delay:
+          milliseconds: 700
+      - action: cover.open_cover
+        target:
+          entity_id: cover.redony_konyha
+      - delay:
+          milliseconds: 700
+      - action: cover.open_cover
+        target:
+          entity_id: cover.redony_eloszoba
+      - delay:
+          milliseconds: 700
+      - action: cover.open_cover
+        target:
+          entity_id: cover.redony_furdo
+      - delay:
+          milliseconds: 700
+      - action: cover.open_cover
+        target:
+          entity_id: cover.redony_gyerekszoba_1
+      - delay:
+          milliseconds: 700
+      - action: cover.open_cover
+        target:
+          entity_id: cover.redony_gyerekszoba_2
+      - delay:
+          milliseconds: 700
+      - action: cover.open_cover
+        target:
+          entity_id: cover.redony_haloszoba_1
+      - delay:
+          milliseconds: 700
+      - action: cover.open_cover
+        target:
+          entity_id: cover.redony_haloszoba_2
+  redonyok_mind_le:
+    alias: "Minden redőny le"
+    icon: mdi:arrow-down-bold-box-outline
+    mode: single
+    sequence:
+      - action: cover.close_cover
+        target:
+          entity_id: cover.redony_nappali_terasz_1
+      - delay:
+          milliseconds: 700
+      - action: cover.close_cover
+        target:
+          entity_id: cover.redony_nappali_terasz_2
+      - delay:
+          milliseconds: 700
+      - action: cover.close_cover
+        target:
+          entity_id: cover.redony_nappali_ablak_1
+      - delay:
+          milliseconds: 700
+      - action: cover.close_cover
+        target:
+          entity_id: cover.redony_nappali_ablak_2
+      - delay:
+          milliseconds: 700
+      - action: cover.close_cover
+        target:
+          entity_id: cover.redony_konyha
+      - delay:
+          milliseconds: 700
+      - action: cover.close_cover
+        target:
+          entity_id: cover.redony_eloszoba
+      - delay:
+          milliseconds: 700
+      - action: cover.close_cover
+        target:
+          entity_id: cover.redony_furdo
+      - delay:
+          milliseconds: 700
+      - action: cover.close_cover
+        target:
+          entity_id: cover.redony_gyerekszoba_1
+      - delay:
+          milliseconds: 700
+      - action: cover.close_cover
+        target:
+          entity_id: cover.redony_gyerekszoba_2
+      - delay:
+          milliseconds: 700
+      - action: cover.close_cover
+        target:
+          entity_id: cover.redony_haloszoba_1
+      - delay:
+          milliseconds: 700
+      - action: cover.close_cover
+        target:
+          entity_id: cover.redony_haloszoba_2
