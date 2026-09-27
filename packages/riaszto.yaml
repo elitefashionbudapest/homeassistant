@@ -20,7 +20,8 @@ script:
         target:
           entity_id: alarm_control_panel.vaskut14_otthon
 
-# Esti emlékeztető: ha 21:30-kor valamelyik telefon az otthoni Wi-Fin van, és a riasztó nincs éjszakai
+# Esti emlékeztető: ha 21:30-kor valaki itthon van (valamelyik telefon az otthoni Wi-Fin, vagy a GPS szerint otthon),
+# és a riasztó nincs éjszakai
 # vagy (teljes) távol módban, push Ádámnak.
 # Kritikus értesítés, mert ilyenkor a telefonja Ne zavarjanak módban van. Magától nem élesít,
 # csak a push gombjára (vagy a dashboardon) kapcsol éjszakai módba.
@@ -37,10 +38,11 @@ automation:
           - condition: state
             entity_id: alarm_control_panel.vaskut14_otthon
             state: [armed_night, armed_away, arming]
-      # valaki itthon van: legalább az egyik telefon az otthoni Wi-Fin
+      # valaki itthon van: legalább az egyik telefon az otthoni Wi-Fin, vagy a GPS szerint otthon
       - condition: template
         value_template: >-
-          {{ 'Vaskut14' in [states('sensor.adam_2_ssid'), states('sensor.noyaflage_iphone_keszuleke_2_ssid')] }}
+          {{ 'Vaskut14' in [states('sensor.adam_2_ssid'), states('sensor.noyaflage_iphone_keszuleke_2_ssid')]
+             or is_state('person.vaskut14', 'home') or is_state('person.cerike', 'home') }}
     actions:
       - action: notify.mobile_app_adam_2
         data:
