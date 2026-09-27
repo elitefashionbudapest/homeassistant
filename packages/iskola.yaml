@@ -1,0 +1,85 @@
+# Iskolai reggel: iskolanap előtti estén (vasárnap–csütörtök) 20:30-kor push a szülőknek: „Holnap megy Domi iskolába?”
+# Csak az „Igen” válasz után húzza fel másnap 6:30-kor a gyerekszoba redőnyeit; „Nem” vagy válasz nélkül nem nyúl semmihez.
+
+input_boolean:
+  iskola_holnap:
+    name: "Holnap iskola (6:30 redőny fel a gyerekszobában)"
+    icon: mdi:school
+
+automation:
+  - id: iskola_esti_kerdes
+    alias: "Iskola – esti kérdés (vasárnap–csütörtök 20:30)"
+    mode: single
+    triggers:
+      - trigger: time
+        at: "20:30:00"
+    conditions:
+      - condition: time
+        weekday: [sun, mon, tue, wed, thu]
+    actions:
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.iskola_holnap
+      - repeat:
+          for_each: [notify.mobile_app_adam_2, notify.mobile_app_noyaflage_iphone_keszuleke_2]
+          sequence:
+            - action: "{{ repeat.item }}"
+              data:
+                title: "🎒 Holnap iskola?"
+                message: "Holnap megy Domi iskolába? Ha igen, 6:30-kor felhúzom a gyerekszoba redőnyeit."
+                data:
+                  tag: iskola
+                  actions:
+                    - action: ISKOLA_IGEN
+                      title: "Igen, megy"
+                    - action: ISKOLA_NEM
+                      title: "Nem"
+
+  - id: iskola_valasz
+    alias: "Iskola – válasz a push gombjaira"
+    mode: single
+    triggers:
+      - trigger: event
+        event_type: mobile_app_notification_action
+        event_data: {action: ISKOLA_IGEN}
+        id: igen
+      - trigger: event
+        event_type: mobile_app_notification_action
+        event_data: {action: ISKOLA_NEM}
+        id: nem
+    actions:
+      - action: "input_boolean.turn_{{ 'on' if trigger.id == 'igen' else 'off' }}"
+        target:
+          entity_id: input_boolean.iskola_holnap
+      # a másik telefonról eltűnik a kérdés, helyette rövid visszaigazolás jön
+      - action: notify.szulok
+        data:
+          message: clear_notification
+          data:
+            tag: iskola
+      - action: notify.szulok
+        data:
+          title: "🎒 Iskola"
+          message: >-
+            {{ 'Rendben, holnap 6:30-kor felhúzom a gyerekszoba redőnyeit.' if trigger.id == 'igen'
+               else 'Rendben, holnap reggel nem nyúlok a gyerekszoba redőnyeihez.' }}
+
+  - id: iskola_reggel
+    alias: "Iskola – 6:30 gyerekszoba redőnyök fel"
+    mode: single
+    triggers:
+      - trigger: time
+        at: "06:30:00"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.iskola_holnap
+        state: "on"
+    actions:
+      - action: cover.open_cover
+        target:
+          entity_id:
+            - cover.redony_gyerekszoba_1
+            - cover.redony_gyerekszoba_2
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.iskola_holnap
