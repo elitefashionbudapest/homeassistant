@@ -6,9 +6,10 @@ Utána: config check, majd template.reload + script.reload + input_number.reload
 Működés:
 - A Broadlink RM4 Pro (remote.vaskut14) betanított kódjai: <slug> eszköz, fel / le / stop parancs.
 - Minden RF-jel a sorba állító script.redony_rf_kuldes-en megy át (0,7 mp szünet a jelek között).
-- A pozíciót egy input_number tárolja (0 = zárva, 100 = nyitva), a futásidőből számolva:
-  részleges állásnál a redőny elindul, a kiszámolt idő után a HA leállítja.
-  A teljes fel- és lehúzás mindig végigmegy, ez „kinullázza” az esetleges eltérést.
+- A pozíciót egy input_number tárolja (0 = zárva, 100 = nyitva), a futásidőből számolva.
+- Részleges állás (½ gomb, csúszka, „félig” hangparancs): a redőny előbb teljesen felmegy,
+  aztán lefelé indul, és a kiszámolt idő után a HA leállítja. Így akkor is pontos, ha közben
+  távirányítóval mozgatták. A teljes fel- és lehúzás közvetlenül megy.
 - Visszajelzés nincs: ha a távirányítóval mozgatod, a HA nem tudja.
 """
 import json
@@ -32,6 +33,7 @@ REDONYOK = [
     ("haloszoba_2", "Hálószoba 2", 22.5),
 ]
 QUEUE_SZUNET = 0.7  # a redony_rf_kuldes ennyit vár a jel után; a részleges mozgásnál ezt levonjuk
+FELHUZAS_RAHAGYAS = 1.0  # részleges állás előtt ennyivel tovább várunk a teljes felhúzásra
 ESTI_KIVETEL = {"nappali_terasz_1"}
 
 
@@ -83,7 +85,7 @@ for slug, nev, ido in REDONYOK:
         "alias": f"{nev} – mozgatás", "icon": "mdi:window-shutter-cog", "mode": "restart",
         "fields": {"cel": {"description": "Célpozíció: 0 = zárva, 100 = nyitva"}},
         "sequence": [
-            {"variables": {"ido": ido, "most": "{{ states('" + pozicio(slug) + "') | float(0) }}",
+            {"variables": {"ido": ido,
                            "c": "{{ [0, [100, cel | int(0)] | min] | max }}"}},
             {"choose": [
                 {"conditions": "{{ c >= 100 }}", "sequence": [
@@ -92,11 +94,14 @@ for slug, nev, ido in REDONYOK:
                 {"conditions": "{{ c <= 0 }}", "sequence": [
                     {"action": "input_number.set_value", "target": {"entity_id": pozicio(slug)}, "data": {"value": 0}},
                     kuld(slug, "le")]},
-                {"conditions": "{{ (c - most) | abs < 3 }}", "sequence": []},
             ], "default": [
-                {"variables": {"irany": "{{ 'fel' if c > most else 'le' }}",
-                               "mp": "{{ [((c - most) | abs) / 100 * ido - " + str(QUEUE_SZUNET) + ", 0] | max | round(2) }}"}},
-                kuld(slug, "{{ irany }}"),
+                # Részleges állás: mindig felülről indul, így akkor is pontos, ha közben távirányítóval mozgatták.
+                # 1. teljesen fel (teljes futásidő + ráhagyás), 2. le a célig, 3. stop.
+                kuld(slug, "fel"),
+                {"delay": {"seconds": "{{ (ido - " + str(QUEUE_SZUNET) + " + " + str(FELHUZAS_RAHAGYAS) + ") | round(2) }}"}},
+                {"action": "input_number.set_value", "target": {"entity_id": pozicio(slug)}, "data": {"value": 100}},
+                {"variables": {"mp": "{{ [(100 - c) / 100 * ido - " + str(QUEUE_SZUNET) + ", 0] | max | round(2) }}"}},
+                kuld(slug, "le"),
                 {"delay": {"seconds": "{{ mp }}"}},
                 kuld(slug, "stop"),
                 {"action": "input_number.set_value", "target": {"entity_id": pozicio(slug)}, "data": {"value": "{{ c }}"}},

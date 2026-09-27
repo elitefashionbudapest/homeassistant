@@ -825,7 +825,6 @@
         {
           "variables": {
             "ido": 36.0,
-            "most": "{{ states('input_number.redony_nappali_terasz_1_pozicio') | float(0) }}",
             "c": "{{ [0, [100, cel | int(0)] | min] | max }}"
           }
         },
@@ -872,24 +871,40 @@
                   }
                 }
               ]
-            },
-            {
-              "conditions": "{{ (c - most) | abs < 3 }}",
-              "sequence": []
             }
           ],
           "default": [
             {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "nappali_terasz_1",
+                "parancs": "fel"
+              }
+            },
+            {
+              "delay": {
+                "seconds": "{{ (ido - 0.7 + 1.0) | round(2) }}"
+              }
+            },
+            {
+              "action": "input_number.set_value",
+              "target": {
+                "entity_id": "input_number.redony_nappali_terasz_1_pozicio"
+              },
+              "data": {
+                "value": 100
+              }
+            },
+            {
               "variables": {
-                "irany": "{{ 'fel' if c > most else 'le' }}",
-                "mp": "{{ [((c - most) | abs) / 100 * ido - 0.7, 0] | max | round(2) }}"
+                "mp": "{{ [(100 - c) / 100 * ido - 0.7, 0] | max | round(2) }}"
               }
             },
             {
               "action": "script.redony_rf_kuldes",
               "data": {
                 "eszkoz": "nappali_terasz_1",
-                "parancs": "{{ irany }}"
+                "parancs": "le"
               }
             },
             {
@@ -930,7 +945,6 @@
         {
           "variables": {
             "ido": 36.0,
-            "most": "{{ states('input_number.redony_nappali_terasz_2_pozicio') | float(0) }}",
             "c": "{{ [0, [100, cel | int(0)] | min] | max }}"
           }
         },
@@ -977,24 +991,40 @@
                   }
                 }
               ]
-            },
-            {
-              "conditions": "{{ (c - most) | abs < 3 }}",
-              "sequence": []
             }
           ],
           "default": [
             {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "nappali_terasz_2",
+                "parancs": "fel"
+              }
+            },
+            {
+              "delay": {
+                "seconds": "{{ (ido - 0.7 + 1.0) | round(2) }}"
+              }
+            },
+            {
+              "action": "input_number.set_value",
+              "target": {
+                "entity_id": "input_number.redony_nappali_terasz_2_pozicio"
+              },
+              "data": {
+                "value": 100
+              }
+            },
+            {
               "variables": {
-                "irany": "{{ 'fel' if c > most else 'le' }}",
-                "mp": "{{ [((c - most) | abs) / 100 * ido - 0.7, 0] | max | round(2) }}"
+                "mp": "{{ [(100 - c) / 100 * ido - 0.7, 0] | max | round(2) }}"
               }
             },
             {
               "action": "script.redony_rf_kuldes",
               "data": {
                 "eszkoz": "nappali_terasz_2",
-                "parancs": "{{ irany }}"
+                "parancs": "le"
               }
             },
             {
@@ -1035,7 +1065,6 @@
         {
           "variables": {
             "ido": 22.5,
-            "most": "{{ states('input_number.redony_nappali_ablak_1_pozicio') | float(0) }}",
             "c": "{{ [0, [100, cel | int(0)] | min] | max }}"
           }
         },
@@ -1082,24 +1111,40 @@
                   }
                 }
               ]
-            },
-            {
-              "conditions": "{{ (c - most) | abs < 3 }}",
-              "sequence": []
             }
           ],
           "default": [
             {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "nappali_ablak_1",
+                "parancs": "fel"
+              }
+            },
+            {
+              "delay": {
+                "seconds": "{{ (ido - 0.7 + 1.0) | round(2) }}"
+              }
+            },
+            {
+              "action": "input_number.set_value",
+              "target": {
+                "entity_id": "input_number.redony_nappali_ablak_1_pozicio"
+              },
+              "data": {
+                "value": 100
+              }
+            },
+            {
               "variables": {
-                "irany": "{{ 'fel' if c > most else 'le' }}",
-                "mp": "{{ [((c - most) | abs) / 100 * ido - 0.7, 0] | max | round(2) }}"
+                "mp": "{{ [(100 - c) / 100 * ido - 0.7, 0] | max | round(2) }}"
               }
             },
             {
               "action": "script.redony_rf_kuldes",
               "data": {
                 "eszkoz": "nappali_ablak_1",
-                "parancs": "{{ irany }}"
+                "parancs": "le"
               }
             },
             {
@@ -1140,7 +1185,6 @@
         {
           "variables": {
             "ido": 22.5,
-            "most": "{{ states('input_number.redony_nappali_ablak_2_pozicio') | float(0) }}",
             "c": "{{ [0, [100, cel | int(0)] | min] | max }}"
           }
         },
@@ -1187,24 +1231,40 @@
                   }
                 }
               ]
-            },
-            {
-              "conditions": "{{ (c - most) | abs < 3 }}",
-              "sequence": []
             }
           ],
           "default": [
             {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "nappali_ablak_2",
+                "parancs": "fel"
+              }
+            },
+            {
+              "delay": {
+                "seconds": "{{ (ido - 0.7 + 1.0) | round(2) }}"
+              }
+            },
+            {
+              "action": "input_number.set_value",
+              "target": {
+                "entity_id": "input_number.redony_nappali_ablak_2_pozicio"
+              },
+              "data": {
+                "value": 100
+              }
+            },
+            {
               "variables": {
-                "irany": "{{ 'fel' if c > most else 'le' }}",
-                "mp": "{{ [((c - most) | abs) / 100 * ido - 0.7, 0] | max | round(2) }}"
+                "mp": "{{ [(100 - c) / 100 * ido - 0.7, 0] | max | round(2) }}"
               }
             },
             {
               "action": "script.redony_rf_kuldes",
               "data": {
                 "eszkoz": "nappali_ablak_2",
-                "parancs": "{{ irany }}"
+                "parancs": "le"
               }
             },
             {
@@ -1245,7 +1305,6 @@
         {
           "variables": {
             "ido": 22.5,
-            "most": "{{ states('input_number.redony_konyha_pozicio') | float(0) }}",
             "c": "{{ [0, [100, cel | int(0)] | min] | max }}"
           }
         },
@@ -1292,24 +1351,40 @@
                   }
                 }
               ]
-            },
-            {
-              "conditions": "{{ (c - most) | abs < 3 }}",
-              "sequence": []
             }
           ],
           "default": [
             {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "konyha",
+                "parancs": "fel"
+              }
+            },
+            {
+              "delay": {
+                "seconds": "{{ (ido - 0.7 + 1.0) | round(2) }}"
+              }
+            },
+            {
+              "action": "input_number.set_value",
+              "target": {
+                "entity_id": "input_number.redony_konyha_pozicio"
+              },
+              "data": {
+                "value": 100
+              }
+            },
+            {
               "variables": {
-                "irany": "{{ 'fel' if c > most else 'le' }}",
-                "mp": "{{ [((c - most) | abs) / 100 * ido - 0.7, 0] | max | round(2) }}"
+                "mp": "{{ [(100 - c) / 100 * ido - 0.7, 0] | max | round(2) }}"
               }
             },
             {
               "action": "script.redony_rf_kuldes",
               "data": {
                 "eszkoz": "konyha",
-                "parancs": "{{ irany }}"
+                "parancs": "le"
               }
             },
             {
@@ -1350,7 +1425,6 @@
         {
           "variables": {
             "ido": 22.5,
-            "most": "{{ states('input_number.redony_eloszoba_pozicio') | float(0) }}",
             "c": "{{ [0, [100, cel | int(0)] | min] | max }}"
           }
         },
@@ -1397,24 +1471,40 @@
                   }
                 }
               ]
-            },
-            {
-              "conditions": "{{ (c - most) | abs < 3 }}",
-              "sequence": []
             }
           ],
           "default": [
             {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "eloszoba",
+                "parancs": "fel"
+              }
+            },
+            {
+              "delay": {
+                "seconds": "{{ (ido - 0.7 + 1.0) | round(2) }}"
+              }
+            },
+            {
+              "action": "input_number.set_value",
+              "target": {
+                "entity_id": "input_number.redony_eloszoba_pozicio"
+              },
+              "data": {
+                "value": 100
+              }
+            },
+            {
               "variables": {
-                "irany": "{{ 'fel' if c > most else 'le' }}",
-                "mp": "{{ [((c - most) | abs) / 100 * ido - 0.7, 0] | max | round(2) }}"
+                "mp": "{{ [(100 - c) / 100 * ido - 0.7, 0] | max | round(2) }}"
               }
             },
             {
               "action": "script.redony_rf_kuldes",
               "data": {
                 "eszkoz": "eloszoba",
-                "parancs": "{{ irany }}"
+                "parancs": "le"
               }
             },
             {
@@ -1455,7 +1545,6 @@
         {
           "variables": {
             "ido": 15.5,
-            "most": "{{ states('input_number.redony_furdo_pozicio') | float(0) }}",
             "c": "{{ [0, [100, cel | int(0)] | min] | max }}"
           }
         },
@@ -1502,24 +1591,40 @@
                   }
                 }
               ]
-            },
-            {
-              "conditions": "{{ (c - most) | abs < 3 }}",
-              "sequence": []
             }
           ],
           "default": [
             {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "furdo",
+                "parancs": "fel"
+              }
+            },
+            {
+              "delay": {
+                "seconds": "{{ (ido - 0.7 + 1.0) | round(2) }}"
+              }
+            },
+            {
+              "action": "input_number.set_value",
+              "target": {
+                "entity_id": "input_number.redony_furdo_pozicio"
+              },
+              "data": {
+                "value": 100
+              }
+            },
+            {
               "variables": {
-                "irany": "{{ 'fel' if c > most else 'le' }}",
-                "mp": "{{ [((c - most) | abs) / 100 * ido - 0.7, 0] | max | round(2) }}"
+                "mp": "{{ [(100 - c) / 100 * ido - 0.7, 0] | max | round(2) }}"
               }
             },
             {
               "action": "script.redony_rf_kuldes",
               "data": {
                 "eszkoz": "furdo",
-                "parancs": "{{ irany }}"
+                "parancs": "le"
               }
             },
             {
@@ -1560,7 +1665,6 @@
         {
           "variables": {
             "ido": 15.5,
-            "most": "{{ states('input_number.redony_gyerekszoba_1_pozicio') | float(0) }}",
             "c": "{{ [0, [100, cel | int(0)] | min] | max }}"
           }
         },
@@ -1607,24 +1711,40 @@
                   }
                 }
               ]
-            },
-            {
-              "conditions": "{{ (c - most) | abs < 3 }}",
-              "sequence": []
             }
           ],
           "default": [
             {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "gyerekszoba_1",
+                "parancs": "fel"
+              }
+            },
+            {
+              "delay": {
+                "seconds": "{{ (ido - 0.7 + 1.0) | round(2) }}"
+              }
+            },
+            {
+              "action": "input_number.set_value",
+              "target": {
+                "entity_id": "input_number.redony_gyerekszoba_1_pozicio"
+              },
+              "data": {
+                "value": 100
+              }
+            },
+            {
               "variables": {
-                "irany": "{{ 'fel' if c > most else 'le' }}",
-                "mp": "{{ [((c - most) | abs) / 100 * ido - 0.7, 0] | max | round(2) }}"
+                "mp": "{{ [(100 - c) / 100 * ido - 0.7, 0] | max | round(2) }}"
               }
             },
             {
               "action": "script.redony_rf_kuldes",
               "data": {
                 "eszkoz": "gyerekszoba_1",
-                "parancs": "{{ irany }}"
+                "parancs": "le"
               }
             },
             {
@@ -1665,7 +1785,6 @@
         {
           "variables": {
             "ido": 22.5,
-            "most": "{{ states('input_number.redony_gyerekszoba_2_pozicio') | float(0) }}",
             "c": "{{ [0, [100, cel | int(0)] | min] | max }}"
           }
         },
@@ -1712,24 +1831,40 @@
                   }
                 }
               ]
-            },
-            {
-              "conditions": "{{ (c - most) | abs < 3 }}",
-              "sequence": []
             }
           ],
           "default": [
             {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "gyerekszoba_2",
+                "parancs": "fel"
+              }
+            },
+            {
+              "delay": {
+                "seconds": "{{ (ido - 0.7 + 1.0) | round(2) }}"
+              }
+            },
+            {
+              "action": "input_number.set_value",
+              "target": {
+                "entity_id": "input_number.redony_gyerekszoba_2_pozicio"
+              },
+              "data": {
+                "value": 100
+              }
+            },
+            {
               "variables": {
-                "irany": "{{ 'fel' if c > most else 'le' }}",
-                "mp": "{{ [((c - most) | abs) / 100 * ido - 0.7, 0] | max | round(2) }}"
+                "mp": "{{ [(100 - c) / 100 * ido - 0.7, 0] | max | round(2) }}"
               }
             },
             {
               "action": "script.redony_rf_kuldes",
               "data": {
                 "eszkoz": "gyerekszoba_2",
-                "parancs": "{{ irany }}"
+                "parancs": "le"
               }
             },
             {
@@ -1770,7 +1905,6 @@
         {
           "variables": {
             "ido": 22.5,
-            "most": "{{ states('input_number.redony_haloszoba_1_pozicio') | float(0) }}",
             "c": "{{ [0, [100, cel | int(0)] | min] | max }}"
           }
         },
@@ -1817,24 +1951,40 @@
                   }
                 }
               ]
-            },
-            {
-              "conditions": "{{ (c - most) | abs < 3 }}",
-              "sequence": []
             }
           ],
           "default": [
             {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "haloszoba_1",
+                "parancs": "fel"
+              }
+            },
+            {
+              "delay": {
+                "seconds": "{{ (ido - 0.7 + 1.0) | round(2) }}"
+              }
+            },
+            {
+              "action": "input_number.set_value",
+              "target": {
+                "entity_id": "input_number.redony_haloszoba_1_pozicio"
+              },
+              "data": {
+                "value": 100
+              }
+            },
+            {
               "variables": {
-                "irany": "{{ 'fel' if c > most else 'le' }}",
-                "mp": "{{ [((c - most) | abs) / 100 * ido - 0.7, 0] | max | round(2) }}"
+                "mp": "{{ [(100 - c) / 100 * ido - 0.7, 0] | max | round(2) }}"
               }
             },
             {
               "action": "script.redony_rf_kuldes",
               "data": {
                 "eszkoz": "haloszoba_1",
-                "parancs": "{{ irany }}"
+                "parancs": "le"
               }
             },
             {
@@ -1875,7 +2025,6 @@
         {
           "variables": {
             "ido": 22.5,
-            "most": "{{ states('input_number.redony_haloszoba_2_pozicio') | float(0) }}",
             "c": "{{ [0, [100, cel | int(0)] | min] | max }}"
           }
         },
@@ -1922,24 +2071,40 @@
                   }
                 }
               ]
-            },
-            {
-              "conditions": "{{ (c - most) | abs < 3 }}",
-              "sequence": []
             }
           ],
           "default": [
             {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "haloszoba_2",
+                "parancs": "fel"
+              }
+            },
+            {
+              "delay": {
+                "seconds": "{{ (ido - 0.7 + 1.0) | round(2) }}"
+              }
+            },
+            {
+              "action": "input_number.set_value",
+              "target": {
+                "entity_id": "input_number.redony_haloszoba_2_pozicio"
+              },
+              "data": {
+                "value": 100
+              }
+            },
+            {
               "variables": {
-                "irany": "{{ 'fel' if c > most else 'le' }}",
-                "mp": "{{ [((c - most) | abs) / 100 * ido - 0.7, 0] | max | round(2) }}"
+                "mp": "{{ [(100 - c) / 100 * ido - 0.7, 0] | max | round(2) }}"
               }
             },
             {
               "action": "script.redony_rf_kuldes",
               "data": {
                 "eszkoz": "haloszoba_2",
-                "parancs": "{{ irany }}"
+                "parancs": "le"
               }
             },
             {
