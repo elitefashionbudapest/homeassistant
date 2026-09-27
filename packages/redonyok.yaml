@@ -1,0 +1,291 @@
+# Redőnyök a Broadlink RM4 Pro-n (remote.vaskut14) keresztül, RF-kódokkal.
+# A kódok a Pi-n vannak: .storage/broadlink_remote_*_codes (remote.learn_command, eszköz = slug).
+# Visszajelzés nincs, ezért az állapot optimista: az utolsó parancsot mutatja.
+template:
+  - cover:
+      - name: "Nappali terasz 1"
+        unique_id: redony_nappali_terasz_1
+        default_entity_id: cover.redony_nappali_terasz_1
+        device_class: shutter
+        optimistic: true
+        open_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: nappali_terasz_1
+              command: fel
+        close_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: nappali_terasz_1
+              command: le
+        stop_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: nappali_terasz_1
+              command: stop
+      - name: "Nappali terasz 2"
+        unique_id: redony_nappali_terasz_2
+        default_entity_id: cover.redony_nappali_terasz_2
+        device_class: shutter
+        optimistic: true
+        open_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: nappali_terasz_2
+              command: fel
+        close_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: nappali_terasz_2
+              command: le
+        stop_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: nappali_terasz_2
+              command: stop
+      - name: "Nappali ablak 1"
+        unique_id: redony_nappali_ablak_1
+        default_entity_id: cover.redony_nappali_ablak_1
+        device_class: shutter
+        optimistic: true
+        open_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: nappali_ablak_1
+              command: fel
+        close_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: nappali_ablak_1
+              command: le
+        stop_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: nappali_ablak_1
+              command: stop
+      - name: "Nappali ablak 2"
+        unique_id: redony_nappali_ablak_2
+        default_entity_id: cover.redony_nappali_ablak_2
+        device_class: shutter
+        optimistic: true
+        open_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: nappali_ablak_2
+              command: fel
+        close_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: nappali_ablak_2
+              command: le
+        stop_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: nappali_ablak_2
+              command: stop
+      - name: "Konyha redőny"
+        unique_id: redony_konyha
+        default_entity_id: cover.redony_konyha
+        device_class: shutter
+        optimistic: true
+        open_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: konyha
+              command: fel
+        close_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: konyha
+              command: le
+        stop_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: konyha
+              command: stop
+      - name: "Előszoba redőny"
+        unique_id: redony_eloszoba
+        default_entity_id: cover.redony_eloszoba
+        device_class: shutter
+        optimistic: true
+        open_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: eloszoba
+              command: fel
+        close_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: eloszoba
+              command: le
+        stop_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: eloszoba
+              command: stop
+      - name: "Fürdő redőny"
+        unique_id: redony_furdo
+        default_entity_id: cover.redony_furdo
+        device_class: shutter
+        optimistic: true
+        open_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: furdo
+              command: fel
+        close_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: furdo
+              command: le
+        stop_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: furdo
+              command: stop
+      - name: "Gyerekszoba 1"
+        unique_id: redony_gyerekszoba_1
+        default_entity_id: cover.redony_gyerekszoba_1
+        device_class: shutter
+        optimistic: true
+        open_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: gyerekszoba_1
+              command: fel
+        close_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: gyerekszoba_1
+              command: le
+        stop_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: gyerekszoba_1
+              command: stop
+      - name: "Gyerekszoba 2"
+        unique_id: redony_gyerekszoba_2
+        default_entity_id: cover.redony_gyerekszoba_2
+        device_class: shutter
+        optimistic: true
+        open_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: gyerekszoba_2
+              command: fel
+        close_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: gyerekszoba_2
+              command: le
+        stop_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: gyerekszoba_2
+              command: stop
+      - name: "Hálószoba 1"
+        unique_id: redony_haloszoba_1
+        default_entity_id: cover.redony_haloszoba_1
+        device_class: shutter
+        optimistic: true
+        open_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: haloszoba_1
+              command: fel
+        close_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: haloszoba_1
+              command: le
+        stop_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: haloszoba_1
+              command: stop
+      - name: "Hálószoba 2"
+        unique_id: redony_haloszoba_2
+        default_entity_id: cover.redony_haloszoba_2
+        device_class: shutter
+        optimistic: true
+        open_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: haloszoba_2
+              command: fel
+        close_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: haloszoba_2
+              command: le
+        stop_cover:
+          - action: remote.send_command
+            target:
+              entity_id: remote.vaskut14
+            data:
+              device: haloszoba_2
+              command: stop
