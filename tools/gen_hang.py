@@ -66,7 +66,7 @@ HOMERO = {
 sentences = {
     "language": "hu",
     "expansion_rules": {
-        "kerlek": "(kérlek|kérem|légyszi|légy szíves|légyszíves|alfréd|alfred|hé alfréd|hey alfréd|szia alfréd|hé alfred|hey alfred|hey mycroft|hé mycroft|mycroft)",
+        "kerlek": "(kérlek|kérem|légyszi|légy szíves|légyszíves|mycroft|hey mycroft|hé mycroft|szia mycroft|hé majkroft|majkroft)",
         "redonyok": "(redőny|redőnyt|redőnyök|redőnyöket|redőnyeit|redőnyét|redőnyöt|árnyékolót|árnyékolókat|rolót|rolókat)",
         "osszes": "(az összes|minden|mindegyik|összes)",
         "takarit": "(takarítsd|porszívózd|szívd|mosd|takaríts|porszívózz|takarítson|porszívózzon|takarítsa) [ki|fel|meg]",
@@ -280,7 +280,7 @@ intent_script = {
         "{{ h[homero] }} most {{ states(homero) | round(0) | int }} fok van.{% endif %}")}},
 }
 
-# --- tanult parancsok (az Alfréd tanuló modulja írja: tools/tanult.json) ------------------
+# --- tanult parancsok (a Mycroft tanuló modulja írja: tools/tanult.json) ------------------
 # Minden tanult mondat saját intentet kap, amely a Claude által egyszer már végrehajtott
 # szolgáltatáshívásokat játssza vissza, token nélkül.
 tanult_path = REPO / "tools" / "tanult.json"
