@@ -66,7 +66,7 @@ HOMERO = {
 sentences = {
     "language": "hu",
     "expansion_rules": {
-        "kerlek": "(kérlek|kérem|légyszi|légy szíves|légyszíves|jarvis|hé jarvis|hey jarvis|szia jarvis)",
+        "kerlek": "(kérlek|kérem|légyszi|légy szíves|légyszíves|alfréd|alfred|hé alfréd|hey alfréd|szia alfréd|hé alfred|hey alfred|jarvis|hé jarvis|hey jarvis|szia jarvis)",
         "redonyok": "(redőny|redőnyt|redőnyök|redőnyöket|redőnyeit|redőnyét|redőnyöt|árnyékolót|árnyékolókat|rolót|rolókat)",
         "osszes": "(az összes|minden|mindegyik|összes)",
         "takarit": "(takarítsd|porszívózd|szívd|mosd|takaríts|porszívózz|takarítson|porszívózzon|takarítsa) [ki|fel|meg]",
@@ -77,7 +77,7 @@ sentences = {
         "fokra": "(fokra|fok|fokosra|celsius fokra)",
         "mozgat": "(engedd|húzd|eresszd|ereszd|állítsd|tedd|nyisd|engedje|húzza|állítsa) [le|fel|ki|be]",
         "szazalekra": "(százalékra|százalékosra|%-ra|%-re|%)",
-        "ebreszt": "((állíts|állítsd|állítsál|tegyél|rakj|csinálj) [be] [egy] (ébresztőt|ébresztést)|ébressz fel|ébressz|keltsél fel|kelts fel|kelts|keltsél|ébresztő|ébresztés) [holnap] [reggel]",
+        "ebreszt": "((állíts|állítsd|állítsál|tegyél|rakj|csinálj) [be] [egy |az |a ](ébresztőt|ébresztést)|ébressz fel|ébressz|keltsél fel|kelts fel|kelts|keltsél|ébresztő|ébresztés) [holnap] [reggel]",
         "ebreszto": "(ébresztőt|ébresztő|ébresztést|riasztást reggel)",
     },
     "lists": {
