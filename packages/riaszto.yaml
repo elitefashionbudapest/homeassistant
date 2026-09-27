@@ -1,0 +1,21 @@
+# Ajax riasztó (alarm_control_panel.vaskut14_otthon) – élesítés hanggal és gombbal.
+# Szándékosan csak élesítő szkriptek vannak: hatástalanítani csak az Ajax appban vagy a kezelőn lehet,
+# ezért a riasztópanel maga nincs kitéve a hangasszisztensnek, csak ezek a szkriptek.
+script:
+  riaszto_ejszakai:
+    alias: "Riasztó – éjszakai mód"
+    icon: mdi:shield-moon
+    mode: single
+    sequence:
+      - action: alarm_control_panel.alarm_arm_night
+        target:
+          entity_id: alarm_control_panel.vaskut14_otthon
+
+  riaszto_elesites:
+    alias: "Riasztó – élesítés (távol)"
+    icon: mdi:shield-lock
+    mode: single
+    sequence:
+      - action: alarm_control_panel.alarm_arm_away
+        target:
+          entity_id: alarm_control_panel.vaskut14_otthon
