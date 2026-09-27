@@ -1,0 +1,986 @@
+# Magyar hangparancsok (tokenmentes, helyben a Pi-n). GENERÁLT FÁJL – a forrás a tools/gen_hang.py (futtatás: python tools/gen_hang.py .).
+# A HA a custom_sentences/<nyelv>/ mappából olvassa, ezért nem a packages/ alatt van.
+{
+  "language": "hu",
+  "expansion_rules": {
+    "kerlek": "(kérlek|kérem|légyszi|légy szíves|légyszíves|jarvis|hé jarvis|hey jarvis|szia jarvis)",
+    "redonyok": "(redőny|redőnyt|redőnyök|redőnyöket|redőnyeit|redőnyét|redőnyöt|árnyékolót|árnyékolókat|rolót|rolókat)",
+    "osszes": "(az összes|minden|mindegyik|összes)",
+    "takarit": "(takarítsd|porszívózd|szívd|mosd|takaríts|porszívózz|takarítson|porszívózzon|takarítsa) [ki|fel|meg]",
+    "indit": "(indítsd|indítsa|kezdd|kezdje|indítsad) [el]",
+    "klima": "(klímát|klíma|légkondit|légkondicionálót|klímáját)",
+    "futes": "(fűtést|fűtés|termosztátot|termosztát|kazánt)",
+    "riaszto": "(riasztót|riasztó|riasztórendszert|ajaxot)",
+    "fokra": "(fokra|fok|fokosra|celsius fokra)"
+  },
+  "lists": {
+    "irany": {
+      "values": [
+        {
+          "in": "húzd fel",
+          "out": "fel"
+        },
+        {
+          "in": "húzza fel",
+          "out": "fel"
+        },
+        {
+          "in": "húzd föl",
+          "out": "fel"
+        },
+        {
+          "in": "emeld fel",
+          "out": "fel"
+        },
+        {
+          "in": "engedd fel",
+          "out": "fel"
+        },
+        {
+          "in": "nyisd ki",
+          "out": "fel"
+        },
+        {
+          "in": "nyissa ki",
+          "out": "fel"
+        },
+        {
+          "in": "nyisd fel",
+          "out": "fel"
+        },
+        {
+          "in": "húzd fel nekem",
+          "out": "fel"
+        },
+        {
+          "in": "engedd le",
+          "out": "le"
+        },
+        {
+          "in": "engedje le",
+          "out": "le"
+        },
+        {
+          "in": "húzd le",
+          "out": "le"
+        },
+        {
+          "in": "húzza le",
+          "out": "le"
+        },
+        {
+          "in": "ereszd le",
+          "out": "le"
+        },
+        {
+          "in": "eresszd le",
+          "out": "le"
+        },
+        {
+          "in": "zárd be",
+          "out": "le"
+        },
+        {
+          "in": "zárja be",
+          "out": "le"
+        },
+        {
+          "in": "csukd be",
+          "out": "le"
+        },
+        {
+          "in": "engedd le nekem",
+          "out": "le"
+        },
+        {
+          "in": "állítsd meg",
+          "out": "stop"
+        },
+        {
+          "in": "állítsa meg",
+          "out": "stop"
+        },
+        {
+          "in": "állj meg",
+          "out": "stop"
+        },
+        {
+          "in": "állítsd le",
+          "out": "stop"
+        },
+        {
+          "in": "stop",
+          "out": "stop"
+        }
+      ]
+    },
+    "szoba": {
+      "values": [
+        {
+          "in": "nappali",
+          "out": "nappali"
+        },
+        {
+          "in": "nappaliban",
+          "out": "nappali"
+        },
+        {
+          "in": "nappalit",
+          "out": "nappali"
+        },
+        {
+          "in": "nappalinak",
+          "out": "nappali"
+        },
+        {
+          "in": "hálószoba",
+          "out": "haloszoba"
+        },
+        {
+          "in": "hálószobában",
+          "out": "haloszoba"
+        },
+        {
+          "in": "hálószobát",
+          "out": "haloszoba"
+        },
+        {
+          "in": "hálószobai",
+          "out": "haloszoba"
+        },
+        {
+          "in": "háló",
+          "out": "haloszoba"
+        },
+        {
+          "in": "hálóban",
+          "out": "haloszoba"
+        },
+        {
+          "in": "hálót",
+          "out": "haloszoba"
+        },
+        {
+          "in": "gyerekszoba",
+          "out": "gyerekszoba"
+        },
+        {
+          "in": "gyerekszobában",
+          "out": "gyerekszoba"
+        },
+        {
+          "in": "gyerekszobát",
+          "out": "gyerekszoba"
+        },
+        {
+          "in": "gyerekszobai",
+          "out": "gyerekszoba"
+        },
+        {
+          "in": "gyerek szoba",
+          "out": "gyerekszoba"
+        },
+        {
+          "in": "gyerek szobában",
+          "out": "gyerekszoba"
+        },
+        {
+          "in": "gyerekszobának",
+          "out": "gyerekszoba"
+        },
+        {
+          "in": "konyha",
+          "out": "konyha"
+        },
+        {
+          "in": "konyhában",
+          "out": "konyha"
+        },
+        {
+          "in": "konyhát",
+          "out": "konyha"
+        },
+        {
+          "in": "konyhai",
+          "out": "konyha"
+        },
+        {
+          "in": "előszoba",
+          "out": "eloter"
+        },
+        {
+          "in": "előszobában",
+          "out": "eloter"
+        },
+        {
+          "in": "előszobát",
+          "out": "eloter"
+        },
+        {
+          "in": "előszobai",
+          "out": "eloter"
+        },
+        {
+          "in": "előtér",
+          "out": "eloter"
+        },
+        {
+          "in": "előtérben",
+          "out": "eloter"
+        },
+        {
+          "in": "folyosó",
+          "out": "eloter"
+        },
+        {
+          "in": "folyosón",
+          "out": "eloter"
+        },
+        {
+          "in": "fürdő",
+          "out": "furdo"
+        },
+        {
+          "in": "fürdőben",
+          "out": "furdo"
+        },
+        {
+          "in": "fürdőt",
+          "out": "furdo"
+        },
+        {
+          "in": "fürdőszoba",
+          "out": "furdo"
+        },
+        {
+          "in": "fürdőszobában",
+          "out": "furdo"
+        },
+        {
+          "in": "fürdőszobát",
+          "out": "furdo"
+        },
+        {
+          "in": "fürdőszobai",
+          "out": "furdo"
+        }
+      ]
+    },
+    "egyedi": {
+      "values": [
+        {
+          "in": "terasz 1",
+          "out": "nappali_terasz_1"
+        },
+        {
+          "in": "terasz egy",
+          "out": "nappali_terasz_1"
+        },
+        {
+          "in": "terasz egyes",
+          "out": "nappali_terasz_1"
+        },
+        {
+          "in": "első terasz",
+          "out": "nappali_terasz_1"
+        },
+        {
+          "in": "egyes terasz",
+          "out": "nappali_terasz_1"
+        },
+        {
+          "in": "terasz 2",
+          "out": "nappali_terasz_2"
+        },
+        {
+          "in": "terasz kettő",
+          "out": "nappali_terasz_2"
+        },
+        {
+          "in": "terasz kettes",
+          "out": "nappali_terasz_2"
+        },
+        {
+          "in": "második terasz",
+          "out": "nappali_terasz_2"
+        },
+        {
+          "in": "kettes terasz",
+          "out": "nappali_terasz_2"
+        },
+        {
+          "in": "ablak 1",
+          "out": "nappali_ablak_1"
+        },
+        {
+          "in": "ablak egy",
+          "out": "nappali_ablak_1"
+        },
+        {
+          "in": "ablak egyes",
+          "out": "nappali_ablak_1"
+        },
+        {
+          "in": "első ablak",
+          "out": "nappali_ablak_1"
+        },
+        {
+          "in": "ablak 2",
+          "out": "nappali_ablak_2"
+        },
+        {
+          "in": "ablak kettő",
+          "out": "nappali_ablak_2"
+        },
+        {
+          "in": "ablak kettes",
+          "out": "nappali_ablak_2"
+        },
+        {
+          "in": "második ablak",
+          "out": "nappali_ablak_2"
+        },
+        {
+          "in": "hálószoba 1",
+          "out": "haloszoba_1"
+        },
+        {
+          "in": "hálószoba egy",
+          "out": "haloszoba_1"
+        },
+        {
+          "in": "háló 1",
+          "out": "haloszoba_1"
+        },
+        {
+          "in": "háló egy",
+          "out": "haloszoba_1"
+        },
+        {
+          "in": "hálószoba 2",
+          "out": "haloszoba_2"
+        },
+        {
+          "in": "hálószoba kettő",
+          "out": "haloszoba_2"
+        },
+        {
+          "in": "háló 2",
+          "out": "haloszoba_2"
+        },
+        {
+          "in": "háló kettő",
+          "out": "haloszoba_2"
+        },
+        {
+          "in": "gyerekszoba 1",
+          "out": "gyerekszoba_1"
+        },
+        {
+          "in": "gyerekszoba egy",
+          "out": "gyerekszoba_1"
+        },
+        {
+          "in": "gyerekszoba 2",
+          "out": "gyerekszoba_2"
+        },
+        {
+          "in": "gyerekszoba kettő",
+          "out": "gyerekszoba_2"
+        }
+      ]
+    },
+    "psz": {
+      "values": [
+        {
+          "in": "konyha",
+          "out": "konyha"
+        },
+        {
+          "in": "konyhában",
+          "out": "konyha"
+        },
+        {
+          "in": "konyhát",
+          "out": "konyha"
+        },
+        {
+          "in": "konyhai",
+          "out": "konyha"
+        },
+        {
+          "in": "előszoba",
+          "out": "eloszoba"
+        },
+        {
+          "in": "előszobában",
+          "out": "eloszoba"
+        },
+        {
+          "in": "előszobát",
+          "out": "eloszoba"
+        },
+        {
+          "in": "előszobai",
+          "out": "eloszoba"
+        },
+        {
+          "in": "előtér",
+          "out": "eloszoba"
+        },
+        {
+          "in": "előtérben",
+          "out": "eloszoba"
+        },
+        {
+          "in": "folyosó",
+          "out": "eloszoba"
+        },
+        {
+          "in": "folyosón",
+          "out": "eloszoba"
+        },
+        {
+          "in": "fürdő",
+          "out": "furdo"
+        },
+        {
+          "in": "fürdőben",
+          "out": "furdo"
+        },
+        {
+          "in": "fürdőt",
+          "out": "furdo"
+        },
+        {
+          "in": "fürdőszoba",
+          "out": "furdo"
+        },
+        {
+          "in": "fürdőszobában",
+          "out": "furdo"
+        },
+        {
+          "in": "fürdőszobát",
+          "out": "furdo"
+        },
+        {
+          "in": "fürdőszobai",
+          "out": "furdo"
+        },
+        {
+          "in": "hálószoba",
+          "out": "haloszoba"
+        },
+        {
+          "in": "hálószobában",
+          "out": "haloszoba"
+        },
+        {
+          "in": "hálószobát",
+          "out": "haloszoba"
+        },
+        {
+          "in": "hálószobai",
+          "out": "haloszoba"
+        },
+        {
+          "in": "háló",
+          "out": "haloszoba"
+        },
+        {
+          "in": "hálóban",
+          "out": "haloszoba"
+        },
+        {
+          "in": "hálót",
+          "out": "haloszoba"
+        },
+        {
+          "in": "gyerekszoba",
+          "out": "gyerekszoba"
+        },
+        {
+          "in": "gyerekszobában",
+          "out": "gyerekszoba"
+        },
+        {
+          "in": "gyerekszobát",
+          "out": "gyerekszoba"
+        },
+        {
+          "in": "gyerekszobai",
+          "out": "gyerekszoba"
+        },
+        {
+          "in": "gyerek szoba",
+          "out": "gyerekszoba"
+        },
+        {
+          "in": "gyerek szobában",
+          "out": "gyerekszoba"
+        },
+        {
+          "in": "gyerekszobának",
+          "out": "gyerekszoba"
+        }
+      ]
+    },
+    "klima": {
+      "values": [
+        {
+          "in": "nappali",
+          "out": "climate.nappali_klima"
+        },
+        {
+          "in": "nappaliban",
+          "out": "climate.nappali_klima"
+        },
+        {
+          "in": "nappalit",
+          "out": "climate.nappali_klima"
+        },
+        {
+          "in": "hálószoba",
+          "out": "climate.haloszoba_klima"
+        },
+        {
+          "in": "hálószobai",
+          "out": "climate.haloszoba_klima"
+        },
+        {
+          "in": "hálószobában",
+          "out": "climate.haloszoba_klima"
+        },
+        {
+          "in": "hálószobát",
+          "out": "climate.haloszoba_klima"
+        },
+        {
+          "in": "háló",
+          "out": "climate.haloszoba_klima"
+        },
+        {
+          "in": "hálóban",
+          "out": "climate.haloszoba_klima"
+        },
+        {
+          "in": "hálót",
+          "out": "climate.haloszoba_klima"
+        },
+        {
+          "in": "gyerekszoba",
+          "out": "climate.gyerekszoba_klima"
+        },
+        {
+          "in": "gyerekszobai",
+          "out": "climate.gyerekszoba_klima"
+        },
+        {
+          "in": "gyerekszobában",
+          "out": "climate.gyerekszoba_klima"
+        },
+        {
+          "in": "gyerekszobát",
+          "out": "climate.gyerekszoba_klima"
+        },
+        {
+          "in": "gyerek szobában",
+          "out": "climate.gyerekszoba_klima"
+        }
+      ]
+    },
+    "kapcs": {
+      "values": [
+        {
+          "in": "kapcsold be",
+          "out": "be"
+        },
+        {
+          "in": "kapcsolja be",
+          "out": "be"
+        },
+        {
+          "in": "kapcsold fel",
+          "out": "be"
+        },
+        {
+          "in": "indítsd el",
+          "out": "be"
+        },
+        {
+          "in": "indítsd",
+          "out": "be"
+        },
+        {
+          "in": "kapcsold ki",
+          "out": "ki"
+        },
+        {
+          "in": "kapcsolja ki",
+          "out": "ki"
+        },
+        {
+          "in": "kapcsold le",
+          "out": "ki"
+        },
+        {
+          "in": "állítsd le",
+          "out": "ki"
+        }
+      ]
+    },
+    "mod": {
+      "values": [
+        {
+          "in": "hűtésre",
+          "out": "cool"
+        },
+        {
+          "in": "hűtés módba",
+          "out": "cool"
+        },
+        {
+          "in": "hűtő módba",
+          "out": "cool"
+        },
+        {
+          "in": "fűtésre",
+          "out": "heat"
+        },
+        {
+          "in": "fűtés módba",
+          "out": "heat"
+        },
+        {
+          "in": "fűtő módba",
+          "out": "heat"
+        },
+        {
+          "in": "ventilátorra",
+          "out": "fan_only"
+        },
+        {
+          "in": "ventilátor módba",
+          "out": "fan_only"
+        },
+        {
+          "in": "szellőztetésre",
+          "out": "fan_only"
+        },
+        {
+          "in": "szárításra",
+          "out": "dry"
+        },
+        {
+          "in": "párátlanításra",
+          "out": "dry"
+        },
+        {
+          "in": "automatára",
+          "out": "auto"
+        },
+        {
+          "in": "automatikusra",
+          "out": "auto"
+        },
+        {
+          "in": "auto módba",
+          "out": "auto"
+        },
+        {
+          "in": "automata módba",
+          "out": "auto"
+        }
+      ]
+    },
+    "homero": {
+      "values": [
+        {
+          "in": "nappali",
+          "out": "sensor.nappali_homerseklet"
+        },
+        {
+          "in": "nappaliban",
+          "out": "sensor.nappali_homerseklet"
+        },
+        {
+          "in": "hálószoba",
+          "out": "sensor.haloszoba_homerseklet"
+        },
+        {
+          "in": "hálószobában",
+          "out": "sensor.haloszoba_homerseklet"
+        },
+        {
+          "in": "háló",
+          "out": "sensor.haloszoba_homerseklet"
+        },
+        {
+          "in": "hálóban",
+          "out": "sensor.haloszoba_homerseklet"
+        },
+        {
+          "in": "gyerekszoba",
+          "out": "sensor.gyerekszoba_homerseklet"
+        },
+        {
+          "in": "gyerekszobában",
+          "out": "sensor.gyerekszoba_homerseklet"
+        },
+        {
+          "in": "gyerek szobában",
+          "out": "sensor.gyerekszoba_homerseklet"
+        },
+        {
+          "in": "előszoba",
+          "out": "sensor.eloter_homerseklet"
+        },
+        {
+          "in": "előszobában",
+          "out": "sensor.eloter_homerseklet"
+        },
+        {
+          "in": "előtér",
+          "out": "sensor.eloter_homerseklet"
+        },
+        {
+          "in": "előtérben",
+          "out": "sensor.eloter_homerseklet"
+        },
+        {
+          "in": "folyosón",
+          "out": "sensor.eloter_homerseklet"
+        },
+        {
+          "in": "kint",
+          "out": "kint"
+        },
+        {
+          "in": "kinn",
+          "out": "kint"
+        },
+        {
+          "in": "odakint",
+          "out": "kint"
+        },
+        {
+          "in": "kint az udvaron",
+          "out": "kint"
+        },
+        {
+          "in": "a szabadban",
+          "out": "kint"
+        }
+      ]
+    },
+    "fok": {
+      "range": {
+        "from": 16,
+        "to": 30
+      }
+    }
+  },
+  "intents": {
+    "RedonySzoba": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] ({irany}; [a |az ]<redonyok>; [a |az ]{szoba}) [<kerlek>]",
+            "[<kerlek>] ({irany}; [a |az ]{szoba} <redonyok>) [<kerlek>]"
+          ]
+        }
+      ]
+    },
+    "RedonyEgyedi": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] ({irany}; [a |az ][nappali ]{egyedi} [<redonyok>]) [<kerlek>]"
+          ]
+        }
+      ]
+    },
+    "RedonyMind": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] ({irany}; <osszes> <redonyok>) [mindenhol|a lakásban|a házban] [<kerlek>]",
+            "[<kerlek>] ({irany}; [a ]<redonyok> mindenhol) [<kerlek>]"
+          ]
+        }
+      ]
+    },
+    "KlimaKapcs": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] ({kapcs}; [a |az ]<klima>; [a |az ]{klima}) [<kerlek>]",
+            "[<kerlek>] ({kapcs}; [a |az ]{klima} <klima>) [<kerlek>]"
+          ]
+        }
+      ]
+    },
+    "KlimaMind": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] ({kapcs}; <osszes> (klímát|klímákat|légkondit)) [<kerlek>]"
+          ]
+        }
+      ]
+    },
+    "KlimaHofok": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] ((állítsd|állítsa|tedd|rakd|legyen); [a |az ]{klima} [<klima>]; {fok} <fokra>) [<kerlek>]",
+            "[<kerlek>] ((állítsd|állítsa|tedd|rakd); [a |az ]<klima>; [a |az ]{klima}; {fok} <fokra>) [<kerlek>]",
+            "[<kerlek>] legyen {fok} fok [a |az ]{klima} [<kerlek>]"
+          ]
+        }
+      ]
+    },
+    "KlimaMod": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] ((kapcsold|állítsd|tedd|váltsd|kapcsolja|állítsa); [a |az ]{klima} [<klima>]; {mod}) [<kerlek>]",
+            "[<kerlek>] ((kapcsold|állítsd|tedd|váltsd); [a |az ]<klima>; [a |az ]{klima}; {mod}) [<kerlek>]"
+          ]
+        },
+        {
+          "sentences": [
+            "[<kerlek>] ((hűtsd le|hűtsd|hűtse le); [a |az ]{klima}) [<kerlek>]"
+          ],
+          "slots": {
+            "mod": "cool"
+          }
+        },
+        {
+          "sentences": [
+            "[<kerlek>] ((fűtsd fel|fűtsd be|fűtse fel|melegítsd fel); [a |az ]{klima}) [<kerlek>]"
+          ],
+          "slots": {
+            "mod": "heat"
+          }
+        }
+      ]
+    },
+    "FutesHofok": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] ((állítsd|állítsa|tedd|rakd); [a ]<futes>; {fok} <fokra>) [<kerlek>]",
+            "[<kerlek>] legyen {fok} fok [a ]<futes> [<kerlek>]"
+          ]
+        }
+      ]
+    },
+    "FutesKapcs": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] ({kapcs}; [a ]<futes>) [<kerlek>]"
+          ]
+        },
+        {
+          "sentences": [
+            "[<kerlek>] ((kapcsold|állítsd|tedd); [a ]<futes>; (automatára|automatikusra|programra))"
+          ],
+          "slots": {
+            "kapcs": "auto"
+          }
+        }
+      ]
+    },
+    "PorszivoSzoba": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] (<takarit>; [a |az ]{psz}) [<kerlek>]",
+            "[<kerlek>] (<indit>; [a ](takarítást|porszívózást|porszívót|felmosást); [a |az ]{psz}) [<kerlek>]",
+            "[<kerlek>] [a ]porszívó (takarítson|menjen|porszívózzon) [a |az ]{psz} [<kerlek>]"
+          ]
+        }
+      ]
+    },
+    "PorszivoNappali": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] (<takarit>; [a ](nappalit|nappaliban)) [<kerlek>]",
+            "[<kerlek>] (<indit>; [a ](takarítást|porszívózást|porszívót); [a ](nappaliban|nappalit)) [<kerlek>]"
+          ]
+        }
+      ]
+    },
+    "PorszivoMind": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] (<takarit>; (az egész lakást|mindenhol|az összes szobát|minden szobát|a lakást|a házat|mindent)) [<kerlek>]",
+            "[<kerlek>] <indit> a (porszívót|takarítást|porszívózást) [mindenhol] [<kerlek>]"
+          ]
+        }
+      ]
+    },
+    "PorszivoHaza": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] ((küldd|vidd|küldje) (haza|vissza); a porszívót) [a dokkolóba|a töltőre|tölteni] [<kerlek>]",
+            "[<kerlek>] [a ]porszívó menjen (haza|vissza) [<kerlek>]"
+          ]
+        }
+      ]
+    },
+    "PorszivoStop": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] ((állítsd le|állítsd meg|állítsa le|szüneteltesd); a (porszívót|takarítást|porszívózást)) [<kerlek>]"
+          ]
+        }
+      ]
+    },
+    "RiasztoEjszakai": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] ((kapcsold|tedd|állítsd|kapcsolja|állítsa); [a ]<riaszto>; éjszakai (módba|üzemmódba)) [<kerlek>]",
+            "[<kerlek>] ((élesítsd|élesítse|kapcsold be); [a ]<riaszto>; (éjszakára|éjszakai módban|éjszakai módba)) [<kerlek>]"
+          ]
+        }
+      ]
+    },
+    "RiasztoElesites": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] (élesítsd|élesítse|kapcsold be|kapcsolja be) [a ]<riaszto> [teljesen] [<kerlek>]"
+          ]
+        }
+      ]
+    },
+    "RiasztoKi": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] ((hatástalanítsd|hatástalanítsa|kapcsold ki|kapcsolja ki|kapcsold le|oldd fel); [a ]<riaszto>) [<kerlek>]"
+          ]
+        }
+      ]
+    },
+    "Homerseklet": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] (hány fok van|hány fok|mennyi a hőmérséklet|milyen meleg van|milyen hideg van|mennyi fok van) [most] [a |az ]{homero} [<kerlek>]",
+            "[<kerlek>] [a |az ]{homero} (hány fok van|mennyi a hőmérséklet|milyen meleg van) [most] [<kerlek>]"
+          ]
+        }
+      ]
+    }
+  }
+}

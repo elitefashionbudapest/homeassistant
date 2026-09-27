@@ -1,0 +1,269 @@
+# A custom_sentences/hu/hangvezerles.yaml mondatainak végrehajtása és magyar válaszai.
+# GENERÁLT FÁJL – a forrás a tools/gen_hang.py (futtatás: python tools/gen_hang.py .). Amit ez nem ért, az a Claude-hoz megy tovább.
+{
+  "intent_script": {
+    "RedonySzoba": {
+      "async_action": true,
+      "action": [
+        {
+          "action": "cover.{{ {'fel':'open_cover','le':'close_cover'}.get(irany, 'stop_cover') }}",
+          "target": {
+            "area_id": "{{ szoba }}"
+          }
+        }
+      ],
+      "speech": {
+        "text": "{% set hely = {'nappali':'a nappaliban','haloszoba':'a hálószobában','gyerekszoba':'a gyerekszobában','konyha':'a konyhában','eloter':'az előszobában','furdo':'a fürdőben'} %}{{ {'fel':'Felhúzom','le':'Leengedem'}.get(irany, 'Megállítom') }} a redőnyöket {{ hely[szoba] }}."
+      }
+    },
+    "RedonyEgyedi": {
+      "async_action": true,
+      "action": [
+        {
+          "action": "cover.{{ {'fel':'open_cover','le':'close_cover'}.get(irany, 'stop_cover') }}",
+          "target": {
+            "entity_id": "cover.redony_{{ egyedi }}"
+          }
+        }
+      ],
+      "speech": {
+        "text": "{% set rnev = {'nappali_terasz_1':'a nappali terasz 1','nappali_terasz_2':'a nappali terasz 2','nappali_ablak_1':'a nappali ablak 1','nappali_ablak_2':'a nappali ablak 2','haloszoba_1':'a hálószoba 1','haloszoba_2':'a hálószoba 2','gyerekszoba_1':'a gyerekszoba 1','gyerekszoba_2':'a gyerekszoba 2'} %}{{ {'fel':'Felhúzom','le':'Leengedem'}.get(irany, 'Megállítom') }} {{ rnev[egyedi] }} redőnyt."
+      }
+    },
+    "RedonyMind": {
+      "async_action": true,
+      "action": [
+        {
+          "choose": [
+            {
+              "conditions": "{{ irany == 'fel' }}",
+              "sequence": [
+                {
+                  "action": "script.turn_on",
+                  "target": {
+                    "entity_id": "script.redonyok_mind_fel"
+                  }
+                }
+              ]
+            },
+            {
+              "conditions": "{{ irany == 'le' }}",
+              "sequence": [
+                {
+                  "action": "script.turn_on",
+                  "target": {
+                    "entity_id": "script.redonyok_mind_le"
+                  }
+                }
+              ]
+            }
+          ],
+          "default": [
+            {
+              "action": "cover.stop_cover",
+              "target": {
+                "entity_id": "all"
+              }
+            }
+          ]
+        }
+      ],
+      "speech": {
+        "text": "{{ {'fel':'Felhúzom','le':'Leengedem'}.get(irany, 'Megállítom') }} az összes redőnyt."
+      }
+    },
+    "KlimaKapcs": {
+      "action": [
+        {
+          "action": "climate.turn_{{ 'on' if kapcs == 'be' else 'off' }}",
+          "target": {
+            "entity_id": "{{ klima }}"
+          }
+        }
+      ],
+      "speech": {
+        "text": "{% set knev = {'climate.nappali_klima':'a nappali','climate.haloszoba_klima':'a hálószoba','climate.gyerekszoba_klima':'a gyerekszoba'} %}{{ 'Bekapcsoltam' if kapcs == 'be' else 'Kikapcsoltam' }} {{ knev[klima] }} klímát."
+      }
+    },
+    "KlimaMind": {
+      "action": [
+        {
+          "action": "climate.turn_{{ 'on' if kapcs == 'be' else 'off' }}",
+          "target": {
+            "entity_id": [
+              "climate.nappali_klima",
+              "climate.haloszoba_klima",
+              "climate.gyerekszoba_klima"
+            ]
+          }
+        }
+      ],
+      "speech": {
+        "text": "{{ 'Bekapcsoltam' if kapcs == 'be' else 'Kikapcsoltam' }} az összes klímát."
+      }
+    },
+    "KlimaHofok": {
+      "action": [
+        {
+          "action": "climate.set_temperature",
+          "target": {
+            "entity_id": "{{ klima }}"
+          },
+          "data": {
+            "temperature": "{{ fok }}"
+          }
+        }
+      ],
+      "speech": {
+        "text": "{% set knev = {'climate.nappali_klima':'a nappali','climate.haloszoba_klima':'a hálószoba','climate.gyerekszoba_klima':'a gyerekszoba'} %}Beállítottam {{ knev[klima] }} klímát {{ fok }} fokra."
+      }
+    },
+    "KlimaMod": {
+      "action": [
+        {
+          "action": "climate.set_hvac_mode",
+          "target": {
+            "entity_id": "{{ klima }}"
+          },
+          "data": {
+            "hvac_mode": "{{ mod }}"
+          }
+        }
+      ],
+      "speech": {
+        "text": "{% set knev = {'climate.nappali_klima':'a nappali','climate.haloszoba_klima':'a hálószoba','climate.gyerekszoba_klima':'a gyerekszoba'} %}{% set mnev = {'cool':'hűtésre','heat':'fűtésre','fan_only':'ventilátorra','dry':'szárításra','auto':'automatára'} %}Átállítottam {{ knev[klima] }} klímát {{ mnev[mod] }}."
+      }
+    },
+    "FutesHofok": {
+      "action": [
+        {
+          "action": "climate.set_temperature",
+          "target": {
+            "entity_id": "climate.termosztat"
+          },
+          "data": {
+            "temperature": "{{ fok }}"
+          }
+        }
+      ],
+      "speech": {
+        "text": "A fűtést {{ fok }} fokra állítottam."
+      }
+    },
+    "FutesKapcs": {
+      "action": [
+        {
+          "action": "climate.set_hvac_mode",
+          "target": {
+            "entity_id": "climate.termosztat"
+          },
+          "data": {
+            "hvac_mode": "{{ {'be':'heat','ki':'off'}.get(kapcs, 'auto') }}"
+          }
+        }
+      ],
+      "speech": {
+        "text": "{{ {'be':'Bekapcsoltam a fűtést.','ki':'Kikapcsoltam a fűtést.'}.get(kapcs, 'A fűtést automatára állítottam.') }}"
+      }
+    },
+    "PorszivoSzoba": {
+      "async_action": true,
+      "action": [
+        {
+          "action": "script.turn_on",
+          "target": {
+            "entity_id": "script.porszivo_{{ psz }}"
+          }
+        }
+      ],
+      "speech": {
+        "text": "{% set pnev = {'konyha':'a konyhában','eloszoba':'az előszobában','furdo':'a fürdőben','haloszoba':'a hálószobában','gyerekszoba':'a gyerekszobában'} %}Rendben, elindítottam a takarítást {{ pnev[psz] }}."
+      }
+    },
+    "PorszivoNappali": {
+      "speech": {
+        "text": "A nappaliba sajnos nem tudok lemenni a lépcső miatt. Takarítsak másik szobában?"
+      }
+    },
+    "PorszivoMind": {
+      "async_action": true,
+      "action": [
+        {
+          "action": "script.turn_on",
+          "target": {
+            "entity_id": "script.porszivo_minden"
+          }
+        }
+      ],
+      "speech": {
+        "text": "Rendben, elindítottam a takarítást az egész lakásban."
+      }
+    },
+    "PorszivoHaza": {
+      "async_action": true,
+      "action": [
+        {
+          "action": "vacuum.return_to_base",
+          "target": {
+            "entity_id": "vacuum.porszivo"
+          }
+        }
+      ],
+      "speech": {
+        "text": "Hazaküldtem a porszívót a dokkolóba."
+      }
+    },
+    "PorszivoStop": {
+      "async_action": true,
+      "action": [
+        {
+          "action": "vacuum.stop",
+          "target": {
+            "entity_id": "vacuum.porszivo"
+          }
+        }
+      ],
+      "speech": {
+        "text": "Leállítottam a porszívót."
+      }
+    },
+    "RiasztoEjszakai": {
+      "async_action": true,
+      "action": [
+        {
+          "action": "script.turn_on",
+          "target": {
+            "entity_id": "script.riaszto_ejszakai"
+          }
+        }
+      ],
+      "speech": {
+        "text": "Éjszakai módba kapcsoltam a riasztót. Jó éjszakát!"
+      }
+    },
+    "RiasztoElesites": {
+      "async_action": true,
+      "action": [
+        {
+          "action": "script.turn_on",
+          "target": {
+            "entity_id": "script.riaszto_elesites"
+          }
+        }
+      ],
+      "speech": {
+        "text": "Élesítettem a riasztót."
+      }
+    },
+    "RiasztoKi": {
+      "speech": {
+        "text": "A riasztót biztonsági okból nem hatástalaníthatom. Kérlek, az Ajax appban vagy a kezelőn tedd meg."
+      }
+    },
+    "Homerseklet": {
+      "speech": {
+        "text": "{% if homero == 'kint' %}Kint most {{ state_attr('weather.forecast_otthon', 'temperature') | round(0) | int }} fok van.{% else %}{% set h = {'sensor.nappali_homerseklet':'A nappaliban','sensor.haloszoba_homerseklet':'A hálószobában','sensor.gyerekszoba_homerseklet':'A gyerekszobában','sensor.eloter_homerseklet':'Az előszobában'} %}{{ h[homero] }} most {{ states(homero) | round(0) | int }} fok van.{% endif %}"
+      }
+    }
+  }
+}
