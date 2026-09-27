@@ -280,7 +280,7 @@ intent_script = {
         "{{ h[homero] }} most {{ states(homero) | round(0) | int }} fok van.{% endif %}")}},
 }
 
-# --- tanult parancsok (a Jarvis tanuló modulja írja: tools/tanult.json) ------------------
+# --- tanult parancsok (az Alfréd tanuló modulja írja: tools/tanult.json) ------------------
 # Minden tanult mondat saját intentet kap, amely a Claude által egyszer már végrehajtott
 # szolgáltatáshívásokat játssza vissza, token nélkül.
 tanult_path = REPO / "tools" / "tanult.json"
