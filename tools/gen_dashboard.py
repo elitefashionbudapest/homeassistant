@@ -45,14 +45,18 @@ def klima(entity: str, nev: str = "Klíma") -> dict:
 
 
 def redony(slug: str, nev: str) -> dict:
-    """Csúszka a pozícióhoz (0 = zárva, 100 = nyitva) és fel / stop / le gomb."""
+    """Csúszka a pozícióhoz (0 = zárva, 100 = nyitva), valamint fel / félig (50%) / stop / le gomb."""
     e = f"cover.redony_{slug}"
-    gomb = lambda ikon, svc: {"icon": ikon, "show_background": True,
-                              "tap_action": {"action": "perform-action", "perform_action": f"cover.{svc}",
-                                             "target": {"entity_id": e}}}
+    def gomb(ikon: str, svc: str, adat: dict | None = None) -> dict:
+        act = {"action": "perform-action", "perform_action": f"cover.{svc}", "target": {"entity_id": e}}
+        if adat:
+            act["data"] = adat
+        return {"icon": ikon, "show_background": True, "tap_action": act}
     return {"type": "custom:bubble-card", "card_type": "button", "button_type": "slider", "entity": e, "name": nev,
             "icon": "mdi:window-shutter", "grid_options": FULL, "state_content": "current_position",
-            "sub_button": [gomb("mdi:arrow-up", "open_cover"), gomb("mdi:stop", "stop_cover"),
+            "sub_button": [gomb("mdi:arrow-up", "open_cover"),
+                           gomb("mdi:circle-half-full", "set_cover_position", {"position": 50}),
+                           gomb("mdi:stop", "stop_cover"),
                            gomb("mdi:arrow-down", "close_cover")]}
 
 
