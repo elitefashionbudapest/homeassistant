@@ -11,6 +11,37 @@ script:
         target:
           entity_id: alarm_control_panel.vaskut14_otthon
 
+  # Az esti emlékeztető push gombja és a dashboard „#riaszto” panelje is ezt hívja.
+  riaszto_esti_bekapcsolas:
+    alias: "Riasztó – éjszakai mód az esti emlékeztetőből"
+    icon: mdi:shield-moon
+    mode: single
+    sequence:
+      - action: notify.mobile_app_adam_2
+        data:
+          message: clear_notification
+          data:
+            tag: riaszto_este
+      - if:
+          - condition: state
+            entity_id: alarm_control_panel.vaskut14_otthon
+            state: [armed_night, armed_away]
+        then:
+          - action: notify.mobile_app_adam_2
+            data:
+              title: "🛡️ Riasztó"
+              message: "A riasztó már be van kapcsolva, nem változtattam rajta."
+        else:
+          - action: script.riaszto_ejszakai
+          - wait_template: "{{ is_state('alarm_control_panel.vaskut14_otthon', 'armed_night') }}"
+            timeout: "00:01:00"
+          - action: notify.mobile_app_adam_2
+            data:
+              title: "🛡️ Riasztó"
+              message: >-
+                {{ 'Bekapcsoltam az éjszakai módot. Jó éjt!' if wait.completed
+                   else 'Nem sikerült éjszakai módba kapcsolni. Nézd meg az Ajax appban, nincs-e nyitva ajtó vagy ablak.' }}
+
   riaszto_elesites:
     alias: "Riasztó – élesítés (távol)"
     icon: mdi:shield-lock
@@ -50,7 +81,8 @@ automation:
           message: "Fél tíz van, de a riasztó még nincs bekapcsolva éjszakára. Bekapcsoljam?"
           data:
             tag: riaszto_este
-            url: /otthon-homerseklet/otthon
+            # koppintásra a HA app a dashboard nagy gombos „#riaszto” paneljén nyílik meg
+            url: /otthon-homerseklet/otthon#riaszto
             push:
               sound:
                 name: default
@@ -68,27 +100,4 @@ automation:
         event_type: mobile_app_notification_action
         event_data: {action: RIASZTO_EJSZAKAI}
     actions:
-      - action: notify.mobile_app_adam_2
-        data:
-          message: clear_notification
-          data:
-            tag: riaszto_este
-      - if:
-          - condition: state
-            entity_id: alarm_control_panel.vaskut14_otthon
-            state: [armed_night, armed_away]
-        then:
-          - action: notify.mobile_app_adam_2
-            data:
-              title: "🛡️ Riasztó"
-              message: "A riasztó már be van kapcsolva, nem változtattam rajta."
-        else:
-          - action: script.riaszto_ejszakai
-          - wait_template: "{{ is_state('alarm_control_panel.vaskut14_otthon', 'armed_night') }}"
-            timeout: "00:01:00"
-          - action: notify.mobile_app_adam_2
-            data:
-              title: "🛡️ Riasztó"
-              message: >-
-                {{ 'Bekapcsoltam az éjszakai módot. Jó éjt!' if wait.completed
-                   else 'Nem sikerült éjszakai módba kapcsolni. Nézd meg az Ajax appban, nincs-e nyitva ajtó vagy ablak.' }}
+      - action: script.riaszto_esti_bekapcsolas

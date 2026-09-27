@@ -138,7 +138,8 @@ AUTOMATIZMUSOK = """## 🌙 Este
 **Iskolai kérdés (vasárnaptól csütörtökig, 21:00).** Pusht kaptok, hogy megy-e holnap Csepike iskolába. Ha rákoppintasz, megnyílik a válaszpanel. Ha igen, reggel 6:30-kor felmennek a gyerekszoba és a nappali redőnyei.
 Holnap: **{{ 'igen, 6:30-kor felmennek a redőnyök' if is_state('input_boolean.iskola_holnap','on') else 'nincs redőnyhúzás' }}**.
 
-**Riasztó-emlékeztető (21:30).** Ha valaki itthon van, de a riasztó nincs éjszakai vagy távol módban, kritikus pusht kapsz, amely a Ne zavarjanak módon is átjön. A gombjával éjszakai módba kapcsolhatod.
+**Riasztó-emlékeztető (21:30).** Ha valaki itthon van, de a riasztó nincs éjszakai vagy távol módban, kritikus pusht kapsz, amely a Ne zavarjanak módon is átjön. \
+Ha rákoppintasz, megnyílik egy ablak, ahol egy gombbal éjszakai módba kapcsolhatod.
 Most: **{{ {'disarmed':'kikapcsolva','armed_night':'éjszakai mód','armed_home':'otthon mód','armed_away':'élesítve (távol)',
 'arming':'élesítés folyamatban','triggered':'RIASZT'}.get(states('alarm_control_panel.vaskut14_otthon'), states('alarm_control_panel.vaskut14_otthon')) }}**.
 
@@ -199,6 +200,16 @@ popupok = [
                           "else 'Nem húzom fel a redőnyöket.' }}"},
         valasz_gomb("Igen, megy", "mdi:check-bold", "igen"),
         valasz_gomb("Nem", "mdi:close-thick", "nem"),
+    ]),
+    # az esti riasztó-emlékeztető push koppintásra ide nyílik (packages/riaszto.yaml)
+    popup("#riaszto", "Riasztó", "mdi:shield-moon", [
+        {"type": "custom:bubble-card", "card_type": "button", "button_type": "state", "card_layout": "large",
+         "entity": "alarm_control_panel.vaskut14_otthon", "name": "Most", "icon": "mdi:shield-home", "grid_options": FULL,
+         "state_content": "{{ {'disarmed':'Kikapcsolva','armed_night':'Éjszakai mód','armed_home':'Otthon mód',"
+                          "'armed_away':'Élesítve (távol)','arming':'Élesítés folyamatban','triggered':'RIASZT'}"
+                          ".get(states('alarm_control_panel.vaskut14_otthon'), states('alarm_control_panel.vaskut14_otthon')) }}"},
+        {**muvelet_gomb("Éjszakai mód bekapcsolása", "mdi:shield-moon", "script.riaszto_esti_bekapcsolas"),
+         "grid_options": FULL},
     ]),
     popup("#automatizmusok", "Automatizmusok", "mdi:robot-happy", [
         {"type": "markdown", "content": AUTOMATIZMUSOK, "grid_options": FULL},
