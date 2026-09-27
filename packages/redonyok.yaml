@@ -1,506 +1,2054 @@
-# Redőnyök a Broadlink RM4 Pro-n (remote.vaskut14) keresztül, RF-kódokkal.
+# Redőnyök (Broadlink RF) időalapú pozícióval, esti lehúzással.
+# GENERÁLT FÁJL – a forrás a tools/gen_redonyok.py (futtatás: python tools/gen_redonyok.py .).
 # A kódok a Pi-n vannak: .storage/broadlink_remote_*_codes (remote.learn_command, eszköz = slug).
-# Visszajelzés nincs, ezért az állapot optimista: az utolsó parancsot mutatja.
-# Minden jel a sorba állító script.redony_rf_kuldes-en megy át, hogy egyszerre több redőnynél se vesszen el.
-# A pozíció-parancs (a hangasszisztens ezt használja) csak két állást ismer:
-# 50% vagy afelett felhúzza, alatta lehúzza a redőnyt.
-template:
-  - cover:
-      - name: "Nappali terasz 1"
-        unique_id: redony_nappali_terasz_1
-        default_entity_id: cover.redony_nappali_terasz_1
-        device_class: shutter
-        optimistic: true
-        open_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: nappali_terasz_1
-              parancs: fel
-        close_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: nappali_terasz_1
-              parancs: le
-        stop_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: nappali_terasz_1
-              parancs: stop
-        set_cover_position:
-          - if:
-              - condition: template
-                value_template: "{{ position | int(0) >= 50 }}"
-            then:
-              - action: script.redony_rf_kuldes
-                data:
-                  eszkoz: nappali_terasz_1
-                  parancs: fel
-            else:
-              - action: script.redony_rf_kuldes
-                data:
-                  eszkoz: nappali_terasz_1
-                  parancs: le
-      - name: "Nappali terasz 2"
-        unique_id: redony_nappali_terasz_2
-        default_entity_id: cover.redony_nappali_terasz_2
-        device_class: shutter
-        optimistic: true
-        open_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: nappali_terasz_2
-              parancs: fel
-        close_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: nappali_terasz_2
-              parancs: le
-        stop_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: nappali_terasz_2
-              parancs: stop
-        set_cover_position:
-          - if:
-              - condition: template
-                value_template: "{{ position | int(0) >= 50 }}"
-            then:
-              - action: script.redony_rf_kuldes
-                data:
-                  eszkoz: nappali_terasz_2
-                  parancs: fel
-            else:
-              - action: script.redony_rf_kuldes
-                data:
-                  eszkoz: nappali_terasz_2
-                  parancs: le
-      - name: "Nappali ablak 1"
-        unique_id: redony_nappali_ablak_1
-        default_entity_id: cover.redony_nappali_ablak_1
-        device_class: shutter
-        optimistic: true
-        open_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: nappali_ablak_1
-              parancs: fel
-        close_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: nappali_ablak_1
-              parancs: le
-        stop_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: nappali_ablak_1
-              parancs: stop
-        set_cover_position:
-          - if:
-              - condition: template
-                value_template: "{{ position | int(0) >= 50 }}"
-            then:
-              - action: script.redony_rf_kuldes
-                data:
-                  eszkoz: nappali_ablak_1
-                  parancs: fel
-            else:
-              - action: script.redony_rf_kuldes
-                data:
-                  eszkoz: nappali_ablak_1
-                  parancs: le
-      - name: "Nappali ablak 2"
-        unique_id: redony_nappali_ablak_2
-        default_entity_id: cover.redony_nappali_ablak_2
-        device_class: shutter
-        optimistic: true
-        open_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: nappali_ablak_2
-              parancs: fel
-        close_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: nappali_ablak_2
-              parancs: le
-        stop_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: nappali_ablak_2
-              parancs: stop
-        set_cover_position:
-          - if:
-              - condition: template
-                value_template: "{{ position | int(0) >= 50 }}"
-            then:
-              - action: script.redony_rf_kuldes
-                data:
-                  eszkoz: nappali_ablak_2
-                  parancs: fel
-            else:
-              - action: script.redony_rf_kuldes
-                data:
-                  eszkoz: nappali_ablak_2
-                  parancs: le
-      - name: "Konyha redőny"
-        unique_id: redony_konyha
-        default_entity_id: cover.redony_konyha
-        device_class: shutter
-        optimistic: true
-        open_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: konyha
-              parancs: fel
-        close_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: konyha
-              parancs: le
-        stop_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: konyha
-              parancs: stop
-        set_cover_position:
-          - if:
-              - condition: template
-                value_template: "{{ position | int(0) >= 50 }}"
-            then:
-              - action: script.redony_rf_kuldes
-                data:
-                  eszkoz: konyha
-                  parancs: fel
-            else:
-              - action: script.redony_rf_kuldes
-                data:
-                  eszkoz: konyha
-                  parancs: le
-      - name: "Előszoba redőny"
-        unique_id: redony_eloszoba
-        default_entity_id: cover.redony_eloszoba
-        device_class: shutter
-        optimistic: true
-        open_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: eloszoba
-              parancs: fel
-        close_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: eloszoba
-              parancs: le
-        stop_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: eloszoba
-              parancs: stop
-        set_cover_position:
-          - if:
-              - condition: template
-                value_template: "{{ position | int(0) >= 50 }}"
-            then:
-              - action: script.redony_rf_kuldes
-                data:
-                  eszkoz: eloszoba
-                  parancs: fel
-            else:
-              - action: script.redony_rf_kuldes
-                data:
-                  eszkoz: eloszoba
-                  parancs: le
-      - name: "Fürdő redőny"
-        unique_id: redony_furdo
-        default_entity_id: cover.redony_furdo
-        device_class: shutter
-        optimistic: true
-        open_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: furdo
-              parancs: fel
-        close_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: furdo
-              parancs: le
-        stop_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: furdo
-              parancs: stop
-        set_cover_position:
-          - if:
-              - condition: template
-                value_template: "{{ position | int(0) >= 50 }}"
-            then:
-              - action: script.redony_rf_kuldes
-                data:
-                  eszkoz: furdo
-                  parancs: fel
-            else:
-              - action: script.redony_rf_kuldes
-                data:
-                  eszkoz: furdo
-                  parancs: le
-      - name: "Gyerekszoba 1"
-        unique_id: redony_gyerekszoba_1
-        default_entity_id: cover.redony_gyerekszoba_1
-        device_class: shutter
-        optimistic: true
-        open_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: gyerekszoba_1
-              parancs: fel
-        close_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: gyerekszoba_1
-              parancs: le
-        stop_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: gyerekszoba_1
-              parancs: stop
-        set_cover_position:
-          - if:
-              - condition: template
-                value_template: "{{ position | int(0) >= 50 }}"
-            then:
-              - action: script.redony_rf_kuldes
-                data:
-                  eszkoz: gyerekszoba_1
-                  parancs: fel
-            else:
-              - action: script.redony_rf_kuldes
-                data:
-                  eszkoz: gyerekszoba_1
-                  parancs: le
-      - name: "Gyerekszoba 2"
-        unique_id: redony_gyerekszoba_2
-        default_entity_id: cover.redony_gyerekszoba_2
-        device_class: shutter
-        optimistic: true
-        open_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: gyerekszoba_2
-              parancs: fel
-        close_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: gyerekszoba_2
-              parancs: le
-        stop_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: gyerekszoba_2
-              parancs: stop
-        set_cover_position:
-          - if:
-              - condition: template
-                value_template: "{{ position | int(0) >= 50 }}"
-            then:
-              - action: script.redony_rf_kuldes
-                data:
-                  eszkoz: gyerekszoba_2
-                  parancs: fel
-            else:
-              - action: script.redony_rf_kuldes
-                data:
-                  eszkoz: gyerekszoba_2
-                  parancs: le
-      - name: "Hálószoba 1"
-        unique_id: redony_haloszoba_1
-        default_entity_id: cover.redony_haloszoba_1
-        device_class: shutter
-        optimistic: true
-        open_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: haloszoba_1
-              parancs: fel
-        close_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: haloszoba_1
-              parancs: le
-        stop_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: haloszoba_1
-              parancs: stop
-        set_cover_position:
-          - if:
-              - condition: template
-                value_template: "{{ position | int(0) >= 50 }}"
-            then:
-              - action: script.redony_rf_kuldes
-                data:
-                  eszkoz: haloszoba_1
-                  parancs: fel
-            else:
-              - action: script.redony_rf_kuldes
-                data:
-                  eszkoz: haloszoba_1
-                  parancs: le
-      - name: "Hálószoba 2"
-        unique_id: redony_haloszoba_2
-        default_entity_id: cover.redony_haloszoba_2
-        device_class: shutter
-        optimistic: true
-        open_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: haloszoba_2
-              parancs: fel
-        close_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: haloszoba_2
-              parancs: le
-        stop_cover:
-          - action: script.redony_rf_kuldes
-            data:
-              eszkoz: haloszoba_2
-              parancs: stop
-        set_cover_position:
-          - if:
-              - condition: template
-                value_template: "{{ position | int(0) >= 50 }}"
-            then:
-              - action: script.redony_rf_kuldes
-                data:
-                  eszkoz: haloszoba_2
-                  parancs: fel
-            else:
-              - action: script.redony_rf_kuldes
-                data:
-                  eszkoz: haloszoba_2
-                  parancs: le
-
-# Minden redőny egyszerre. A jeleket a redony_rf_kuldes sor küldi egymás után.
-script:
-  redony_rf_kuldes:
-    alias: "Redőny RF-jel küldése (sorban)"
-    icon: mdi:radio-tower
-    mode: queued
-    max: 60
-    fields:
-      eszkoz:
-        description: "A betanított eszköz neve a Broadlinkon (pl. nappali_terasz_1)"
-      parancs:
-        description: "fel, le vagy stop"
-    sequence:
-      - action: remote.send_command
-        target:
-          entity_id: remote.vaskut14
-        data:
-          device: "{{ eszkoz }}"
-          command: "{{ parancs }}"
-      # szünet a következő jel előtt, hogy a Broadlink ne nyelje el
-      - delay:
-          milliseconds: 700
-
-  redonyok_mind_fel:
-    alias: "Minden redőny fel"
-    icon: mdi:arrow-up-bold-box-outline
-    mode: single
-    sequence:
-      - action: cover.open_cover
-        target:
-          entity_id: cover.redony_nappali_terasz_1
-      - action: cover.open_cover
-        target:
-          entity_id: cover.redony_nappali_terasz_2
-      - action: cover.open_cover
-        target:
-          entity_id: cover.redony_nappali_ablak_1
-      - action: cover.open_cover
-        target:
-          entity_id: cover.redony_nappali_ablak_2
-      - action: cover.open_cover
-        target:
-          entity_id: cover.redony_konyha
-      - action: cover.open_cover
-        target:
-          entity_id: cover.redony_eloszoba
-      - action: cover.open_cover
-        target:
-          entity_id: cover.redony_furdo
-      - action: cover.open_cover
-        target:
-          entity_id: cover.redony_gyerekszoba_1
-      - action: cover.open_cover
-        target:
-          entity_id: cover.redony_gyerekszoba_2
-      - action: cover.open_cover
-        target:
-          entity_id: cover.redony_haloszoba_1
-      - action: cover.open_cover
-        target:
-          entity_id: cover.redony_haloszoba_2
-  redonyok_mind_le:
-    alias: "Minden redőny le"
-    icon: mdi:arrow-down-bold-box-outline
-    mode: single
-    sequence:
-      - action: cover.close_cover
-        target:
-          entity_id: cover.redony_nappali_terasz_1
-      - action: cover.close_cover
-        target:
-          entity_id: cover.redony_nappali_terasz_2
-      - action: cover.close_cover
-        target:
-          entity_id: cover.redony_nappali_ablak_1
-      - action: cover.close_cover
-        target:
-          entity_id: cover.redony_nappali_ablak_2
-      - action: cover.close_cover
-        target:
-          entity_id: cover.redony_konyha
-      - action: cover.close_cover
-        target:
-          entity_id: cover.redony_eloszoba
-      - action: cover.close_cover
-        target:
-          entity_id: cover.redony_furdo
-      - action: cover.close_cover
-        target:
-          entity_id: cover.redony_gyerekszoba_1
-      - action: cover.close_cover
-        target:
-          entity_id: cover.redony_gyerekszoba_2
-      - action: cover.close_cover
-        target:
-          entity_id: cover.redony_haloszoba_1
-      - action: cover.close_cover
-        target:
-          entity_id: cover.redony_haloszoba_2
-
-# Esti lehúzás: napnyugta után 30 perccel minden redőny le, kivéve a nappali terasz 1-et.
-automation:
-  - id: redonyok_esti_lehuzas
-    alias: "Redőnyök – esti lehúzás (napnyugta + 30 perc)"
-    mode: single
-    triggers:
-      - trigger: sun
-        event: sunset
-        offset: "00:30:00"
-    actions:
-      - action: cover.close_cover
-        target:
-          entity_id:
-            - cover.redony_nappali_terasz_2
-            - cover.redony_nappali_ablak_1
-            - cover.redony_nappali_ablak_2
-            - cover.redony_konyha
-            - cover.redony_eloszoba
-            - cover.redony_furdo
-            - cover.redony_gyerekszoba_1
-            - cover.redony_gyerekszoba_2
-            - cover.redony_haloszoba_1
-            - cover.redony_haloszoba_2
+{
+  "input_number": {
+    "redony_nappali_terasz_1_pozicio": {
+      "name": "Nappali terasz 1 pozíció",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "mode": "slider",
+      "unit_of_measurement": "%",
+      "icon": "mdi:window-shutter-settings"
+    },
+    "redony_nappali_terasz_2_pozicio": {
+      "name": "Nappali terasz 2 pozíció",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "mode": "slider",
+      "unit_of_measurement": "%",
+      "icon": "mdi:window-shutter-settings"
+    },
+    "redony_nappali_ablak_1_pozicio": {
+      "name": "Nappali ablak 1 pozíció",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "mode": "slider",
+      "unit_of_measurement": "%",
+      "icon": "mdi:window-shutter-settings"
+    },
+    "redony_nappali_ablak_2_pozicio": {
+      "name": "Nappali ablak 2 pozíció",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "mode": "slider",
+      "unit_of_measurement": "%",
+      "icon": "mdi:window-shutter-settings"
+    },
+    "redony_konyha_pozicio": {
+      "name": "Konyha redőny pozíció",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "mode": "slider",
+      "unit_of_measurement": "%",
+      "icon": "mdi:window-shutter-settings"
+    },
+    "redony_eloszoba_pozicio": {
+      "name": "Előszoba redőny pozíció",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "mode": "slider",
+      "unit_of_measurement": "%",
+      "icon": "mdi:window-shutter-settings"
+    },
+    "redony_furdo_pozicio": {
+      "name": "Fürdő redőny pozíció",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "mode": "slider",
+      "unit_of_measurement": "%",
+      "icon": "mdi:window-shutter-settings"
+    },
+    "redony_gyerekszoba_1_pozicio": {
+      "name": "Gyerekszoba 1 pozíció",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "mode": "slider",
+      "unit_of_measurement": "%",
+      "icon": "mdi:window-shutter-settings"
+    },
+    "redony_gyerekszoba_2_pozicio": {
+      "name": "Gyerekszoba 2 pozíció",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "mode": "slider",
+      "unit_of_measurement": "%",
+      "icon": "mdi:window-shutter-settings"
+    },
+    "redony_haloszoba_1_pozicio": {
+      "name": "Hálószoba 1 pozíció",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "mode": "slider",
+      "unit_of_measurement": "%",
+      "icon": "mdi:window-shutter-settings"
+    },
+    "redony_haloszoba_2_pozicio": {
+      "name": "Hálószoba 2 pozíció",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "mode": "slider",
+      "unit_of_measurement": "%",
+      "icon": "mdi:window-shutter-settings"
+    }
+  },
+  "template": [
+    {
+      "cover": [
+        {
+          "name": "Nappali terasz 1",
+          "unique_id": "redony_nappali_terasz_1",
+          "default_entity_id": "cover.redony_nappali_terasz_1",
+          "device_class": "shutter",
+          "position": "{{ states('input_number.redony_nappali_terasz_1_pozicio') | int(0) }}",
+          "open_cover": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_nappali_terasz_1_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": 100
+                }
+              }
+            }
+          ],
+          "close_cover": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_nappali_terasz_1_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": 0
+                }
+              }
+            }
+          ],
+          "set_cover_position": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_nappali_terasz_1_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": "{{ position }}"
+                }
+              }
+            }
+          ],
+          "stop_cover": [
+            {
+              "action": "script.turn_off",
+              "target": {
+                "entity_id": "script.redony_nappali_terasz_1_mozgat"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "nappali_terasz_1",
+                "parancs": "stop"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Nappali terasz 2",
+          "unique_id": "redony_nappali_terasz_2",
+          "default_entity_id": "cover.redony_nappali_terasz_2",
+          "device_class": "shutter",
+          "position": "{{ states('input_number.redony_nappali_terasz_2_pozicio') | int(0) }}",
+          "open_cover": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_nappali_terasz_2_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": 100
+                }
+              }
+            }
+          ],
+          "close_cover": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_nappali_terasz_2_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": 0
+                }
+              }
+            }
+          ],
+          "set_cover_position": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_nappali_terasz_2_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": "{{ position }}"
+                }
+              }
+            }
+          ],
+          "stop_cover": [
+            {
+              "action": "script.turn_off",
+              "target": {
+                "entity_id": "script.redony_nappali_terasz_2_mozgat"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "nappali_terasz_2",
+                "parancs": "stop"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Nappali ablak 1",
+          "unique_id": "redony_nappali_ablak_1",
+          "default_entity_id": "cover.redony_nappali_ablak_1",
+          "device_class": "shutter",
+          "position": "{{ states('input_number.redony_nappali_ablak_1_pozicio') | int(0) }}",
+          "open_cover": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_nappali_ablak_1_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": 100
+                }
+              }
+            }
+          ],
+          "close_cover": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_nappali_ablak_1_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": 0
+                }
+              }
+            }
+          ],
+          "set_cover_position": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_nappali_ablak_1_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": "{{ position }}"
+                }
+              }
+            }
+          ],
+          "stop_cover": [
+            {
+              "action": "script.turn_off",
+              "target": {
+                "entity_id": "script.redony_nappali_ablak_1_mozgat"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "nappali_ablak_1",
+                "parancs": "stop"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Nappali ablak 2",
+          "unique_id": "redony_nappali_ablak_2",
+          "default_entity_id": "cover.redony_nappali_ablak_2",
+          "device_class": "shutter",
+          "position": "{{ states('input_number.redony_nappali_ablak_2_pozicio') | int(0) }}",
+          "open_cover": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_nappali_ablak_2_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": 100
+                }
+              }
+            }
+          ],
+          "close_cover": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_nappali_ablak_2_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": 0
+                }
+              }
+            }
+          ],
+          "set_cover_position": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_nappali_ablak_2_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": "{{ position }}"
+                }
+              }
+            }
+          ],
+          "stop_cover": [
+            {
+              "action": "script.turn_off",
+              "target": {
+                "entity_id": "script.redony_nappali_ablak_2_mozgat"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "nappali_ablak_2",
+                "parancs": "stop"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Konyha redőny",
+          "unique_id": "redony_konyha",
+          "default_entity_id": "cover.redony_konyha",
+          "device_class": "shutter",
+          "position": "{{ states('input_number.redony_konyha_pozicio') | int(0) }}",
+          "open_cover": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_konyha_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": 100
+                }
+              }
+            }
+          ],
+          "close_cover": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_konyha_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": 0
+                }
+              }
+            }
+          ],
+          "set_cover_position": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_konyha_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": "{{ position }}"
+                }
+              }
+            }
+          ],
+          "stop_cover": [
+            {
+              "action": "script.turn_off",
+              "target": {
+                "entity_id": "script.redony_konyha_mozgat"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "konyha",
+                "parancs": "stop"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Előszoba redőny",
+          "unique_id": "redony_eloszoba",
+          "default_entity_id": "cover.redony_eloszoba",
+          "device_class": "shutter",
+          "position": "{{ states('input_number.redony_eloszoba_pozicio') | int(0) }}",
+          "open_cover": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_eloszoba_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": 100
+                }
+              }
+            }
+          ],
+          "close_cover": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_eloszoba_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": 0
+                }
+              }
+            }
+          ],
+          "set_cover_position": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_eloszoba_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": "{{ position }}"
+                }
+              }
+            }
+          ],
+          "stop_cover": [
+            {
+              "action": "script.turn_off",
+              "target": {
+                "entity_id": "script.redony_eloszoba_mozgat"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "eloszoba",
+                "parancs": "stop"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Fürdő redőny",
+          "unique_id": "redony_furdo",
+          "default_entity_id": "cover.redony_furdo",
+          "device_class": "shutter",
+          "position": "{{ states('input_number.redony_furdo_pozicio') | int(0) }}",
+          "open_cover": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_furdo_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": 100
+                }
+              }
+            }
+          ],
+          "close_cover": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_furdo_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": 0
+                }
+              }
+            }
+          ],
+          "set_cover_position": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_furdo_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": "{{ position }}"
+                }
+              }
+            }
+          ],
+          "stop_cover": [
+            {
+              "action": "script.turn_off",
+              "target": {
+                "entity_id": "script.redony_furdo_mozgat"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "furdo",
+                "parancs": "stop"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Gyerekszoba 1",
+          "unique_id": "redony_gyerekszoba_1",
+          "default_entity_id": "cover.redony_gyerekszoba_1",
+          "device_class": "shutter",
+          "position": "{{ states('input_number.redony_gyerekszoba_1_pozicio') | int(0) }}",
+          "open_cover": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_gyerekszoba_1_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": 100
+                }
+              }
+            }
+          ],
+          "close_cover": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_gyerekszoba_1_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": 0
+                }
+              }
+            }
+          ],
+          "set_cover_position": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_gyerekszoba_1_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": "{{ position }}"
+                }
+              }
+            }
+          ],
+          "stop_cover": [
+            {
+              "action": "script.turn_off",
+              "target": {
+                "entity_id": "script.redony_gyerekszoba_1_mozgat"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "gyerekszoba_1",
+                "parancs": "stop"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Gyerekszoba 2",
+          "unique_id": "redony_gyerekszoba_2",
+          "default_entity_id": "cover.redony_gyerekszoba_2",
+          "device_class": "shutter",
+          "position": "{{ states('input_number.redony_gyerekszoba_2_pozicio') | int(0) }}",
+          "open_cover": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_gyerekszoba_2_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": 100
+                }
+              }
+            }
+          ],
+          "close_cover": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_gyerekszoba_2_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": 0
+                }
+              }
+            }
+          ],
+          "set_cover_position": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_gyerekszoba_2_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": "{{ position }}"
+                }
+              }
+            }
+          ],
+          "stop_cover": [
+            {
+              "action": "script.turn_off",
+              "target": {
+                "entity_id": "script.redony_gyerekszoba_2_mozgat"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "gyerekszoba_2",
+                "parancs": "stop"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Hálószoba 1",
+          "unique_id": "redony_haloszoba_1",
+          "default_entity_id": "cover.redony_haloszoba_1",
+          "device_class": "shutter",
+          "position": "{{ states('input_number.redony_haloszoba_1_pozicio') | int(0) }}",
+          "open_cover": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_haloszoba_1_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": 100
+                }
+              }
+            }
+          ],
+          "close_cover": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_haloszoba_1_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": 0
+                }
+              }
+            }
+          ],
+          "set_cover_position": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_haloszoba_1_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": "{{ position }}"
+                }
+              }
+            }
+          ],
+          "stop_cover": [
+            {
+              "action": "script.turn_off",
+              "target": {
+                "entity_id": "script.redony_haloszoba_1_mozgat"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "haloszoba_1",
+                "parancs": "stop"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Hálószoba 2",
+          "unique_id": "redony_haloszoba_2",
+          "default_entity_id": "cover.redony_haloszoba_2",
+          "device_class": "shutter",
+          "position": "{{ states('input_number.redony_haloszoba_2_pozicio') | int(0) }}",
+          "open_cover": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_haloszoba_2_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": 100
+                }
+              }
+            }
+          ],
+          "close_cover": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_haloszoba_2_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": 0
+                }
+              }
+            }
+          ],
+          "set_cover_position": [
+            {
+              "action": "script.turn_on",
+              "target": {
+                "entity_id": "script.redony_haloszoba_2_mozgat"
+              },
+              "data": {
+                "variables": {
+                  "cel": "{{ position }}"
+                }
+              }
+            }
+          ],
+          "stop_cover": [
+            {
+              "action": "script.turn_off",
+              "target": {
+                "entity_id": "script.redony_haloszoba_2_mozgat"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "haloszoba_2",
+                "parancs": "stop"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "script": {
+    "redony_rf_kuldes": {
+      "alias": "Redőny RF-jel küldése (sorban)",
+      "icon": "mdi:radio-tower",
+      "mode": "queued",
+      "max": 60,
+      "fields": {
+        "eszkoz": {
+          "description": "A betanított eszköz neve a Broadlinkon (pl. nappali_terasz_1)"
+        },
+        "parancs": {
+          "description": "fel, le vagy stop"
+        }
+      },
+      "sequence": [
+        {
+          "action": "remote.send_command",
+          "target": {
+            "entity_id": "remote.vaskut14"
+          },
+          "data": {
+            "device": "{{ eszkoz }}",
+            "command": "{{ parancs }}"
+          }
+        },
+        {
+          "delay": {
+            "milliseconds": 700
+          }
+        }
+      ]
+    },
+    "redony_nappali_terasz_1_mozgat": {
+      "alias": "Nappali terasz 1 – mozgatás",
+      "icon": "mdi:window-shutter-cog",
+      "mode": "restart",
+      "fields": {
+        "cel": {
+          "description": "Célpozíció: 0 = zárva, 100 = nyitva"
+        }
+      },
+      "sequence": [
+        {
+          "variables": {
+            "ido": 36.0,
+            "most": "{{ states('input_number.redony_nappali_terasz_1_pozicio') | float(0) }}",
+            "c": "{{ [0, [100, cel | int(0)] | min] | max }}"
+          }
+        },
+        {
+          "choose": [
+            {
+              "conditions": "{{ c >= 100 }}",
+              "sequence": [
+                {
+                  "action": "input_number.set_value",
+                  "target": {
+                    "entity_id": "input_number.redony_nappali_terasz_1_pozicio"
+                  },
+                  "data": {
+                    "value": 100
+                  }
+                },
+                {
+                  "action": "script.redony_rf_kuldes",
+                  "data": {
+                    "eszkoz": "nappali_terasz_1",
+                    "parancs": "fel"
+                  }
+                }
+              ]
+            },
+            {
+              "conditions": "{{ c <= 0 }}",
+              "sequence": [
+                {
+                  "action": "input_number.set_value",
+                  "target": {
+                    "entity_id": "input_number.redony_nappali_terasz_1_pozicio"
+                  },
+                  "data": {
+                    "value": 0
+                  }
+                },
+                {
+                  "action": "script.redony_rf_kuldes",
+                  "data": {
+                    "eszkoz": "nappali_terasz_1",
+                    "parancs": "le"
+                  }
+                }
+              ]
+            },
+            {
+              "conditions": "{{ (c - most) | abs < 3 }}",
+              "sequence": []
+            }
+          ],
+          "default": [
+            {
+              "variables": {
+                "irany": "{{ 'fel' if c > most else 'le' }}",
+                "mp": "{{ [((c - most) | abs) / 100 * ido - 0.7, 0] | max | round(2) }}"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "nappali_terasz_1",
+                "parancs": "{{ irany }}"
+              }
+            },
+            {
+              "delay": {
+                "seconds": "{{ mp }}"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "nappali_terasz_1",
+                "parancs": "stop"
+              }
+            },
+            {
+              "action": "input_number.set_value",
+              "target": {
+                "entity_id": "input_number.redony_nappali_terasz_1_pozicio"
+              },
+              "data": {
+                "value": "{{ c }}"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "redony_nappali_terasz_2_mozgat": {
+      "alias": "Nappali terasz 2 – mozgatás",
+      "icon": "mdi:window-shutter-cog",
+      "mode": "restart",
+      "fields": {
+        "cel": {
+          "description": "Célpozíció: 0 = zárva, 100 = nyitva"
+        }
+      },
+      "sequence": [
+        {
+          "variables": {
+            "ido": 36.0,
+            "most": "{{ states('input_number.redony_nappali_terasz_2_pozicio') | float(0) }}",
+            "c": "{{ [0, [100, cel | int(0)] | min] | max }}"
+          }
+        },
+        {
+          "choose": [
+            {
+              "conditions": "{{ c >= 100 }}",
+              "sequence": [
+                {
+                  "action": "input_number.set_value",
+                  "target": {
+                    "entity_id": "input_number.redony_nappali_terasz_2_pozicio"
+                  },
+                  "data": {
+                    "value": 100
+                  }
+                },
+                {
+                  "action": "script.redony_rf_kuldes",
+                  "data": {
+                    "eszkoz": "nappali_terasz_2",
+                    "parancs": "fel"
+                  }
+                }
+              ]
+            },
+            {
+              "conditions": "{{ c <= 0 }}",
+              "sequence": [
+                {
+                  "action": "input_number.set_value",
+                  "target": {
+                    "entity_id": "input_number.redony_nappali_terasz_2_pozicio"
+                  },
+                  "data": {
+                    "value": 0
+                  }
+                },
+                {
+                  "action": "script.redony_rf_kuldes",
+                  "data": {
+                    "eszkoz": "nappali_terasz_2",
+                    "parancs": "le"
+                  }
+                }
+              ]
+            },
+            {
+              "conditions": "{{ (c - most) | abs < 3 }}",
+              "sequence": []
+            }
+          ],
+          "default": [
+            {
+              "variables": {
+                "irany": "{{ 'fel' if c > most else 'le' }}",
+                "mp": "{{ [((c - most) | abs) / 100 * ido - 0.7, 0] | max | round(2) }}"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "nappali_terasz_2",
+                "parancs": "{{ irany }}"
+              }
+            },
+            {
+              "delay": {
+                "seconds": "{{ mp }}"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "nappali_terasz_2",
+                "parancs": "stop"
+              }
+            },
+            {
+              "action": "input_number.set_value",
+              "target": {
+                "entity_id": "input_number.redony_nappali_terasz_2_pozicio"
+              },
+              "data": {
+                "value": "{{ c }}"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "redony_nappali_ablak_1_mozgat": {
+      "alias": "Nappali ablak 1 – mozgatás",
+      "icon": "mdi:window-shutter-cog",
+      "mode": "restart",
+      "fields": {
+        "cel": {
+          "description": "Célpozíció: 0 = zárva, 100 = nyitva"
+        }
+      },
+      "sequence": [
+        {
+          "variables": {
+            "ido": 22.5,
+            "most": "{{ states('input_number.redony_nappali_ablak_1_pozicio') | float(0) }}",
+            "c": "{{ [0, [100, cel | int(0)] | min] | max }}"
+          }
+        },
+        {
+          "choose": [
+            {
+              "conditions": "{{ c >= 100 }}",
+              "sequence": [
+                {
+                  "action": "input_number.set_value",
+                  "target": {
+                    "entity_id": "input_number.redony_nappali_ablak_1_pozicio"
+                  },
+                  "data": {
+                    "value": 100
+                  }
+                },
+                {
+                  "action": "script.redony_rf_kuldes",
+                  "data": {
+                    "eszkoz": "nappali_ablak_1",
+                    "parancs": "fel"
+                  }
+                }
+              ]
+            },
+            {
+              "conditions": "{{ c <= 0 }}",
+              "sequence": [
+                {
+                  "action": "input_number.set_value",
+                  "target": {
+                    "entity_id": "input_number.redony_nappali_ablak_1_pozicio"
+                  },
+                  "data": {
+                    "value": 0
+                  }
+                },
+                {
+                  "action": "script.redony_rf_kuldes",
+                  "data": {
+                    "eszkoz": "nappali_ablak_1",
+                    "parancs": "le"
+                  }
+                }
+              ]
+            },
+            {
+              "conditions": "{{ (c - most) | abs < 3 }}",
+              "sequence": []
+            }
+          ],
+          "default": [
+            {
+              "variables": {
+                "irany": "{{ 'fel' if c > most else 'le' }}",
+                "mp": "{{ [((c - most) | abs) / 100 * ido - 0.7, 0] | max | round(2) }}"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "nappali_ablak_1",
+                "parancs": "{{ irany }}"
+              }
+            },
+            {
+              "delay": {
+                "seconds": "{{ mp }}"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "nappali_ablak_1",
+                "parancs": "stop"
+              }
+            },
+            {
+              "action": "input_number.set_value",
+              "target": {
+                "entity_id": "input_number.redony_nappali_ablak_1_pozicio"
+              },
+              "data": {
+                "value": "{{ c }}"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "redony_nappali_ablak_2_mozgat": {
+      "alias": "Nappali ablak 2 – mozgatás",
+      "icon": "mdi:window-shutter-cog",
+      "mode": "restart",
+      "fields": {
+        "cel": {
+          "description": "Célpozíció: 0 = zárva, 100 = nyitva"
+        }
+      },
+      "sequence": [
+        {
+          "variables": {
+            "ido": 22.5,
+            "most": "{{ states('input_number.redony_nappali_ablak_2_pozicio') | float(0) }}",
+            "c": "{{ [0, [100, cel | int(0)] | min] | max }}"
+          }
+        },
+        {
+          "choose": [
+            {
+              "conditions": "{{ c >= 100 }}",
+              "sequence": [
+                {
+                  "action": "input_number.set_value",
+                  "target": {
+                    "entity_id": "input_number.redony_nappali_ablak_2_pozicio"
+                  },
+                  "data": {
+                    "value": 100
+                  }
+                },
+                {
+                  "action": "script.redony_rf_kuldes",
+                  "data": {
+                    "eszkoz": "nappali_ablak_2",
+                    "parancs": "fel"
+                  }
+                }
+              ]
+            },
+            {
+              "conditions": "{{ c <= 0 }}",
+              "sequence": [
+                {
+                  "action": "input_number.set_value",
+                  "target": {
+                    "entity_id": "input_number.redony_nappali_ablak_2_pozicio"
+                  },
+                  "data": {
+                    "value": 0
+                  }
+                },
+                {
+                  "action": "script.redony_rf_kuldes",
+                  "data": {
+                    "eszkoz": "nappali_ablak_2",
+                    "parancs": "le"
+                  }
+                }
+              ]
+            },
+            {
+              "conditions": "{{ (c - most) | abs < 3 }}",
+              "sequence": []
+            }
+          ],
+          "default": [
+            {
+              "variables": {
+                "irany": "{{ 'fel' if c > most else 'le' }}",
+                "mp": "{{ [((c - most) | abs) / 100 * ido - 0.7, 0] | max | round(2) }}"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "nappali_ablak_2",
+                "parancs": "{{ irany }}"
+              }
+            },
+            {
+              "delay": {
+                "seconds": "{{ mp }}"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "nappali_ablak_2",
+                "parancs": "stop"
+              }
+            },
+            {
+              "action": "input_number.set_value",
+              "target": {
+                "entity_id": "input_number.redony_nappali_ablak_2_pozicio"
+              },
+              "data": {
+                "value": "{{ c }}"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "redony_konyha_mozgat": {
+      "alias": "Konyha redőny – mozgatás",
+      "icon": "mdi:window-shutter-cog",
+      "mode": "restart",
+      "fields": {
+        "cel": {
+          "description": "Célpozíció: 0 = zárva, 100 = nyitva"
+        }
+      },
+      "sequence": [
+        {
+          "variables": {
+            "ido": 22.5,
+            "most": "{{ states('input_number.redony_konyha_pozicio') | float(0) }}",
+            "c": "{{ [0, [100, cel | int(0)] | min] | max }}"
+          }
+        },
+        {
+          "choose": [
+            {
+              "conditions": "{{ c >= 100 }}",
+              "sequence": [
+                {
+                  "action": "input_number.set_value",
+                  "target": {
+                    "entity_id": "input_number.redony_konyha_pozicio"
+                  },
+                  "data": {
+                    "value": 100
+                  }
+                },
+                {
+                  "action": "script.redony_rf_kuldes",
+                  "data": {
+                    "eszkoz": "konyha",
+                    "parancs": "fel"
+                  }
+                }
+              ]
+            },
+            {
+              "conditions": "{{ c <= 0 }}",
+              "sequence": [
+                {
+                  "action": "input_number.set_value",
+                  "target": {
+                    "entity_id": "input_number.redony_konyha_pozicio"
+                  },
+                  "data": {
+                    "value": 0
+                  }
+                },
+                {
+                  "action": "script.redony_rf_kuldes",
+                  "data": {
+                    "eszkoz": "konyha",
+                    "parancs": "le"
+                  }
+                }
+              ]
+            },
+            {
+              "conditions": "{{ (c - most) | abs < 3 }}",
+              "sequence": []
+            }
+          ],
+          "default": [
+            {
+              "variables": {
+                "irany": "{{ 'fel' if c > most else 'le' }}",
+                "mp": "{{ [((c - most) | abs) / 100 * ido - 0.7, 0] | max | round(2) }}"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "konyha",
+                "parancs": "{{ irany }}"
+              }
+            },
+            {
+              "delay": {
+                "seconds": "{{ mp }}"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "konyha",
+                "parancs": "stop"
+              }
+            },
+            {
+              "action": "input_number.set_value",
+              "target": {
+                "entity_id": "input_number.redony_konyha_pozicio"
+              },
+              "data": {
+                "value": "{{ c }}"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "redony_eloszoba_mozgat": {
+      "alias": "Előszoba redőny – mozgatás",
+      "icon": "mdi:window-shutter-cog",
+      "mode": "restart",
+      "fields": {
+        "cel": {
+          "description": "Célpozíció: 0 = zárva, 100 = nyitva"
+        }
+      },
+      "sequence": [
+        {
+          "variables": {
+            "ido": 22.5,
+            "most": "{{ states('input_number.redony_eloszoba_pozicio') | float(0) }}",
+            "c": "{{ [0, [100, cel | int(0)] | min] | max }}"
+          }
+        },
+        {
+          "choose": [
+            {
+              "conditions": "{{ c >= 100 }}",
+              "sequence": [
+                {
+                  "action": "input_number.set_value",
+                  "target": {
+                    "entity_id": "input_number.redony_eloszoba_pozicio"
+                  },
+                  "data": {
+                    "value": 100
+                  }
+                },
+                {
+                  "action": "script.redony_rf_kuldes",
+                  "data": {
+                    "eszkoz": "eloszoba",
+                    "parancs": "fel"
+                  }
+                }
+              ]
+            },
+            {
+              "conditions": "{{ c <= 0 }}",
+              "sequence": [
+                {
+                  "action": "input_number.set_value",
+                  "target": {
+                    "entity_id": "input_number.redony_eloszoba_pozicio"
+                  },
+                  "data": {
+                    "value": 0
+                  }
+                },
+                {
+                  "action": "script.redony_rf_kuldes",
+                  "data": {
+                    "eszkoz": "eloszoba",
+                    "parancs": "le"
+                  }
+                }
+              ]
+            },
+            {
+              "conditions": "{{ (c - most) | abs < 3 }}",
+              "sequence": []
+            }
+          ],
+          "default": [
+            {
+              "variables": {
+                "irany": "{{ 'fel' if c > most else 'le' }}",
+                "mp": "{{ [((c - most) | abs) / 100 * ido - 0.7, 0] | max | round(2) }}"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "eloszoba",
+                "parancs": "{{ irany }}"
+              }
+            },
+            {
+              "delay": {
+                "seconds": "{{ mp }}"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "eloszoba",
+                "parancs": "stop"
+              }
+            },
+            {
+              "action": "input_number.set_value",
+              "target": {
+                "entity_id": "input_number.redony_eloszoba_pozicio"
+              },
+              "data": {
+                "value": "{{ c }}"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "redony_furdo_mozgat": {
+      "alias": "Fürdő redőny – mozgatás",
+      "icon": "mdi:window-shutter-cog",
+      "mode": "restart",
+      "fields": {
+        "cel": {
+          "description": "Célpozíció: 0 = zárva, 100 = nyitva"
+        }
+      },
+      "sequence": [
+        {
+          "variables": {
+            "ido": 15.5,
+            "most": "{{ states('input_number.redony_furdo_pozicio') | float(0) }}",
+            "c": "{{ [0, [100, cel | int(0)] | min] | max }}"
+          }
+        },
+        {
+          "choose": [
+            {
+              "conditions": "{{ c >= 100 }}",
+              "sequence": [
+                {
+                  "action": "input_number.set_value",
+                  "target": {
+                    "entity_id": "input_number.redony_furdo_pozicio"
+                  },
+                  "data": {
+                    "value": 100
+                  }
+                },
+                {
+                  "action": "script.redony_rf_kuldes",
+                  "data": {
+                    "eszkoz": "furdo",
+                    "parancs": "fel"
+                  }
+                }
+              ]
+            },
+            {
+              "conditions": "{{ c <= 0 }}",
+              "sequence": [
+                {
+                  "action": "input_number.set_value",
+                  "target": {
+                    "entity_id": "input_number.redony_furdo_pozicio"
+                  },
+                  "data": {
+                    "value": 0
+                  }
+                },
+                {
+                  "action": "script.redony_rf_kuldes",
+                  "data": {
+                    "eszkoz": "furdo",
+                    "parancs": "le"
+                  }
+                }
+              ]
+            },
+            {
+              "conditions": "{{ (c - most) | abs < 3 }}",
+              "sequence": []
+            }
+          ],
+          "default": [
+            {
+              "variables": {
+                "irany": "{{ 'fel' if c > most else 'le' }}",
+                "mp": "{{ [((c - most) | abs) / 100 * ido - 0.7, 0] | max | round(2) }}"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "furdo",
+                "parancs": "{{ irany }}"
+              }
+            },
+            {
+              "delay": {
+                "seconds": "{{ mp }}"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "furdo",
+                "parancs": "stop"
+              }
+            },
+            {
+              "action": "input_number.set_value",
+              "target": {
+                "entity_id": "input_number.redony_furdo_pozicio"
+              },
+              "data": {
+                "value": "{{ c }}"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "redony_gyerekszoba_1_mozgat": {
+      "alias": "Gyerekszoba 1 – mozgatás",
+      "icon": "mdi:window-shutter-cog",
+      "mode": "restart",
+      "fields": {
+        "cel": {
+          "description": "Célpozíció: 0 = zárva, 100 = nyitva"
+        }
+      },
+      "sequence": [
+        {
+          "variables": {
+            "ido": 15.5,
+            "most": "{{ states('input_number.redony_gyerekszoba_1_pozicio') | float(0) }}",
+            "c": "{{ [0, [100, cel | int(0)] | min] | max }}"
+          }
+        },
+        {
+          "choose": [
+            {
+              "conditions": "{{ c >= 100 }}",
+              "sequence": [
+                {
+                  "action": "input_number.set_value",
+                  "target": {
+                    "entity_id": "input_number.redony_gyerekszoba_1_pozicio"
+                  },
+                  "data": {
+                    "value": 100
+                  }
+                },
+                {
+                  "action": "script.redony_rf_kuldes",
+                  "data": {
+                    "eszkoz": "gyerekszoba_1",
+                    "parancs": "fel"
+                  }
+                }
+              ]
+            },
+            {
+              "conditions": "{{ c <= 0 }}",
+              "sequence": [
+                {
+                  "action": "input_number.set_value",
+                  "target": {
+                    "entity_id": "input_number.redony_gyerekszoba_1_pozicio"
+                  },
+                  "data": {
+                    "value": 0
+                  }
+                },
+                {
+                  "action": "script.redony_rf_kuldes",
+                  "data": {
+                    "eszkoz": "gyerekszoba_1",
+                    "parancs": "le"
+                  }
+                }
+              ]
+            },
+            {
+              "conditions": "{{ (c - most) | abs < 3 }}",
+              "sequence": []
+            }
+          ],
+          "default": [
+            {
+              "variables": {
+                "irany": "{{ 'fel' if c > most else 'le' }}",
+                "mp": "{{ [((c - most) | abs) / 100 * ido - 0.7, 0] | max | round(2) }}"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "gyerekszoba_1",
+                "parancs": "{{ irany }}"
+              }
+            },
+            {
+              "delay": {
+                "seconds": "{{ mp }}"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "gyerekszoba_1",
+                "parancs": "stop"
+              }
+            },
+            {
+              "action": "input_number.set_value",
+              "target": {
+                "entity_id": "input_number.redony_gyerekszoba_1_pozicio"
+              },
+              "data": {
+                "value": "{{ c }}"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "redony_gyerekszoba_2_mozgat": {
+      "alias": "Gyerekszoba 2 – mozgatás",
+      "icon": "mdi:window-shutter-cog",
+      "mode": "restart",
+      "fields": {
+        "cel": {
+          "description": "Célpozíció: 0 = zárva, 100 = nyitva"
+        }
+      },
+      "sequence": [
+        {
+          "variables": {
+            "ido": 22.5,
+            "most": "{{ states('input_number.redony_gyerekszoba_2_pozicio') | float(0) }}",
+            "c": "{{ [0, [100, cel | int(0)] | min] | max }}"
+          }
+        },
+        {
+          "choose": [
+            {
+              "conditions": "{{ c >= 100 }}",
+              "sequence": [
+                {
+                  "action": "input_number.set_value",
+                  "target": {
+                    "entity_id": "input_number.redony_gyerekszoba_2_pozicio"
+                  },
+                  "data": {
+                    "value": 100
+                  }
+                },
+                {
+                  "action": "script.redony_rf_kuldes",
+                  "data": {
+                    "eszkoz": "gyerekszoba_2",
+                    "parancs": "fel"
+                  }
+                }
+              ]
+            },
+            {
+              "conditions": "{{ c <= 0 }}",
+              "sequence": [
+                {
+                  "action": "input_number.set_value",
+                  "target": {
+                    "entity_id": "input_number.redony_gyerekszoba_2_pozicio"
+                  },
+                  "data": {
+                    "value": 0
+                  }
+                },
+                {
+                  "action": "script.redony_rf_kuldes",
+                  "data": {
+                    "eszkoz": "gyerekszoba_2",
+                    "parancs": "le"
+                  }
+                }
+              ]
+            },
+            {
+              "conditions": "{{ (c - most) | abs < 3 }}",
+              "sequence": []
+            }
+          ],
+          "default": [
+            {
+              "variables": {
+                "irany": "{{ 'fel' if c > most else 'le' }}",
+                "mp": "{{ [((c - most) | abs) / 100 * ido - 0.7, 0] | max | round(2) }}"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "gyerekszoba_2",
+                "parancs": "{{ irany }}"
+              }
+            },
+            {
+              "delay": {
+                "seconds": "{{ mp }}"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "gyerekszoba_2",
+                "parancs": "stop"
+              }
+            },
+            {
+              "action": "input_number.set_value",
+              "target": {
+                "entity_id": "input_number.redony_gyerekszoba_2_pozicio"
+              },
+              "data": {
+                "value": "{{ c }}"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "redony_haloszoba_1_mozgat": {
+      "alias": "Hálószoba 1 – mozgatás",
+      "icon": "mdi:window-shutter-cog",
+      "mode": "restart",
+      "fields": {
+        "cel": {
+          "description": "Célpozíció: 0 = zárva, 100 = nyitva"
+        }
+      },
+      "sequence": [
+        {
+          "variables": {
+            "ido": 22.5,
+            "most": "{{ states('input_number.redony_haloszoba_1_pozicio') | float(0) }}",
+            "c": "{{ [0, [100, cel | int(0)] | min] | max }}"
+          }
+        },
+        {
+          "choose": [
+            {
+              "conditions": "{{ c >= 100 }}",
+              "sequence": [
+                {
+                  "action": "input_number.set_value",
+                  "target": {
+                    "entity_id": "input_number.redony_haloszoba_1_pozicio"
+                  },
+                  "data": {
+                    "value": 100
+                  }
+                },
+                {
+                  "action": "script.redony_rf_kuldes",
+                  "data": {
+                    "eszkoz": "haloszoba_1",
+                    "parancs": "fel"
+                  }
+                }
+              ]
+            },
+            {
+              "conditions": "{{ c <= 0 }}",
+              "sequence": [
+                {
+                  "action": "input_number.set_value",
+                  "target": {
+                    "entity_id": "input_number.redony_haloszoba_1_pozicio"
+                  },
+                  "data": {
+                    "value": 0
+                  }
+                },
+                {
+                  "action": "script.redony_rf_kuldes",
+                  "data": {
+                    "eszkoz": "haloszoba_1",
+                    "parancs": "le"
+                  }
+                }
+              ]
+            },
+            {
+              "conditions": "{{ (c - most) | abs < 3 }}",
+              "sequence": []
+            }
+          ],
+          "default": [
+            {
+              "variables": {
+                "irany": "{{ 'fel' if c > most else 'le' }}",
+                "mp": "{{ [((c - most) | abs) / 100 * ido - 0.7, 0] | max | round(2) }}"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "haloszoba_1",
+                "parancs": "{{ irany }}"
+              }
+            },
+            {
+              "delay": {
+                "seconds": "{{ mp }}"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "haloszoba_1",
+                "parancs": "stop"
+              }
+            },
+            {
+              "action": "input_number.set_value",
+              "target": {
+                "entity_id": "input_number.redony_haloszoba_1_pozicio"
+              },
+              "data": {
+                "value": "{{ c }}"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "redony_haloszoba_2_mozgat": {
+      "alias": "Hálószoba 2 – mozgatás",
+      "icon": "mdi:window-shutter-cog",
+      "mode": "restart",
+      "fields": {
+        "cel": {
+          "description": "Célpozíció: 0 = zárva, 100 = nyitva"
+        }
+      },
+      "sequence": [
+        {
+          "variables": {
+            "ido": 22.5,
+            "most": "{{ states('input_number.redony_haloszoba_2_pozicio') | float(0) }}",
+            "c": "{{ [0, [100, cel | int(0)] | min] | max }}"
+          }
+        },
+        {
+          "choose": [
+            {
+              "conditions": "{{ c >= 100 }}",
+              "sequence": [
+                {
+                  "action": "input_number.set_value",
+                  "target": {
+                    "entity_id": "input_number.redony_haloszoba_2_pozicio"
+                  },
+                  "data": {
+                    "value": 100
+                  }
+                },
+                {
+                  "action": "script.redony_rf_kuldes",
+                  "data": {
+                    "eszkoz": "haloszoba_2",
+                    "parancs": "fel"
+                  }
+                }
+              ]
+            },
+            {
+              "conditions": "{{ c <= 0 }}",
+              "sequence": [
+                {
+                  "action": "input_number.set_value",
+                  "target": {
+                    "entity_id": "input_number.redony_haloszoba_2_pozicio"
+                  },
+                  "data": {
+                    "value": 0
+                  }
+                },
+                {
+                  "action": "script.redony_rf_kuldes",
+                  "data": {
+                    "eszkoz": "haloszoba_2",
+                    "parancs": "le"
+                  }
+                }
+              ]
+            },
+            {
+              "conditions": "{{ (c - most) | abs < 3 }}",
+              "sequence": []
+            }
+          ],
+          "default": [
+            {
+              "variables": {
+                "irany": "{{ 'fel' if c > most else 'le' }}",
+                "mp": "{{ [((c - most) | abs) / 100 * ido - 0.7, 0] | max | round(2) }}"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "haloszoba_2",
+                "parancs": "{{ irany }}"
+              }
+            },
+            {
+              "delay": {
+                "seconds": "{{ mp }}"
+              }
+            },
+            {
+              "action": "script.redony_rf_kuldes",
+              "data": {
+                "eszkoz": "haloszoba_2",
+                "parancs": "stop"
+              }
+            },
+            {
+              "action": "input_number.set_value",
+              "target": {
+                "entity_id": "input_number.redony_haloszoba_2_pozicio"
+              },
+              "data": {
+                "value": "{{ c }}"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "redonyok_mind_fel": {
+      "alias": "Minden redőny fel",
+      "icon": "mdi:arrow-up-bold-box-outline",
+      "mode": "single",
+      "sequence": [
+        {
+          "action": "cover.open_cover",
+          "target": {
+            "entity_id": [
+              "cover.redony_nappali_terasz_1",
+              "cover.redony_nappali_terasz_2",
+              "cover.redony_nappali_ablak_1",
+              "cover.redony_nappali_ablak_2",
+              "cover.redony_konyha",
+              "cover.redony_eloszoba",
+              "cover.redony_furdo",
+              "cover.redony_gyerekszoba_1",
+              "cover.redony_gyerekszoba_2",
+              "cover.redony_haloszoba_1",
+              "cover.redony_haloszoba_2"
+            ]
+          }
+        }
+      ]
+    },
+    "redonyok_mind_le": {
+      "alias": "Minden redőny le",
+      "icon": "mdi:arrow-down-bold-box-outline",
+      "mode": "single",
+      "sequence": [
+        {
+          "action": "cover.close_cover",
+          "target": {
+            "entity_id": [
+              "cover.redony_nappali_terasz_1",
+              "cover.redony_nappali_terasz_2",
+              "cover.redony_nappali_ablak_1",
+              "cover.redony_nappali_ablak_2",
+              "cover.redony_konyha",
+              "cover.redony_eloszoba",
+              "cover.redony_furdo",
+              "cover.redony_gyerekszoba_1",
+              "cover.redony_gyerekszoba_2",
+              "cover.redony_haloszoba_1",
+              "cover.redony_haloszoba_2"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "automation": [
+    {
+      "id": "redonyok_esti_lehuzas",
+      "alias": "Redőnyök – esti lehúzás (napnyugta + 30 perc)",
+      "mode": "single",
+      "triggers": [
+        {
+          "trigger": "sun",
+          "event": "sunset",
+          "offset": "00:30:00"
+        }
+      ],
+      "actions": [
+        {
+          "action": "cover.close_cover",
+          "target": {
+            "entity_id": [
+              "cover.redony_nappali_terasz_2",
+              "cover.redony_nappali_ablak_1",
+              "cover.redony_nappali_ablak_2",
+              "cover.redony_konyha",
+              "cover.redony_eloszoba",
+              "cover.redony_furdo",
+              "cover.redony_gyerekszoba_1",
+              "cover.redony_gyerekszoba_2",
+              "cover.redony_haloszoba_1",
+              "cover.redony_haloszoba_2"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

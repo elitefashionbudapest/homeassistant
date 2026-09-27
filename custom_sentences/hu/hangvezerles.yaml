@@ -11,7 +11,9 @@
     "klima": "(klímát|klíma|légkondit|légkondicionálót|klímáját)",
     "futes": "(fűtést|fűtés|termosztátot|termosztát|kazánt)",
     "riaszto": "(riasztót|riasztó|riasztórendszert|ajaxot)",
-    "fokra": "(fokra|fok|fokosra|celsius fokra)"
+    "fokra": "(fokra|fok|fokosra|celsius fokra)",
+    "mozgat": "(engedd|húzd|eresszd|ereszd|állítsd|tedd|nyisd|engedje|húzza|állítsa) [le|fel|ki|be]",
+    "szazalekra": "(százalékra|százalékosra|%-ra|%-re|%)"
   },
   "lists": {
     "irany": {
@@ -827,6 +829,12 @@
         "from": 16,
         "to": 30
       }
+    },
+    "szazalek": {
+      "range": {
+        "from": 0,
+        "to": 100
+      }
     }
   },
   "intents": {
@@ -845,6 +853,42 @@
         {
           "sentences": [
             "[<kerlek>] ({irany}; [a |az ][nappali ]{egyedi} [<redonyok>]) [<kerlek>]"
+          ]
+        }
+      ]
+    },
+    "RedonyPozicioSzoba": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] (<mozgat>; [a |az ]<redonyok>; [a |az ]{szoba}; félig) [<kerlek>]",
+            "[<kerlek>] (<mozgat>; [a |az ]{szoba} <redonyok>; félig) [<kerlek>]"
+          ],
+          "slots": {
+            "szazalek": 50
+          }
+        },
+        {
+          "sentences": [
+            "[<kerlek>] (<mozgat>; [a |az ]<redonyok>; [a |az ]{szoba}; {szazalek} <szazalekra>) [<kerlek>]",
+            "[<kerlek>] (<mozgat>; [a |az ]{szoba} <redonyok>; {szazalek} <szazalekra>) [<kerlek>]"
+          ]
+        }
+      ]
+    },
+    "RedonyPozicioEgyedi": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] (<mozgat>; [a |az ][nappali ]{egyedi} [<redonyok>]; félig) [<kerlek>]"
+          ],
+          "slots": {
+            "szazalek": 50
+          }
+        },
+        {
+          "sentences": [
+            "[<kerlek>] (<mozgat>; [a |az ][nappali ]{egyedi} [<redonyok>]; {szazalek} <szazalekra>) [<kerlek>]"
           ]
         }
       ]

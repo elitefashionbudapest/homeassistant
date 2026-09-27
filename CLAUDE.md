@@ -13,6 +13,9 @@ Ez a repó a Pi `/config` (= `/homeassistant`) mappája, a `main` ágon. A telep
   Kivétel: a magyar hangparancsok mondatmintái a `custom_sentences/hu/` mappába kerülnek, mert a HA onnan olvassa.
   Ezt és a `packages/hangvezerles.yaml`-t a `tools/gen_hang.py` generálja; kézzel ne szerkeszd őket, hanem a generátort
   módosítsd, és futtasd: `python tools/gen_hang.py .` Utána: `conversation.reload` és `intent_script.reload`.
+- A `packages/redonyok.yaml`-t a `tools/gen_redonyok.py` generálja (redőnyök, futásidők, pozíció, esti lehúzás).
+  Módosítás után: `python tools/gen_redonyok.py .`, majd `template.reload`, `script.reload`, `input_number.reload`,
+  `automation.reload`.
 - Az `automations.yaml`, `scripts.yaml` és `scenes.yaml` fájlokat a HA UI kezeli. **Soha ne módosítsd őket a repóban**,
   különben a Pi-n a `git pull` ütközéssel elszáll.
 - Titkok (tokenek, jelszavak) csak `!secret kulcs` formában. A kulcsot vedd fel a `secrets.example.yaml`-ba

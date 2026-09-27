@@ -30,6 +30,40 @@
         "text": "{% set rnev = {'nappali_terasz_1':'a nappali terasz 1','nappali_terasz_2':'a nappali terasz 2','nappali_ablak_1':'a nappali ablak 1','nappali_ablak_2':'a nappali ablak 2','haloszoba_1':'a hálószoba 1','haloszoba_2':'a hálószoba 2','gyerekszoba_1':'a gyerekszoba 1','gyerekszoba_2':'a gyerekszoba 2'} %}{{ {'fel':'Felhúzom','le':'Leengedem'}.get(irany, 'Megállítom') }} {{ rnev[egyedi] }} redőnyt."
       }
     },
+    "RedonyPozicioSzoba": {
+      "async_action": true,
+      "action": [
+        {
+          "action": "cover.set_cover_position",
+          "target": {
+            "area_id": "{{ szoba }}"
+          },
+          "data": {
+            "position": "{{ szazalek | int }}"
+          }
+        }
+      ],
+      "speech": {
+        "text": "{% set hely = {'nappali':'a nappaliban','haloszoba':'a hálószobában','gyerekszoba':'a gyerekszobában','konyha':'a konyhában','eloter':'az előszobában','furdo':'a fürdőben'} %}{{ 'Félig nyitom' if szazalek | int == 50 else 'Beállítom ' ~ (szazalek | int) ~ '%-os nyitásra' }} a redőnyöket {{ hely[szoba] }}."
+      }
+    },
+    "RedonyPozicioEgyedi": {
+      "async_action": true,
+      "action": [
+        {
+          "action": "cover.set_cover_position",
+          "target": {
+            "entity_id": "cover.redony_{{ egyedi }}"
+          },
+          "data": {
+            "position": "{{ szazalek | int }}"
+          }
+        }
+      ],
+      "speech": {
+        "text": "{% set rnev = {'nappali_terasz_1':'a nappali terasz 1','nappali_terasz_2':'a nappali terasz 2','nappali_ablak_1':'a nappali ablak 1','nappali_ablak_2':'a nappali ablak 2','haloszoba_1':'a hálószoba 1','haloszoba_2':'a hálószoba 2','gyerekszoba_1':'a gyerekszoba 1','gyerekszoba_2':'a gyerekszoba 2'} %}{{ 'Félig nyitom' if szazalek | int == 50 else 'Beállítom ' ~ (szazalek | int) ~ '%-os nyitásra' }} {{ rnev[egyedi] }} redőnyt."
+      }
+    },
     "RedonyMind": {
       "async_action": true,
       "action": [

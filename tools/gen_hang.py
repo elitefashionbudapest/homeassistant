@@ -75,11 +75,14 @@ sentences = {
         "futes": "(fűtést|fűtés|termosztátot|termosztát|kazánt)",
         "riaszto": "(riasztót|riasztó|riasztórendszert|ajaxot)",
         "fokra": "(fokra|fok|fokosra|celsius fokra)",
+        "mozgat": "(engedd|húzd|eresszd|ereszd|állítsd|tedd|nyisd|engedje|húzza|állítsa) [le|fel|ki|be]",
+        "szazalekra": "(százalékra|százalékosra|%-ra|%-re|%)",
     },
     "lists": {
         "irany": lst(IRANY), "szoba": lst(SZOBA), "egyedi": lst(EGYEDI), "psz": lst(PORSZIVO),
         "klima": lst(KLIMA), "kapcs": lst(KAPCS), "mod": lst(MOD), "homero": lst(HOMERO),
         "fok": {"range": {"from": 16, "to": 30}},
+        "szazalek": {"range": {"from": 0, "to": 100}},
     },
     "intents": {
         "RedonySzoba": {"data": [{"sentences": [
@@ -89,6 +92,18 @@ sentences = {
         "RedonyEgyedi": {"data": [{"sentences": [
             "[<kerlek>] ({irany}; [a |az ][nappali ]{egyedi} [<redonyok>]) [<kerlek>]",
         ]}]},
+        "RedonyPozicioSzoba": {"data": [
+            {"sentences": ["[<kerlek>] (<mozgat>; [a |az ]<redonyok>; [a |az ]{szoba}; félig) [<kerlek>]",
+                           "[<kerlek>] (<mozgat>; [a |az ]{szoba} <redonyok>; félig) [<kerlek>]"],
+             "slots": {"szazalek": 50}},
+            {"sentences": ["[<kerlek>] (<mozgat>; [a |az ]<redonyok>; [a |az ]{szoba}; {szazalek} <szazalekra>) [<kerlek>]",
+                           "[<kerlek>] (<mozgat>; [a |az ]{szoba} <redonyok>; {szazalek} <szazalekra>) [<kerlek>]"]},
+        ]},
+        "RedonyPozicioEgyedi": {"data": [
+            {"sentences": ["[<kerlek>] (<mozgat>; [a |az ][nappali ]{egyedi} [<redonyok>]; félig) [<kerlek>]"],
+             "slots": {"szazalek": 50}},
+            {"sentences": ["[<kerlek>] (<mozgat>; [a |az ][nappali ]{egyedi} [<redonyok>]; {szazalek} <szazalekra>) [<kerlek>]"]},
+        ]},
         "RedonyMind": {"data": [{"sentences": [
             "[<kerlek>] ({irany}; <osszes> <redonyok>) [mindenhol|a lakásban|a házban] [<kerlek>]",
             "[<kerlek>] ({irany}; [a ]<redonyok> mindenhol) [<kerlek>]",
@@ -177,6 +192,14 @@ intent_script = {
     "RedonyEgyedi": {"async_action": True,
                      "action": [{"action": COVER_ACT, "target": {"entity_id": "cover.redony_{{ egyedi }}"}}],
                      "speech": {"text": RNEV + IGE + " {{ rnev[egyedi] }} redőnyt."}},
+    "RedonyPozicioSzoba": {"async_action": True,
+                           "action": [{"action": "cover.set_cover_position", "target": {"area_id": "{{ szoba }}"},
+                                       "data": {"position": "{{ szazalek | int }}"}}],
+                           "speech": {"text": HELY + "{{ 'Félig nyitom' if szazalek | int == 50 else 'Beállítom ' ~ (szazalek | int) ~ '%-os nyitásra' }} a redőnyöket {{ hely[szoba] }}."}},
+    "RedonyPozicioEgyedi": {"async_action": True,
+                            "action": [{"action": "cover.set_cover_position", "target": {"entity_id": "cover.redony_{{ egyedi }}"},
+                                        "data": {"position": "{{ szazalek | int }}"}}],
+                            "speech": {"text": RNEV + "{{ 'Félig nyitom' if szazalek | int == 50 else 'Beállítom ' ~ (szazalek | int) ~ '%-os nyitásra' }} {{ rnev[egyedi] }} redőnyt."}},
     "RedonyMind": {"async_action": True,
                    "action": [{"choose": [
                        {"conditions": "{{ irany == 'fel' }}", "sequence": [{"action": "script.turn_on", "target": {"entity_id": "script.redonyok_mind_fel"}}]},
