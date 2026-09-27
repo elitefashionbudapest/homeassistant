@@ -18,6 +18,8 @@ Ez a repó a Pi `/config` (= `/homeassistant`) mappája, a `main` ágon. A telep
 - A `packages/redonyok.yaml`-t a `tools/gen_redonyok.py` generálja (redőnyök, futásidők, pozíció, esti lehúzás).
   Módosítás után: `python tools/gen_redonyok.py .`, majd `template.reload`, `script.reload`, `input_number.reload`,
   `automation.reload`.
+- Az automatizmusok emberi nyelvű összefoglalója a `tools/gen_dashboard.py` `AUTOMATIZMUSOK` szövegében van
+  (a dashboard „#automatizmusok” panelje). Új vagy megváltozott automatizmusnál ezt is frissítsd, majd futtasd a generátort.
 - Az `automations.yaml`, `scripts.yaml` és `scenes.yaml` fájlokat a HA UI kezeli. **Soha ne módosítsd őket a repóban**,
   különben a Pi-n a `git pull` ütközéssel elszáll.
 - Titkok (tokenek, jelszavak) csak `!secret kulcs` formában. A kulcsot vedd fel a `secrets.example.yaml`-ba
