@@ -79,6 +79,13 @@ def popup(hash_: str, nev: str, ikon: str, kartyak: list[dict]) -> dict:
             "cards": kartyak}
 
 
+def valasz_gomb(nev: str, ikon: str, valasz: str) -> dict:
+    act = {"action": "perform-action", "perform_action": "script.iskola_valasz", "data": {"valasz": valasz}}
+    return {"type": "custom:bubble-card", "card_type": "button", "button_type": "name", "card_layout": "large",
+            "name": nev, "icon": ikon, "grid_options": HALF,
+            "button_action": {"tap_action": act}, "tap_action": act}
+
+
 def cim(nev: str) -> dict:
     return {"type": "custom:bubble-card", "card_type": "separator", "name": nev, "grid_options": FULL}
 
@@ -148,6 +155,15 @@ popupok = [
     popup("#konyha", "Konyha", "mdi:stove", [redony("konyha", "Redőny"), takaritas("script.porszivo_konyha")]),
     popup("#furdo", "Fürdő", "mdi:shower", [redony("furdo", "Redőny"), takaritas("script.porszivo_furdo")]),
     popup("#futes", "Fűtés", "mdi:radiator", [klima("climate.termosztat", "Termosztát")]),
+    # az esti iskolai push koppintásra ide nyílik (packages/iskola.yaml)
+    popup("#iskola", "Holnap iskola?", "mdi:school", [
+        {"type": "custom:bubble-card", "card_type": "button", "button_type": "state", "card_layout": "large",
+         "entity": "input_boolean.iskola_holnap", "name": "Holnap reggel", "icon": "mdi:school", "grid_options": FULL,
+         "state_content": "{{ 'Csepike iskolába megy, 6:30-kor felhúzom a gyerekszoba és a nappali redőnyeit.' "
+                          "if is_state('input_boolean.iskola_holnap','on') else 'Nem húzom fel a redőnyöket.' }}"},
+        valasz_gomb("Igen, megy", "mdi:check-bold", "igen"),
+        valasz_gomb("Nem", "mdi:close-thick", "nem"),
+    ]),
     popup("#porszivo", "Porszívó", "mdi:robot-vacuum", [
         {"type": "tile", "entity": "vacuum.porszivo", "name": "Porszívó", "grid_options": FULL,
          "features": [{"type": "vacuum-commands", "commands": ["start_pause", "stop", "return_home", "locate"]}]},

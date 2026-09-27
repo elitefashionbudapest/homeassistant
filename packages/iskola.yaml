@@ -6,6 +6,33 @@ input_boolean:
     name: "Holnap iskola (6:30 redőny fel a gyerekszobában és a nappaliban)"
     icon: mdi:school
 
+# A válasz a push gombjairól és a dashboard „#iskola” paneljéről is ide fut be.
+script:
+  iskola_valasz:
+    alias: "Iskola – válasz rögzítése"
+    icon: mdi:school
+    mode: queued
+    fields:
+      valasz:
+        description: "igen vagy nem"
+        example: igen
+    sequence:
+      - action: "input_boolean.turn_{{ 'on' if valasz == 'igen' else 'off' }}"
+        target:
+          entity_id: input_boolean.iskola_holnap
+      # mindkét telefonról eltűnik a kérdés, helyette rövid visszaigazolás jön
+      - action: notify.szulok
+        data:
+          message: clear_notification
+          data:
+            tag: iskola
+      - action: notify.szulok
+        data:
+          title: "🎒 Iskola"
+          message: >-
+            {{ 'Rendben, holnap 6:30-kor felhúzom a gyerekszoba és a nappali redőnyeit.' if valasz == 'igen'
+               else 'Rendben, holnap reggel nem nyúlok a redőnyökhöz.' }}
+
 automation:
   - id: iskola_esti_kerdes
     alias: "Iskola – esti kérdés (vasárnap–csütörtök 21:00)"
@@ -29,6 +56,8 @@ automation:
                 message: "Holnap megy Csepike iskolába? Ha igen, 6:30-kor felhúzom a gyerekszoba és a nappali redőnyeit."
                 data:
                   tag: iskola
+                  # koppintásra a HA app a dashboard nagy Igen / Nem gombos paneljén nyílik meg
+                  url: /otthon-homerseklet/otthon#iskola
                   actions:
                     - action: ISKOLA_IGEN
                       title: "Igen, megy"
@@ -37,7 +66,7 @@ automation:
 
   - id: iskola_valasz
     alias: "Iskola – válasz a push gombjaira"
-    mode: single
+    mode: queued
     triggers:
       - trigger: event
         event_type: mobile_app_notification_action
@@ -48,21 +77,9 @@ automation:
         event_data: {action: ISKOLA_NEM}
         id: nem
     actions:
-      - action: "input_boolean.turn_{{ 'on' if trigger.id == 'igen' else 'off' }}"
-        target:
-          entity_id: input_boolean.iskola_holnap
-      # a másik telefonról eltűnik a kérdés, helyette rövid visszaigazolás jön
-      - action: notify.szulok
+      - action: script.iskola_valasz
         data:
-          message: clear_notification
-          data:
-            tag: iskola
-      - action: notify.szulok
-        data:
-          title: "🎒 Iskola"
-          message: >-
-            {{ 'Rendben, holnap 6:30-kor felhúzom a gyerekszoba és a nappali redőnyeit.' if trigger.id == 'igen'
-               else 'Rendben, holnap reggel nem nyúlok a redőnyökhöz.' }}
+          valasz: "{{ trigger.id }}"
 
   - id: iskola_reggel
     alias: "Iskola – 6:30 gyerekszoba és nappali redőnyök fel"
