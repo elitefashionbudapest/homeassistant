@@ -19,3 +19,69 @@ script:
       - action: alarm_control_panel.alarm_arm_away
         target:
           entity_id: alarm_control_panel.vaskut14_otthon
+
+# Esti emlékeztető: ha 22:00-kor a riasztó nincs éjszakai (vagy távol) módban, push Ádámnak.
+# Kritikus értesítés, mert ilyenkor a telefonja Ne zavarjanak módban van. Magától nem élesít,
+# csak a push gombjára (vagy a dashboardon) kapcsol éjszakai módba.
+automation:
+  - id: riaszto_esti_emlekezteto
+    alias: "Riasztó – 22:00 emlékeztető, ha nincs éjszakai módban"
+    mode: single
+    triggers:
+      - trigger: time
+        at: "22:00:00"
+    conditions:
+      - condition: not
+        conditions:
+          - condition: state
+            entity_id: alarm_control_panel.vaskut14_otthon
+            state: [armed_night, armed_away, arming]
+    actions:
+      - action: notify.mobile_app_adam_2
+        data:
+          title: "🛡️ A riasztó nincs éjszakai módban"
+          message: "Már 10 óra van, de a riasztó még nincs bekapcsolva éjszakára. Bekapcsoljam?"
+          data:
+            tag: riaszto_este
+            url: /otthon-homerseklet/otthon
+            push:
+              sound:
+                name: default
+                critical: 1
+                volume: 0.6
+            actions:
+              - action: RIASZTO_EJSZAKAI
+                title: "Éjszakai mód bekapcsolása"
+
+  - id: riaszto_esti_valasz
+    alias: "Riasztó – esti emlékeztető gombja"
+    mode: single
+    triggers:
+      - trigger: event
+        event_type: mobile_app_notification_action
+        event_data: {action: RIASZTO_EJSZAKAI}
+    actions:
+      - action: notify.mobile_app_adam_2
+        data:
+          message: clear_notification
+          data:
+            tag: riaszto_este
+      - if:
+          - condition: state
+            entity_id: alarm_control_panel.vaskut14_otthon
+            state: [armed_night, armed_away]
+        then:
+          - action: notify.mobile_app_adam_2
+            data:
+              title: "🛡️ Riasztó"
+              message: "A riasztó már be van kapcsolva, nem változtattam rajta."
+        else:
+          - action: script.riaszto_ejszakai
+          - wait_template: "{{ is_state('alarm_control_panel.vaskut14_otthon', 'armed_night') }}"
+            timeout: "00:01:00"
+          - action: notify.mobile_app_adam_2
+            data:
+              title: "🛡️ Riasztó"
+              message: >-
+                {{ 'Bekapcsoltam az éjszakai módot. Jó éjt!' if wait.completed
+                   else 'Nem sikerült éjszakai módba kapcsolni. Nézd meg az Ajax appban, nincs-e nyitva ajtó vagy ablak.' }}
