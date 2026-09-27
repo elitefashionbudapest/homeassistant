@@ -146,6 +146,23 @@ popupok = [
     ]),
 ]
 
+# A Bubble-kártyák a téma (Liquid Glass / visionOS) üveges kártyahátterét és elmosását kapják
+UVEG = (":host { --bubble-main-background-color: var(--ha-card-background); "
+        "--bubble-pop-up-background-color: var(--ha-card-background); } "
+        ".bubble-container { backdrop-filter: var(--ha-card-backdrop-filter); "
+        "-webkit-backdrop-filter: var(--ha-card-backdrop-filter); }")
+
+
+def uvegesit(kartyak: list[dict]) -> None:
+    for c in kartyak:
+        if c.get("type") == "custom:bubble-card" and c.get("card_type") not in ("separator", "pop-up"):
+            c["styles"] = (c.get("styles", "") + " " + UVEG).strip()
+        uvegesit(c.get("cards", []))
+
+
+uvegesit(fo)
+uvegesit(popupok)
+
 uj_nezet = {"title": "Otthon", "path": "otthon", "icon": "mdi:home", "type": "sections", "max_columns": 2,
             "sections": [{"type": "grid", "cards": fo}, {"type": "grid", "cards": popupok}]}
 
