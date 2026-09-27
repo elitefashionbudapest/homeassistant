@@ -22,3 +22,6 @@ blueprints/
 zigbee2mqtt/
 esphome/
 .ssh/
+
+# A HACS által telepített témák (a themes/.gitkeep marad)
+themes/*/
