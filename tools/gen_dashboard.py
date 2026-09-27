@@ -159,8 +159,8 @@ popupok = [
     popup("#iskola", "Holnap iskola?", "mdi:school", [
         {"type": "custom:bubble-card", "card_type": "button", "button_type": "state", "card_layout": "large",
          "entity": "input_boolean.iskola_holnap", "name": "Holnap reggel", "icon": "mdi:school", "grid_options": FULL,
-         "state_content": "{{ 'Csepike iskolába megy, 6:30-kor felhúzom a gyerekszoba és a nappali redőnyeit.' "
-                          "if is_state('input_boolean.iskola_holnap','on') else 'Nem húzom fel a redőnyöket.' }}"},
+         "state_content": "{{ '6:30-kor felhúzom a redőnyöket.' if is_state('input_boolean.iskola_holnap','on') "
+                          "else 'Nem húzom fel a redőnyöket.' }}"},
         valasz_gomb("Igen, megy", "mdi:check-bold", "igen"),
         valasz_gomb("Nem", "mdi:close-thick", "nem"),
     ]),
