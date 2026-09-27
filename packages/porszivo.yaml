@@ -1,6 +1,6 @@
 # Dreame L40 Ultra AE (vacuum.porszivo) – szobánkénti takarítás.
-# A szobák a robot térképének szegmensei (Map 1): 1 = Fürdő, 2 = Előszoba + konyha, 3 = Gyerekszoba, 4 = Hálószoba.
-# A 2-es szegmenst a Dreamehome appban kell kettévágni (előszoba | konyha), utána külön szkriptet kap.
+# A szobák a robot térképének szegmensei (Map 1): 1 = Fürdő, 2 = Konyha, 3 = Gyerekszoba, 4 = Hálószoba, 5 = Előszoba.
+# Az 5-ös (Előszoba) a korábbi 2-esből lett leválasztva a dokkoló mellett; a dokkoló az Előszobában van.
 # A nappaliba a lépcső miatt nem jut le, ezért ott nincs szegmens.
 script:
   porszivo_gyerekszoba:
@@ -37,8 +37,19 @@ script:
           segments: [1]
 
   porszivo_eloszoba:
-    alias: "Porszívó – Előszoba és konyha"
+    alias: "Porszívó – Előszoba"
     icon: mdi:coat-rack
+    mode: single
+    sequence:
+      - action: dreame_vacuum.vacuum_clean_segment
+        target:
+          entity_id: vacuum.porszivo
+        data:
+          segments: [5]
+
+  porszivo_konyha:
+    alias: "Porszívó – Konyha"
+    icon: mdi:stove
     mode: single
     sequence:
       - action: dreame_vacuum.vacuum_clean_segment
