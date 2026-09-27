@@ -224,6 +224,16 @@ intent_script = {
         "{{ h[homero] }} most {{ states(homero) | round(0) | int }} fok van.{% endif %}")}},
 }
 
+# --- tanult parancsok (a Jarvis tanuló modulja írja: tools/tanult.json) ------------------
+# Minden tanult mondat saját intentet kap, amely a Claude által egyszer már végrehajtott
+# szolgáltatáshívásokat játssza vissza, token nélkül.
+tanult_path = REPO / "tools" / "tanult.json"
+tanult = json.loads(tanult_path.read_text(encoding="utf-8")) if tanult_path.exists() else []
+for i, t in enumerate(tanult, 1):
+    name = f"Tanult{i:03d}"
+    sentences["intents"][name] = {"data": [{"sentences": [f"[<kerlek>] {t['mondat']} [<kerlek>]"]}]}
+    intent_script[name] = {"async_action": True, "action": t["muveletek"], "speech": {"text": t["valasz"]}}
+
 (REPO / "custom_sentences" / "hu").mkdir(parents=True, exist_ok=True)
 hdr_s = ("# Magyar hangparancsok (tokenmentes, helyben a Pi-n). GENERÁLT FÁJL – a forrás a tools/gen_hang.py (futtatás: python tools/gen_hang.py .).\n"
          "# A HA a custom_sentences/<nyelv>/ mappából olvassa, ezért nem a packages/ alatt van.\n")
