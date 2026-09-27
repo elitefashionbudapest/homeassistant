@@ -45,7 +45,9 @@ HOVEDELEM_OLDALAK = [
     ("eny", "Nappali ablak 2, fürdő, gyerekszoba 1 (ÉNy, 320°)", 320, ["nappali_ablak_2", "furdo", "gyerekszoba_1"]),
     ("ek", "Gyerekszoba 2, hálószoba 1 (ÉK, 49°)", 49, ["gyerekszoba_2", "haloszoba_1"]),
 ]
-HOVEDELEM_KINT_MIN = 26      # °C – ennél melegebb kinti hőmérsékletnél árnyékol
+HOVEDELEM_KINT_MIN = 28      # °C – automatikusan csak ennél melegebb kinti hőmérsékletnél árnyékol
+HOVEDELEM_KINT_VISSZA = 26   # °C – ez alá hűlve húzza vissza (hiszterézis, hogy ne menjen folyton fel-le)
+HOVEDELEM_HONAPOK = (5, 9)   # automatikus mód csak májustól szeptemberig; télen a nap süssön be
 HOVEDELEM_SZOG = 60          # ha a nap ennél kisebb szögben süt az ablak felé
 HOVEDELEM_NAPMAGASSAG = 10   # ° – ennél alacsonyabb napnál nem árnyékol
 HOVEDELEM_POZICIO = 30       # % nyitva árnyékoláskor
@@ -136,18 +138,19 @@ automation = [{
                  "target": {"entity_id": [f"cover.redony_{s}" for s, _, _ in REDONYOK if s not in ESTI_KIVETEL]}}],
 }]
 
-input_boolean = {"redony_hovedelem_aktiv": {"name": "Redőny hővédelem", "icon": "mdi:weather-sunny-alert"}}
+input_boolean = {"redony_hovedelem_aktiv": {"name": "Redőny hővédelem (automatikus, nyáron)", "icon": "mdi:weather-sunny-alert"},
+                 "redony_hovedelem_ma": {"name": "Hővédelem ma", "icon": "mdi:sun-thermometer"}}
 for kulcs, nev, _, _ in HOVEDELEM_OLDALAK:
     input_boolean[f"redony_hovedelem_{kulcs}"] = {"name": f"Hővédelem árnyékol – {nev}", "icon": "mdi:sun-angle"}
 
 automation.append({
     "id": "redonyok_hovedelem",
     "alias": "Redőnyök – nyári hővédelem (napirány szerint)",
-    "description": "Ha kint meleg van és a nap egy ablaksorra süt, azokat a redőnyöket részben leengedi; "
-                   "ha a nap napközben elvonul, visszahúzza. Naplemente után nem húz fel semmit.",
+    "description": "Ha a nap egy ablaksorra süt, és vagy be van kapcsolva a „Hővédelem ma”, vagy nyár van "
+                   "(máj–szept) és kint legalább 28 °C, akkor azokat a redőnyöket részben leengedi. Ha a nap napközben "
+                   "elvonul, vagy a feltétel megszűnik, visszahúzza. Naplemente után nem húz fel semmit.",
     "mode": "single",
     "triggers": [{"trigger": "time_pattern", "minutes": "/5"}],
-    "conditions": [{"condition": "state", "entity_id": "input_boolean.redony_hovedelem_aktiv", "state": "on"}],
     "actions": [{"repeat": {
         "for_each": [{"flag": f"input_boolean.redony_hovedelem_{k}", "azimut": az,
                       "coverek": [f"cover.redony_{s}" for s in cs]} for k, _, az, cs in HOVEDELEM_OLDALAK],
@@ -158,19 +161,40 @@ automation.append({
                 "kint": "{{ state_attr('weather.forecast_otthon', 'temperature') | float(0) }}",
                 "szog": "{{ (((nap_az - repeat.item.azimut + 540) % 360) - 180) | abs }}",
                 "napos": "{{ nap_mag >= " + str(HOVEDELEM_NAPMAGASSAG) + " and szog <= " + str(HOVEDELEM_SZOG) + " }}",
-                "meleg": "{{ kint >= " + str(HOVEDELEM_KINT_MIN) + " }}",
+                "ma": "{{ is_state('input_boolean.redony_hovedelem_ma', 'on') }}",
+                "auto": "{{ is_state('input_boolean.redony_hovedelem_aktiv', 'on') and "
+                        + str(HOVEDELEM_HONAPOK[0]) + " <= now().month <= " + str(HOVEDELEM_HONAPOK[1]) + " }}",
+                "indit": "{{ ma or (auto and kint >= " + str(HOVEDELEM_KINT_MIN) + ") }}",
+                "tart": "{{ ma or (auto and kint >= " + str(HOVEDELEM_KINT_VISSZA) + ") }}",
                 "arnyekol": "{{ is_state(repeat.item.flag, 'on') }}"}},
             {"choose": [
-                {"conditions": "{{ napos and meleg and not arnyekol }}", "sequence": [
+                {"conditions": "{{ napos and indit and not arnyekol }}", "sequence": [
                     {"action": "cover.set_cover_position", "target": {"entity_id": "{{ repeat.item.coverek }}"},
                      "data": {"position": HOVEDELEM_POZICIO}},
                     {"action": "input_boolean.turn_on", "target": {"entity_id": "{{ repeat.item.flag }}"}}]},
-                {"conditions": "{{ arnyekol and not napos }}", "sequence": [
+                {"conditions": "{{ arnyekol and not (napos and tart) }}", "sequence": [
                     {"if": "{{ nap_mag > 5 }}", "then": [
                         {"action": "cover.open_cover", "target": {"entity_id": "{{ repeat.item.coverek }}"}}]},
                     {"action": "input_boolean.turn_off", "target": {"entity_id": "{{ repeat.item.flag }}"}}]},
             ]},
         ]}}],
+})
+
+automation.append({
+    "id": "redonyok_hovedelem_ma_azonnal",
+    "alias": "Redőnyök – „Hővédelem ma” azonnali futtatás",
+    "mode": "restart",
+    "triggers": [{"trigger": "state", "entity_id": "input_boolean.redony_hovedelem_ma", "to": ["on", "off"]}],
+    "actions": [{"action": "automation.trigger", "target": {"entity_id": "automation.redonyok_nyari_hovedelem_napirany_szerint"},
+                 "data": {"skip_condition": False}}],
+})
+automation.append({
+    "id": "redonyok_hovedelem_ma_ejfel",
+    "alias": "Redőnyök – „Hővédelem ma” kikapcsolása éjfélkor",
+    "mode": "single",
+    "triggers": [{"trigger": "time", "at": "00:00:00"}],
+    "conditions": [{"condition": "state", "entity_id": "input_boolean.redony_hovedelem_ma", "state": "on"}],
+    "actions": [{"action": "input_boolean.turn_off", "target": {"entity_id": "input_boolean.redony_hovedelem_ma"}}],
 })
 
 fej = ("# Redőnyök (Broadlink RF) időalapú pozícióval, esti lehúzással.\n"

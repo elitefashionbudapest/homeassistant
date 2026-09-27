@@ -105,8 +105,12 @@
   },
   "input_boolean": {
     "redony_hovedelem_aktiv": {
-      "name": "Redőny hővédelem",
+      "name": "Redőny hővédelem (automatikus, nyáron)",
       "icon": "mdi:weather-sunny-alert"
+    },
+    "redony_hovedelem_ma": {
+      "name": "Hővédelem ma",
+      "icon": "mdi:sun-thermometer"
     },
     "redony_hovedelem_dk_terasz": {
       "name": "Hővédelem árnyékol – Terasz (DK, 150°)",
@@ -2244,19 +2248,12 @@
     {
       "id": "redonyok_hovedelem",
       "alias": "Redőnyök – nyári hővédelem (napirány szerint)",
-      "description": "Ha kint meleg van és a nap egy ablaksorra süt, azokat a redőnyöket részben leengedi; ha a nap napközben elvonul, visszahúzza. Naplemente után nem húz fel semmit.",
+      "description": "Ha a nap egy ablaksorra süt, és vagy be van kapcsolva a „Hővédelem ma”, vagy nyár van (máj–szept) és kint legalább 28 °C, akkor azokat a redőnyöket részben leengedi. Ha a nap napközben elvonul, vagy a feltétel megszűnik, visszahúzza. Naplemente után nem húz fel semmit.",
       "mode": "single",
       "triggers": [
         {
           "trigger": "time_pattern",
           "minutes": "/5"
-        }
-      ],
-      "conditions": [
-        {
-          "condition": "state",
-          "entity_id": "input_boolean.redony_hovedelem_aktiv",
-          "state": "on"
         }
       ],
       "actions": [
@@ -2312,14 +2309,17 @@
                   "kint": "{{ state_attr('weather.forecast_otthon', 'temperature') | float(0) }}",
                   "szog": "{{ (((nap_az - repeat.item.azimut + 540) % 360) - 180) | abs }}",
                   "napos": "{{ nap_mag >= 10 and szog <= 60 }}",
-                  "meleg": "{{ kint >= 26 }}",
+                  "ma": "{{ is_state('input_boolean.redony_hovedelem_ma', 'on') }}",
+                  "auto": "{{ is_state('input_boolean.redony_hovedelem_aktiv', 'on') and 5 <= now().month <= 9 }}",
+                  "indit": "{{ ma or (auto and kint >= 28) }}",
+                  "tart": "{{ ma or (auto and kint >= 26) }}",
                   "arnyekol": "{{ is_state(repeat.item.flag, 'on') }}"
                 }
               },
               {
                 "choose": [
                   {
-                    "conditions": "{{ napos and meleg and not arnyekol }}",
+                    "conditions": "{{ napos and indit and not arnyekol }}",
                     "sequence": [
                       {
                         "action": "cover.set_cover_position",
@@ -2339,7 +2339,7 @@
                     ]
                   },
                   {
-                    "conditions": "{{ arnyekol and not napos }}",
+                    "conditions": "{{ arnyekol and not (napos and tart) }}",
                     "sequence": [
                       {
                         "if": "{{ nap_mag > 5 }}",
@@ -2363,6 +2363,58 @@
                 ]
               }
             ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "redonyok_hovedelem_ma_azonnal",
+      "alias": "Redőnyök – „Hővédelem ma” azonnali futtatás",
+      "mode": "restart",
+      "triggers": [
+        {
+          "trigger": "state",
+          "entity_id": "input_boolean.redony_hovedelem_ma",
+          "to": [
+            "on",
+            "off"
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "action": "automation.trigger",
+          "target": {
+            "entity_id": "automation.redonyok_nyari_hovedelem_napirany_szerint"
+          },
+          "data": {
+            "skip_condition": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "redonyok_hovedelem_ma_ejfel",
+      "alias": "Redőnyök – „Hővédelem ma” kikapcsolása éjfélkor",
+      "mode": "single",
+      "triggers": [
+        {
+          "trigger": "time",
+          "at": "00:00:00"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "state",
+          "entity_id": "input_boolean.redony_hovedelem_ma",
+          "state": "on"
+        }
+      ],
+      "actions": [
+        {
+          "action": "input_boolean.turn_off",
+          "target": {
+            "entity_id": "input_boolean.redony_hovedelem_ma"
           }
         }
       ]

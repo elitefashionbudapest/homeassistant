@@ -116,6 +116,10 @@ fo = [
     muvelet_gomb("Redőnyök fel", "mdi:window-shutter-open", "script.redonyok_mind_fel"),
     muvelet_gomb("Éjszakai mód", "mdi:shield-moon", "script.riaszto_ejszakai", "Éjszakai módba kapcsolod a riasztót?"),
     muvelet_gomb("Takarítás", "mdi:broom", "script.porszivo_minden", "Elindítod a takarítást az egész lakásban?"),
+    {"type": "custom:bubble-card", "card_type": "button", "button_type": "switch", "card_layout": "large",
+     "entity": "input_boolean.redony_hovedelem_ma", "name": "Hővédelem ma", "icon": "mdi:sun-thermometer",
+     "state_content": "{{ 'Be – ma árnyékolok, ha süt a nap' if is_state('input_boolean.redony_hovedelem_ma','on') else 'Ki – koppints, ha ma meleg lesz' }}",
+     "grid_options": FULL},
 ]
 
 popupok = [
