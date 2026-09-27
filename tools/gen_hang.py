@@ -66,7 +66,7 @@ HOMERO = {
 sentences = {
     "language": "hu",
     "expansion_rules": {
-        "kerlek": "(kérlek|kérem|légyszi|légy szíves|légyszíves|alfréd|alfred|hé alfréd|hey alfréd|szia alfréd|hé alfred|hey alfred|jarvis|hé jarvis|hey jarvis|szia jarvis)",
+        "kerlek": "(kérlek|kérem|légyszi|légy szíves|légyszíves|alfréd|alfred|hé alfréd|hey alfréd|szia alfréd|hé alfred|hey alfred)",
         "redonyok": "(redőny|redőnyt|redőnyök|redőnyöket|redőnyeit|redőnyét|redőnyöt|árnyékolót|árnyékolókat|rolót|rolókat)",
         "osszes": "(az összes|minden|mindegyik|összes)",
         "takarit": "(takarítsd|porszívózd|szívd|mosd|takaríts|porszívózz|takarítson|porszívózzon|takarítsa) [ki|fel|meg]",
