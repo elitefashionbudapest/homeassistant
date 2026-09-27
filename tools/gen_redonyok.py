@@ -50,7 +50,7 @@ HOVEDELEM_KINT_VISSZA = 26   # °C – ez alá hűlve húzza vissza (hiszterézi
 HOVEDELEM_HONAPOK = (5, 9)   # automatikus mód csak májustól szeptemberig; télen a nap süssön be
 HOVEDELEM_SZOG = 60          # ha a nap ennél kisebb szögben süt az ablak felé
 HOVEDELEM_NAPMAGASSAG = 10   # ° – ennél alacsonyabb napnál nem árnyékol
-HOVEDELEM_POZICIO = 70       # % nyitva árnyékoláskor (Ádám kérése: csak kb. 30%-ig menjen le)
+HOVEDELEM_POZICIO = 30       # % nyitva árnyékoláskor = 70%-ban lent (Ádám kérése)
 
 
 def kuld(slug: str, parancs: str) -> dict:

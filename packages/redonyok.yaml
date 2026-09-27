@@ -2327,7 +2327,7 @@
                           "entity_id": "{{ repeat.item.coverek }}"
                         },
                         "data": {
-                          "position": 70
+                          "position": 30
                         }
                       },
                       {
