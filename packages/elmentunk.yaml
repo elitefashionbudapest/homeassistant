@@ -1,0 +1,216 @@
+# „Elmentünk” rutin: ha Ádám és Cerike is elhagyta a házat (GPS-zóna ÉS az otthoni Wi-Fi is),
+# push értesítés mindkettőjüknek: Élesítés + takarítás / Csak takarítás / Semmi.
+# Magától soha nem élesít: a HA a gyereket nem látja, ezért kérdez, és ellenőrzi, hogy nincs-e jel arra,
+# hogy valaki otthon maradt (Xbox online, bekapcsolt Samsung tévé, lejátszó Apple TV, azóta nyílt bejárati ajtó).
+# A gombnyomáskor újra ellenőriz. Hazaérkezéskor: a porszívó haza, figyelmeztetés, ha a riasztó élesítve maradt.
+
+notify:
+  - platform: group
+    name: szulok
+    services:
+      - service: mobile_app_adam_2
+      - service: mobile_app_noyaflage_iphone_keszuleke_2
+
+input_boolean:
+  elmentunk_kerdezve:
+    name: "Elmentünk – már rákérdezett"
+    icon: mdi:home-export-outline
+
+input_datetime:
+  elmentunk_ideje:
+    name: "Elmentünk – utolsó távozás ideje"
+    has_date: true
+    has_time: true
+    icon: mdi:clock-out
+
+template:
+  - binary_sensor:
+      - name: "Valaki otthon lehet"
+        unique_id: valaki_otthon_lehet
+        default_entity_id: binary_sensor.valaki_otthon_lehet
+        device_class: occupancy
+        icon: mdi:account-question
+        state: >-
+          {{ is_state('binary_sensor.domi20181210', 'on')
+             or is_state('media_player.nappali_nappali_tv', 'on')
+             or is_state('media_player.samsung_5_series_32_ue32k5500', 'on')
+             or is_state('media_player.nappali_nappali', 'playing')
+             or (states.binary_sensor.vaskut14_bejarat_ajto is not none
+                 and states('input_datetime.elmentunk_ideje') not in ['unknown', 'unavailable']
+                 and is_state('input_boolean.elmentunk_kerdezve', 'on')
+                 and states.binary_sensor.vaskut14_bejarat_ajto.last_changed
+                     > (states('input_datetime.elmentunk_ideje') | as_datetime | as_local)) }}
+        attributes:
+          okok: >-
+            {% set o = [] %}
+            {% if is_state('binary_sensor.domi20181210', 'on') %}{% set o = o + ['az Xbox online'] %}{% endif %}
+            {% if is_state('media_player.nappali_nappali_tv', 'on') %}{% set o = o + ['a nappali tévé be van kapcsolva'] %}{% endif %}
+            {% if is_state('media_player.samsung_5_series_32_ue32k5500', 'on') %}{% set o = o + ['a gyerekszobai tévé be van kapcsolva'] %}{% endif %}
+            {% if is_state('media_player.nappali_nappali', 'playing') %}{% set o = o + ['az Apple TV lejátszik'] %}{% endif %}
+            {% if is_state('input_boolean.elmentunk_kerdezve', 'on')
+                  and states('input_datetime.elmentunk_ideje') not in ['unknown', 'unavailable']
+                  and states.binary_sensor.vaskut14_bejarat_ajto is not none
+                  and states.binary_sensor.vaskut14_bejarat_ajto.last_changed > (states('input_datetime.elmentunk_ideje') | as_datetime | as_local) %}
+              {% set o = o + ['a bejárati ajtó azóta kinyílt'] %}{% endif %}
+            {{ o | join(', ') }}
+
+script:
+  elmentunk_elesit_takarit:
+    alias: "Elmentünk – élesítés és takarítás"
+    icon: mdi:shield-home
+    mode: single
+    sequence:
+      - action: script.riaszto_elesites
+      - action: script.porszivo_minden
+
+automation:
+  - id: elmentunk_kerdes
+    alias: "Elmentünk – rákérdezés (mindkét telefon távol, Wi-Fin sincs)"
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: [person.vaskut14, person.cerike]
+        to: "not_home"
+        for: "00:02:00"
+      - trigger: state
+        entity_id: [sensor.adam_2_ssid, sensor.noyaflage_iphone_keszuleke_2_ssid]
+    conditions:
+      - condition: state
+        entity_id: [person.vaskut14, person.cerike]
+        state: "not_home"
+      - condition: state
+        entity_id: input_boolean.elmentunk_kerdezve
+        state: "off"
+      # Mindkét telefon ténylegesen lecsatlakozott az otthoni Wi-Fi-ről (ismeretlen állapot NEM elég).
+      - condition: template
+        value_template: >-
+          {% set s = [states('sensor.adam_2_ssid'), states('sensor.noyaflage_iphone_keszuleke_2_ssid')] %}
+          {{ s | select('in', ['unknown', 'unavailable', 'Vaskut14']) | list | count == 0 }}
+    actions:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.elmentunk_kerdezve
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.elmentunk_ideje
+        data:
+          datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+      - variables:
+          gyanus: "{{ is_state('binary_sensor.valaki_otthon_lehet', 'on') }}"
+          okok: "{{ state_attr('binary_sensor.valaki_otthon_lehet', 'okok') }}"
+          uzenet: >-
+            {% if gyanus %}⚠️ Lehet, hogy valaki otthon van: {{ okok }}. Biztosan élesítsek?{% else %}Mindketten elmentetek. Élesítsem a riasztót, és indítsam a takarítást?{% endif %}
+          gombok: >-
+            {% if gyanus %}
+            [{"action": "ELMENTUNK_SEMMI", "title": "Semmi"}, {"action": "ELMENTUNK_MEGIS", "title": "Mégis élesíts + takaríts", "destructive": true}]
+            {% else %}
+            [{"action": "ELMENTUNK_ELESIT", "title": "Élesítés + takarítás"}, {"action": "ELMENTUNK_TAKARIT", "title": "Csak takarítás"}, {"action": "ELMENTUNK_SEMMI", "title": "Semmi"}]
+            {% endif %}
+      - repeat:
+          for_each: [notify.mobile_app_adam_2, notify.mobile_app_noyaflage_iphone_keszuleke_2]
+          sequence:
+            - action: "{{ repeat.item }}"
+              data:
+                title: "🏠 Elmentetek"
+                message: "{{ uzenet }}"
+                data:
+                  tag: elmentunk
+                  push:
+                    interruption-level: time-sensitive
+                  actions: "{{ gombok }}"
+
+  - id: elmentunk_valasz
+    alias: "Elmentünk – válasz a push gombjaira"
+    mode: single
+    triggers:
+      - trigger: event
+        event_type: mobile_app_notification_action
+        event_data: {action: ELMENTUNK_ELESIT}
+        id: elesit
+      - trigger: event
+        event_type: mobile_app_notification_action
+        event_data: {action: ELMENTUNK_MEGIS}
+        id: megis
+      - trigger: event
+        event_type: mobile_app_notification_action
+        event_data: {action: ELMENTUNK_TAKARIT}
+        id: takarit
+      - trigger: event
+        event_type: mobile_app_notification_action
+        event_data: {action: ELMENTUNK_SEMMI}
+        id: semmi
+    actions:
+      # a másik telefonról eltűnik a kérdés
+      - repeat:
+          for_each: [notify.mobile_app_adam_2, notify.mobile_app_noyaflage_iphone_keszuleke_2]
+          sequence:
+            - action: "{{ repeat.item }}"
+              data:
+                message: clear_notification
+                data:
+                  tag: elmentunk
+      - variables:
+          meg_tavol: "{{ is_state('person.vaskut14', 'not_home') and is_state('person.cerike', 'not_home') }}"
+          gyanus: "{{ is_state('binary_sensor.valaki_otthon_lehet', 'on') }}"
+          okok: "{{ state_attr('binary_sensor.valaki_otthon_lehet', 'okok') }}"
+      - choose:
+          - conditions: "{{ trigger.id == 'semmi' }}"
+            sequence: []
+          - conditions: "{{ not meg_tavol }}"
+            sequence:
+              - action: notify.szulok
+                data:
+                  title: "🏠 Elmentetek"
+                  message: "Nem csináltam semmit, mert közben valamelyikőtök hazaért."
+          - conditions: "{{ trigger.id == 'elesit' and gyanus }}"
+            sequence:
+              - action: notify.szulok
+                data:
+                  title: "🏠 Nem élesítettem"
+                  message: "Azóta jel jött, hogy valaki otthon lehet: {{ okok }}. Semmit nem indítottam."
+          - conditions: "{{ trigger.id in ['elesit', 'megis'] }}"
+            sequence:
+              - action: script.elmentunk_elesit_takarit
+              - action: notify.szulok
+                data:
+                  title: "🏠 Kész"
+                  message: "Élesítettem a riasztót, és elindult a takarítás."
+          - conditions: "{{ trigger.id == 'takarit' and gyanus }}"
+            sequence:
+              - action: notify.szulok
+                data:
+                  title: "🏠 Nem indítottam takarítást"
+                  message: "Azóta jel jött, hogy valaki otthon lehet: {{ okok }}."
+          - conditions: "{{ trigger.id == 'takarit' }}"
+            sequence:
+              - action: script.porszivo_minden
+              - action: notify.szulok
+                data:
+                  title: "🏠 Kész"
+                  message: "Elindult a takarítás."
+
+  - id: elmentunk_hazaerkezes
+    alias: "Elmentünk – hazaérkezés (porszívó haza, riasztó-emlékeztető)"
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: [person.vaskut14, person.cerike]
+        to: "home"
+    actions:
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.elmentunk_kerdezve
+      - if: "{{ is_state('vacuum.porszivo', 'cleaning') }}"
+        then:
+          - action: vacuum.return_to_base
+            target:
+              entity_id: vacuum.porszivo
+      - if: "{{ states('alarm_control_panel.vaskut14_otthon') in ['armed_away', 'armed_home'] }}"
+        then:
+          - action: "notify.mobile_app_{{ 'adam_2' if trigger.entity_id == 'person.vaskut14' else 'noyaflage_iphone_keszuleke_2' }}"
+            data:
+              title: "🏠 Üdv itthon!"
+              message: "A riasztó élesítve van – ne felejtsd el hatástalanítani az Ajax appban vagy a kezelőn."
+              data:
+                push:
+                  interruption-level: time-sensitive
