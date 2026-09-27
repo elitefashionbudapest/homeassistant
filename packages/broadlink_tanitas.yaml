@@ -1,0 +1,39 @@
+# A Broadlink kódtanítás lépéseit (remote.learn_command) push értesítésben
+# továbbküldi Ádám telefonjára, mert a HA ezeket csak az értesítési panelre teszi.
+automation:
+  - id: broadlink_tanitas_push
+    alias: "Broadlink tanítás – értesítés a telefonra"
+    mode: queued
+    triggers:
+      - trigger: persistent_notification
+        notification_id: sweep_frequency
+        update_type:
+          - added
+          - updated
+      - trigger: persistent_notification
+        notification_id: learn_command
+        update_type:
+          - added
+          - updated
+    actions:
+      - variables:
+          uzenet: "{{ trigger.notification.message }}"
+          gomb: "{{ uzenet | regex_findall_index(\"'([^']+)'\") | upper }}"
+          szoveg: >-
+            {% if trigger.notification.notification_id == 'sweep_frequency' %}
+              Nyomd, és TARTSD LENYOMVA a(z) {{ gomb }} gombot!
+            {% elif 'again' in uzenet %}
+              Most nyomd meg MÉG EGYSZER röviden a(z) {{ gomb }} gombot!
+            {% else %}
+              Nyomd meg röviden a(z) {{ gomb }} gombot!
+            {% endif %}
+      - action: notify.mobile_app_adam_2
+        data:
+          title: "Redőny tanítása"
+          message: "{{ szoveg }}"
+          data:
+            tag: broadlink_tanitas
+            priority: high
+            ttl: 0
+            push:
+              interruption-level: time-sensitive
