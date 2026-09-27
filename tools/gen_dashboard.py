@@ -127,7 +127,43 @@ fo = [
      "entity": "input_boolean.redony_hovedelem_ma", "name": "Hővédelem ma", "icon": "mdi:sun-thermometer",
      "state_content": "{{ 'Be – ma árnyékolok, ha süt a nap' if is_state('input_boolean.redony_hovedelem_ma','on') else 'Ki – koppints, ha ma meleg lesz' }}",
      "grid_options": FULL},
+    {**szoba_gomb("Automatizmusok", "mdi:robot-happy", "#automatizmusok", "Mi történik magától, és mikor"),
+     "grid_options": FULL},
 ]
+
+# Az automatizmusok összefoglalója (a push is erre nyílik); az élő részek Jinja-sablonok.
+AUTOMATIZMUSOK = """## 🌙 Este
+**Redőnyök lehúzása.** Napnyugta után fél órával minden redőny lemegy, kivéve a terasz 1-et, mert arra jártok ki.
+
+**Iskolai kérdés (vasárnaptól csütörtökig, 21:00).** Pusht kaptok, hogy megy-e holnap Csepike iskolába. Ha rákoppintasz, megnyílik a válaszpanel. Ha igen, reggel 6:30-kor felmennek a gyerekszoba és a nappali redőnyei.
+Holnap: **{{ 'igen, 6:30-kor felmennek a redőnyök' if is_state('input_boolean.iskola_holnap','on') else 'nincs redőnyhúzás' }}**.
+
+**Riasztó-emlékeztető (21:30).** Ha valaki itthon van, de a riasztó nincs éjszakai vagy távol módban, kritikus pusht kapsz, amely a Ne zavarjanak módon is átjön. A gombjával éjszakai módba kapcsolhatod.
+Most: **{{ {'disarmed':'kikapcsolva','armed_night':'éjszakai mód','armed_home':'otthon mód','armed_away':'élesítve (távol)',
+'arming':'élesítés folyamatban','triggered':'RIASZT'}.get(states('alarm_control_panel.vaskut14_otthon'), states('alarm_control_panel.vaskut14_otthon')) }}**.
+
+## ☀️ Reggel
+**Ébresztő.** Hanggal vagy a dashboardon állítható. Ébredéskor pusht kapsz (Leállítás vagy Még 10 perc), a hálószoba redőnyei előbb félig, 3 perc múlva teljesen felmennek, fűtési szezonban pedig a termosztát 21 °C-ra áll.
+Most: **{% if is_state('input_boolean.ebreszto_aktiv','on') %}bekapcsolva, {{ states('input_datetime.ebreszto_ido')[:5] }} ({{ states('input_select.ebreszto_ismetles') | lower }}){% else %}kikapcsolva{% endif %}**.
+
+**Iskolai reggel (6:30).** Csak akkor mennek fel a redőnyök, ha előző este igent nyomtatok.
+
+## 🏠 Távozás és hazaérkezés
+**Elmentünk.** Ha mindketten elmentek, és a telefonotok a Wi-Firől is lecsatlakozott, pusht kaptok: élesítés és takarítás, csak takarítás, vagy semmi. Ha valami arra utal, hogy valaki otthon maradt (bekapcsolt Xbox, tévé vagy Apple TV, azóta nyílt bejárati ajtó), előbb figyelmeztet.
+
+**Hazaérkezés.** Ha takarítás közben hazaértek, a porszívó hazamegy, és ha a riasztó élesítve maradt, szól.
+
+## 🌡️ Nyári hővédelem
+Májustól szeptemberig, ha kint legalább 28 °C van, azokat a redőnyöket, amelyekre éppen süt a nap, 70%-ban lehúzza. Ha a nap továbbvonult, vagy kint 26 °C alá hűlt, visszahúzza őket. A „Hővédelem ma” kapcsolóval bármelyik napon bekapcsolható, éjfélkor pedig magától kikapcsol.
+Ma: **{{ 'bekapcsolva' if is_state('input_boolean.redony_hovedelem_ma','on') else 'automatikus' }}**.
+
+## 🎙️ Egyéb
+**Mycroft.** A „Hey Mycroft” után magyarul irányíthatod a redőnyöket, a klímákat, a fűtést, a porszívót, az ébresztőt és a riasztó élesítését. Hatástalanítani csak az Ajax appban vagy a kezelőn lehet.
+
+**Tanulás.** Vasárnap 18:00-kor összefoglalót kapsz a meg nem értett parancsokról. Újat csak a jóváhagyásod után tanul meg.
+
+**Mentés.** Minden éjjel 3:30-kor titkosított mentés készül a NAS-ra, és az utolsó 14 megmarad.
+"""
 
 popupok = [
     popup("#nappali", "Nappali", "mdi:sofa", [
@@ -163,6 +199,9 @@ popupok = [
                           "else 'Nem húzom fel a redőnyöket.' }}"},
         valasz_gomb("Igen, megy", "mdi:check-bold", "igen"),
         valasz_gomb("Nem", "mdi:close-thick", "nem"),
+    ]),
+    popup("#automatizmusok", "Automatizmusok", "mdi:robot-happy", [
+        {"type": "markdown", "content": AUTOMATIZMUSOK, "grid_options": FULL},
     ]),
     popup("#porszivo", "Porszívó", "mdi:robot-vacuum", [
         {"type": "tile", "entity": "vacuum.porszivo", "name": "Porszívó", "grid_options": FULL,
