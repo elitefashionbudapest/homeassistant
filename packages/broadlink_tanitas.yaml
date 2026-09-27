@@ -1,5 +1,11 @@
 # A Broadlink kódtanítás lépéseit (remote.learn_command) push értesítésben
 # továbbküldi Ádám telefonjára, mert a HA ezeket csak az értesítési panelre teszi.
+# Tanítás előtt az input_text.broadlink_tanitas_redony kapja meg a redőny nevét.
+input_text:
+  broadlink_tanitas_redony:
+    name: "Broadlink tanítás – aktuális redőny"
+    max: 60
+
 automation:
   - id: broadlink_tanitas_push
     alias: "Broadlink tanítás – értesítés a telefonra"
@@ -18,6 +24,7 @@ automation:
     actions:
       - variables:
           uzenet: "{{ trigger.notification.message }}"
+          redony: "{{ states('input_text.broadlink_tanitas_redony') }}"
           gomb: "{{ uzenet | regex_findall_index(\"'([^']+)'\") | upper }}"
           szoveg: >-
             {% if trigger.notification.notification_id == 'sweep_frequency' %}
@@ -29,7 +36,8 @@ automation:
             {% endif %}
       - action: notify.mobile_app_adam_2
         data:
-          title: "Redőny tanítása"
+          title: >-
+            {{ redony if redony not in ['', 'unknown', 'unavailable'] else 'Redőny tanítása' }} – {{ gomb }}
           message: "{{ szoveg }}"
           data:
             tag: broadlink_tanitas
