@@ -1,18 +1,18 @@
-# Iskolai reggel: iskolanap előtti estén (vasárnap–csütörtök) 20:30-kor push a szülőknek: „Holnap megy Domi iskolába?”
-# Csak az „Igen” válasz után húzza fel másnap 6:30-kor a gyerekszoba redőnyeit; „Nem” vagy válasz nélkül nem nyúl semmihez.
+# Iskolai reggel: iskolanap előtti estén (vasárnap–csütörtök) 21:00-kor push a szülőknek: „Holnap megy Csepike iskolába?”
+# Csak az „Igen” válasz után húzza fel másnap 6:30-kor a gyerekszoba és a nappali redőnyeit; „Nem” vagy válasz nélkül nem nyúl semmihez.
 
 input_boolean:
   iskola_holnap:
-    name: "Holnap iskola (6:30 redőny fel a gyerekszobában)"
+    name: "Holnap iskola (6:30 redőny fel a gyerekszobában és a nappaliban)"
     icon: mdi:school
 
 automation:
   - id: iskola_esti_kerdes
-    alias: "Iskola – esti kérdés (vasárnap–csütörtök 20:30)"
+    alias: "Iskola – esti kérdés (vasárnap–csütörtök 21:00)"
     mode: single
     triggers:
       - trigger: time
-        at: "20:30:00"
+        at: "21:00:00"
     conditions:
       - condition: time
         weekday: [sun, mon, tue, wed, thu]
@@ -26,7 +26,7 @@ automation:
             - action: "{{ repeat.item }}"
               data:
                 title: "🎒 Holnap iskola?"
-                message: "Holnap megy Domi iskolába? Ha igen, 6:30-kor felhúzom a gyerekszoba redőnyeit."
+                message: "Holnap megy Csepike iskolába? Ha igen, 6:30-kor felhúzom a gyerekszoba és a nappali redőnyeit."
                 data:
                   tag: iskola
                   actions:
@@ -61,11 +61,11 @@ automation:
         data:
           title: "🎒 Iskola"
           message: >-
-            {{ 'Rendben, holnap 6:30-kor felhúzom a gyerekszoba redőnyeit.' if trigger.id == 'igen'
-               else 'Rendben, holnap reggel nem nyúlok a gyerekszoba redőnyeihez.' }}
+            {{ 'Rendben, holnap 6:30-kor felhúzom a gyerekszoba és a nappali redőnyeit.' if trigger.id == 'igen'
+               else 'Rendben, holnap reggel nem nyúlok a redőnyökhöz.' }}
 
   - id: iskola_reggel
-    alias: "Iskola – 6:30 gyerekszoba redőnyök fel"
+    alias: "Iskola – 6:30 gyerekszoba és nappali redőnyök fel"
     mode: single
     triggers:
       - trigger: time
@@ -80,6 +80,10 @@ automation:
           entity_id:
             - cover.redony_gyerekszoba_1
             - cover.redony_gyerekszoba_2
+            - cover.redony_nappali_terasz_1
+            - cover.redony_nappali_terasz_2
+            - cover.redony_nappali_ablak_1
+            - cover.redony_nappali_ablak_2
       - action: input_boolean.turn_off
         target:
           entity_id: input_boolean.iskola_holnap
