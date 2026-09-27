@@ -289,6 +289,18 @@
           "out": "nappali_terasz_1"
         },
         {
+          "in": "első teraszt",
+          "out": "nappali_terasz_1"
+        },
+        {
+          "in": "terasz egyet",
+          "out": "nappali_terasz_1"
+        },
+        {
+          "in": "egyes teraszt",
+          "out": "nappali_terasz_1"
+        },
+        {
           "in": "terasz 2",
           "out": "nappali_terasz_2"
         },
@@ -309,6 +321,18 @@
           "out": "nappali_terasz_2"
         },
         {
+          "in": "második teraszt",
+          "out": "nappali_terasz_2"
+        },
+        {
+          "in": "terasz kettőt",
+          "out": "nappali_terasz_2"
+        },
+        {
+          "in": "kettes teraszt",
+          "out": "nappali_terasz_2"
+        },
+        {
           "in": "ablak 1",
           "out": "nappali_ablak_1"
         },
@@ -325,6 +349,18 @@
           "out": "nappali_ablak_1"
         },
         {
+          "in": "első ablakot",
+          "out": "nappali_ablak_1"
+        },
+        {
+          "in": "ablak egyet",
+          "out": "nappali_ablak_1"
+        },
+        {
+          "in": "egyes ablakot",
+          "out": "nappali_ablak_1"
+        },
+        {
           "in": "ablak 2",
           "out": "nappali_ablak_2"
         },
@@ -338,6 +374,18 @@
         },
         {
           "in": "második ablak",
+          "out": "nappali_ablak_2"
+        },
+        {
+          "in": "második ablakot",
+          "out": "nappali_ablak_2"
+        },
+        {
+          "in": "ablak kettőt",
+          "out": "nappali_ablak_2"
+        },
+        {
+          "in": "kettes ablakot",
           "out": "nappali_ablak_2"
         },
         {

@@ -28,10 +28,10 @@ SZOBA = {  # redőny/terület → area_id
     "furdo": ["fürdő", "fürdőben", "fürdőt", "fürdőszoba", "fürdőszobában", "fürdőszobát", "fürdőszobai"],
 }
 EGYEDI = {
-    "nappali_terasz_1": ["terasz 1", "terasz egy", "terasz egyes", "első terasz", "egyes terasz"],
-    "nappali_terasz_2": ["terasz 2", "terasz kettő", "terasz kettes", "második terasz", "kettes terasz"],
-    "nappali_ablak_1": ["ablak 1", "ablak egy", "ablak egyes", "első ablak"],
-    "nappali_ablak_2": ["ablak 2", "ablak kettő", "ablak kettes", "második ablak"],
+    "nappali_terasz_1": ["terasz 1", "terasz egy", "terasz egyes", "első terasz", "egyes terasz", "első teraszt", "terasz egyet", "egyes teraszt"],
+    "nappali_terasz_2": ["terasz 2", "terasz kettő", "terasz kettes", "második terasz", "kettes terasz", "második teraszt", "terasz kettőt", "kettes teraszt"],
+    "nappali_ablak_1": ["ablak 1", "ablak egy", "ablak egyes", "első ablak", "első ablakot", "ablak egyet", "egyes ablakot"],
+    "nappali_ablak_2": ["ablak 2", "ablak kettő", "ablak kettes", "második ablak", "második ablakot", "ablak kettőt", "kettes ablakot"],
     "haloszoba_1": ["hálószoba 1", "hálószoba egy", "háló 1", "háló egy"],
     "haloszoba_2": ["hálószoba 2", "hálószoba kettő", "háló 2", "háló kettő"],
     "gyerekszoba_1": ["gyerekszoba 1", "gyerekszoba egy"],
