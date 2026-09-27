@@ -1,4 +1,4 @@
-"""Generálja a packages/redonyok.yaml-t: 11 RF-redőny időalapú pozícióval.
+"""Generálja a packages/redonyok.yaml-t: 11 RF-redőny időalapú pozícióval, esti lehúzás, nyári hővédelem.
 
 Futtatás a repó gyökerében:  python tools/gen_redonyok.py .
 Utána: config check, majd template.reload + script.reload + input_number.reload + automation.reload.
@@ -35,6 +35,20 @@ REDONYOK = [
 QUEUE_SZUNET = 0.7  # a redony_rf_kuldes ennyit vár a jel után; a részleges mozgásnál ezt levonjuk
 FELHUZAS_RAHAGYAS = 1.0  # részleges állás előtt ennyivel tovább várunk a teljes felhúzásra
 ESTI_KIVETEL = {"nappali_terasz_1"}
+
+# Nyári hővédelem: ablaksorok tájolása (azimut, fok) – Ádám mérése, 2026-09-27.
+# A terasz 1 kimarad, mert arra járnak ki (ahogy az esti lehúzásból is).
+HOVEDELEM_OLDALAK = [
+    ("dk_terasz", "Terasz (DK, 150°)", 150, ["nappali_terasz_2"]),
+    ("dk_halo", "Hálószoba 2 (DK, 141°)", 141, ["haloszoba_2"]),
+    ("dny", "Nappali ablak 1, előszoba, konyha (DNy, 220°)", 220, ["nappali_ablak_1", "eloszoba", "konyha"]),
+    ("eny", "Nappali ablak 2, fürdő, gyerekszoba 1 (ÉNy, 320°)", 320, ["nappali_ablak_2", "furdo", "gyerekszoba_1"]),
+    ("ek", "Gyerekszoba 2, hálószoba 1 (ÉK, 49°)", 49, ["gyerekszoba_2", "haloszoba_1"]),
+]
+HOVEDELEM_KINT_MIN = 26      # °C – ennél melegebb kinti hőmérsékletnél árnyékol
+HOVEDELEM_SZOG = 60          # ha a nap ennél kisebb szögben süt az ablak felé
+HOVEDELEM_NAPMAGASSAG = 10   # ° – ennél alacsonyabb napnál nem árnyékol
+HOVEDELEM_POZICIO = 30       # % nyitva árnyékoláskor
 
 
 def kuld(slug: str, parancs: str) -> dict:
@@ -122,10 +136,47 @@ automation = [{
                  "target": {"entity_id": [f"cover.redony_{s}" for s, _, _ in REDONYOK if s not in ESTI_KIVETEL]}}],
 }]
 
+input_boolean = {"redony_hovedelem_aktiv": {"name": "Redőny hővédelem", "icon": "mdi:weather-sunny-alert"}}
+for kulcs, nev, _, _ in HOVEDELEM_OLDALAK:
+    input_boolean[f"redony_hovedelem_{kulcs}"] = {"name": f"Hővédelem árnyékol – {nev}", "icon": "mdi:sun-angle"}
+
+automation.append({
+    "id": "redonyok_hovedelem",
+    "alias": "Redőnyök – nyári hővédelem (napirány szerint)",
+    "description": "Ha kint meleg van és a nap egy ablaksorra süt, azokat a redőnyöket részben leengedi; "
+                   "ha a nap napközben elvonul, visszahúzza. Naplemente után nem húz fel semmit.",
+    "mode": "single",
+    "triggers": [{"trigger": "time_pattern", "minutes": "/5"}],
+    "conditions": [{"condition": "state", "entity_id": "input_boolean.redony_hovedelem_aktiv", "state": "on"}],
+    "actions": [{"repeat": {
+        "for_each": [{"flag": f"input_boolean.redony_hovedelem_{k}", "azimut": az,
+                      "coverek": [f"cover.redony_{s}" for s in cs]} for k, _, az, cs in HOVEDELEM_OLDALAK],
+        "sequence": [
+            {"variables": {
+                "nap_az": "{{ state_attr('sun.sun', 'azimuth') | float(0) }}",
+                "nap_mag": "{{ state_attr('sun.sun', 'elevation') | float(-90) }}",
+                "kint": "{{ state_attr('weather.forecast_otthon', 'temperature') | float(0) }}",
+                "szog": "{{ (((nap_az - repeat.item.azimut + 540) % 360) - 180) | abs }}",
+                "napos": "{{ nap_mag >= " + str(HOVEDELEM_NAPMAGASSAG) + " and szog <= " + str(HOVEDELEM_SZOG) + " }}",
+                "meleg": "{{ kint >= " + str(HOVEDELEM_KINT_MIN) + " }}",
+                "arnyekol": "{{ is_state(repeat.item.flag, 'on') }}"}},
+            {"choose": [
+                {"conditions": "{{ napos and meleg and not arnyekol }}", "sequence": [
+                    {"action": "cover.set_cover_position", "target": {"entity_id": "{{ repeat.item.coverek }}"},
+                     "data": {"position": HOVEDELEM_POZICIO}},
+                    {"action": "input_boolean.turn_on", "target": {"entity_id": "{{ repeat.item.flag }}"}}]},
+                {"conditions": "{{ arnyekol and not napos }}", "sequence": [
+                    {"if": "{{ nap_mag > 5 }}", "then": [
+                        {"action": "cover.open_cover", "target": {"entity_id": "{{ repeat.item.coverek }}"}}]},
+                    {"action": "input_boolean.turn_off", "target": {"entity_id": "{{ repeat.item.flag }}"}}]},
+            ]},
+        ]}}],
+})
+
 fej = ("# Redőnyök (Broadlink RF) időalapú pozícióval, esti lehúzással.\n"
        "# GENERÁLT FÁJL – a forrás a tools/gen_redonyok.py (futtatás: python tools/gen_redonyok.py .).\n"
        "# A kódok a Pi-n vannak: .storage/broadlink_remote_*_codes (remote.learn_command, eszköz = slug).\n")
-tartalom = {"input_number": input_number, "template": [{"cover": covers}], "script": scripts, "automation": automation}
+tartalom = {"input_number": input_number, "input_boolean": input_boolean, "template": [{"cover": covers}], "script": scripts, "automation": automation}
 (REPO / "packages" / "redonyok.yaml").write_text(fej + json.dumps(tartalom, ensure_ascii=False, indent=2) + "\n",
                                                 encoding="utf-8", newline="\n")
 print(f"kész: {len(covers)} redőny, {len(scripts)} szkript")

@@ -103,6 +103,32 @@
       "icon": "mdi:window-shutter-settings"
     }
   },
+  "input_boolean": {
+    "redony_hovedelem_aktiv": {
+      "name": "Redőny hővédelem",
+      "icon": "mdi:weather-sunny-alert"
+    },
+    "redony_hovedelem_dk_terasz": {
+      "name": "Hővédelem árnyékol – Terasz (DK, 150°)",
+      "icon": "mdi:sun-angle"
+    },
+    "redony_hovedelem_dk_halo": {
+      "name": "Hővédelem árnyékol – Hálószoba 2 (DK, 141°)",
+      "icon": "mdi:sun-angle"
+    },
+    "redony_hovedelem_dny": {
+      "name": "Hővédelem árnyékol – Nappali ablak 1, előszoba, konyha (DNy, 220°)",
+      "icon": "mdi:sun-angle"
+    },
+    "redony_hovedelem_eny": {
+      "name": "Hővédelem árnyékol – Nappali ablak 2, fürdő, gyerekszoba 1 (ÉNy, 320°)",
+      "icon": "mdi:sun-angle"
+    },
+    "redony_hovedelem_ek": {
+      "name": "Hővédelem árnyékol – Gyerekszoba 2, hálószoba 1 (ÉK, 49°)",
+      "icon": "mdi:sun-angle"
+    }
+  },
   "template": [
     {
       "cover": [
@@ -2210,6 +2236,132 @@
               "cover.redony_gyerekszoba_2",
               "cover.redony_haloszoba_1",
               "cover.redony_haloszoba_2"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "redonyok_hovedelem",
+      "alias": "Redőnyök – nyári hővédelem (napirány szerint)",
+      "description": "Ha kint meleg van és a nap egy ablaksorra süt, azokat a redőnyöket részben leengedi; ha a nap napközben elvonul, visszahúzza. Naplemente után nem húz fel semmit.",
+      "mode": "single",
+      "triggers": [
+        {
+          "trigger": "time_pattern",
+          "minutes": "/5"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "state",
+          "entity_id": "input_boolean.redony_hovedelem_aktiv",
+          "state": "on"
+        }
+      ],
+      "actions": [
+        {
+          "repeat": {
+            "for_each": [
+              {
+                "flag": "input_boolean.redony_hovedelem_dk_terasz",
+                "azimut": 150,
+                "coverek": [
+                  "cover.redony_nappali_terasz_2"
+                ]
+              },
+              {
+                "flag": "input_boolean.redony_hovedelem_dk_halo",
+                "azimut": 141,
+                "coverek": [
+                  "cover.redony_haloszoba_2"
+                ]
+              },
+              {
+                "flag": "input_boolean.redony_hovedelem_dny",
+                "azimut": 220,
+                "coverek": [
+                  "cover.redony_nappali_ablak_1",
+                  "cover.redony_eloszoba",
+                  "cover.redony_konyha"
+                ]
+              },
+              {
+                "flag": "input_boolean.redony_hovedelem_eny",
+                "azimut": 320,
+                "coverek": [
+                  "cover.redony_nappali_ablak_2",
+                  "cover.redony_furdo",
+                  "cover.redony_gyerekszoba_1"
+                ]
+              },
+              {
+                "flag": "input_boolean.redony_hovedelem_ek",
+                "azimut": 49,
+                "coverek": [
+                  "cover.redony_gyerekszoba_2",
+                  "cover.redony_haloszoba_1"
+                ]
+              }
+            ],
+            "sequence": [
+              {
+                "variables": {
+                  "nap_az": "{{ state_attr('sun.sun', 'azimuth') | float(0) }}",
+                  "nap_mag": "{{ state_attr('sun.sun', 'elevation') | float(-90) }}",
+                  "kint": "{{ state_attr('weather.forecast_otthon', 'temperature') | float(0) }}",
+                  "szog": "{{ (((nap_az - repeat.item.azimut + 540) % 360) - 180) | abs }}",
+                  "napos": "{{ nap_mag >= 10 and szog <= 60 }}",
+                  "meleg": "{{ kint >= 26 }}",
+                  "arnyekol": "{{ is_state(repeat.item.flag, 'on') }}"
+                }
+              },
+              {
+                "choose": [
+                  {
+                    "conditions": "{{ napos and meleg and not arnyekol }}",
+                    "sequence": [
+                      {
+                        "action": "cover.set_cover_position",
+                        "target": {
+                          "entity_id": "{{ repeat.item.coverek }}"
+                        },
+                        "data": {
+                          "position": 30
+                        }
+                      },
+                      {
+                        "action": "input_boolean.turn_on",
+                        "target": {
+                          "entity_id": "{{ repeat.item.flag }}"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "conditions": "{{ arnyekol and not napos }}",
+                    "sequence": [
+                      {
+                        "if": "{{ nap_mag > 5 }}",
+                        "then": [
+                          {
+                            "action": "cover.open_cover",
+                            "target": {
+                              "entity_id": "{{ repeat.item.coverek }}"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "action": "input_boolean.turn_off",
+                        "target": {
+                          "entity_id": "{{ repeat.item.flag }}"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
             ]
           }
         }
