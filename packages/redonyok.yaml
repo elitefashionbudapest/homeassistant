@@ -400,6 +400,9 @@ script:
         data:
           device: "{{ eszkoz }}"
           command: "{{ parancs }}"
+      # szünet a következő jel előtt, hogy a Broadlink ne nyelje el
+      - delay:
+          milliseconds: 700
 
   redonyok_mind_fel:
     alias: "Minden redőny fel"
