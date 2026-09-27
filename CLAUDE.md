@@ -13,6 +13,8 @@ Ez a repó a Pi `/config` (= `/homeassistant`) mappája, a `main` ágon. A telep
   Kivétel: a magyar hangparancsok mondatmintái a `custom_sentences/hu/` mappába kerülnek, mert a HA onnan olvassa.
   Ezt és a `packages/hangvezerles.yaml`-t a `tools/gen_hang.py` generálja; kézzel ne szerkeszd őket, hanem a generátort
   módosítsd, és futtasd: `python tools/gen_hang.py .` Utána: `conversation.reload` és `intent_script.reload`.
+- Közös Jinja-makrók a `custom_templates/` mappában vannak (a HA onnan olvassa), pl. `ido.jinja` = magyar
+  időkifejezés → „HH:MM”. Módosítás után: `homeassistant.reload_custom_templates`.
 - A `packages/redonyok.yaml`-t a `tools/gen_redonyok.py` generálja (redőnyök, futásidők, pozíció, esti lehúzás).
   Módosítás után: `python tools/gen_redonyok.py .`, majd `template.reload`, `script.reload`, `input_number.reload`,
   `automation.reload`.

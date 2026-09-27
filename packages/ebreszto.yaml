@@ -1,0 +1,203 @@
+# Ébresztő a hálószobába: hanggal („állíts be egy ébresztőt fél hétre”), a dashboardról vagy a Claude-dal állítható.
+# Ébredéskor: push értesítés Ádámnak (Leállítás / Még 10 perc gombbal), a hálószoba redőnyei előbb félig,
+# 3 perc múlva teljesen fel, fűtési szezonban (okt–ápr) a termosztát 21 °C-ra.
+# A hálószobai Home Assistant Voice megérkezése után ide jön a zene / rádió lejátszása is.
+# Az időértelmező közös: custom_templates/ido.jinja (ido_ertelmez makró).
+
+input_datetime:
+  ebreszto_ido:
+    name: "Ébresztés időpontja"
+    has_date: false
+    has_time: true
+    icon: mdi:alarm
+
+input_boolean:
+  ebreszto_aktiv:
+    name: "Ébresztő bekapcsolva"
+    icon: mdi:alarm-check
+  ebreszto_szol:
+    name: "Ébresztő szól"
+    icon: mdi:alarm-bell
+
+input_select:
+  ebreszto_ismetles:
+    name: "Ébresztő ismétlése"
+    icon: mdi:calendar-sync
+    options:
+      - "Egyszer"
+      - "Hétköznap"
+      - "Minden nap"
+
+timer:
+  ebreszto_szundi:
+    name: "Ébresztő szundi"
+    duration: "00:10:00"
+    icon: mdi:alarm-snooze
+
+script:
+  ebreszto_beallit:
+    alias: "Ébresztő beállítása"
+    icon: mdi:alarm-plus
+    description: >-
+      Beállítja és bekapcsolja a hálószobai ébresztőt. Az időpontot magyarul vagy számmal is
+      megadhatod (pl. „06:30”, „fél hét”, „negyed nyolc”). Az ismétlés: Egyszer, Hétköznap vagy Minden nap.
+    mode: single
+    fields:
+      ido:
+        description: "Az ébresztés ideje, pl. 06:30 vagy „fél hét”"
+        required: true
+        selector:
+          text:
+      ismetles:
+        description: "Egyszer, Hétköznap vagy Minden nap (ha nincs megadva: Egyszer)"
+        selector:
+          select:
+            options: ["Egyszer", "Hétköznap", "Minden nap"]
+    sequence:
+      - variables:
+          hhmm: >-
+            {% from 'ido.jinja' import ido_ertelmez %}{{ ido_ertelmez(ido | string) }}
+          ism: >-
+            {% set t = (ido | string | lower) ~ ' ' ~ (ismetles | default('') | string | lower) %}
+            {{ 'Hétköznap' if 'hétköznap' in t else ('Minden nap' if ('minden nap' in t or 'naponta' in t) else 'Egyszer') }}
+      - if: "{{ hhmm == 'HIBA' }}"
+        then:
+          - stop: "Nem értem az időpontot"
+            error: true
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.ebreszto_ido
+        data:
+          time: "{{ hhmm }}:00"
+      - action: input_select.select_option
+        target:
+          entity_id: input_select.ebreszto_ismetles
+        data:
+          option: "{{ ism }}"
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.ebreszto_aktiv
+
+  ebreszto_leallit:
+    alias: "Ébresztő leállítása"
+    icon: mdi:alarm-off
+    description: "Leállítja a szóló ébresztőt (és a szundit). A beállított ébresztőt nem kapcsolja ki."
+    mode: single
+    sequence:
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.ebreszto_szol
+      - action: timer.cancel
+        target:
+          entity_id: timer.ebreszto_szundi
+
+  ebreszto_szundi:
+    alias: "Ébresztő szundi (10 perc)"
+    icon: mdi:alarm-snooze
+    mode: single
+    sequence:
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.ebreszto_szol
+      - action: timer.start
+        target:
+          entity_id: timer.ebreszto_szundi
+
+automation:
+  - id: ebreszto_szol
+    alias: "Ébresztő – ébresztés"
+    mode: queued
+    max: 3
+    triggers:
+      - trigger: time
+        at: input_datetime.ebreszto_ido
+        id: ido
+      - trigger: event
+        event_type: timer.finished
+        event_data:
+          entity_id: timer.ebreszto_szundi
+        id: szundi
+    conditions:
+      - condition: or
+        conditions:
+          - condition: trigger
+            id: szundi
+          - condition: and
+            conditions:
+              - condition: state
+                entity_id: input_boolean.ebreszto_aktiv
+                state: "on"
+              - condition: template
+                value_template: >-
+                  {{ not is_state('input_select.ebreszto_ismetles', 'Hétköznap') or now().weekday() < 5 }}
+    actions:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.ebreszto_szol
+      - action: notify.mobile_app_adam_2
+        data:
+          title: "⏰ Ébresztő"
+          message: >-
+            {{ 'Jó reggelt! ' if trigger.id == 'ido' else 'Letelt a szundi. ' }}Kint {{ state_attr('weather.forecast_otthon', 'temperature') | round(0) | int }} fok van.
+          data:
+            tag: ebreszto
+            push:
+              interruption-level: time-sensitive
+              sound:
+                name: default
+                critical: 0
+                volume: 1.0
+            actions:
+              - action: EBRESZTO_STOP
+                title: "Leállítás"
+              - action: EBRESZTO_SZUNDI
+                title: "Még 10 perc"
+      - if: "{{ trigger.id == 'ido' }}"
+        then:
+          - if: "{{ is_state('input_select.ebreszto_ismetles', 'Egyszer') }}"
+            then:
+              - action: input_boolean.turn_off
+                target:
+                  entity_id: input_boolean.ebreszto_aktiv
+          - if: "{{ now().month >= 10 or now().month <= 4 }}"
+            then:
+              - action: climate.set_temperature
+                target:
+                  entity_id: climate.termosztat
+                data:
+                  temperature: 21
+          - action: cover.set_cover_position
+            target:
+              entity_id:
+                - cover.redony_haloszoba_1
+                - cover.redony_haloszoba_2
+            data:
+              position: 50
+          - delay: "00:03:00"
+          - action: cover.open_cover
+            target:
+              entity_id:
+                - cover.redony_haloszoba_1
+                - cover.redony_haloszoba_2
+      - wait_template: "{{ is_state('input_boolean.ebreszto_szol', 'off') }}"
+        timeout: "00:15:00"
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.ebreszto_szol
+
+  - id: ebreszto_ertesites_gomb
+    alias: "Ébresztő – értesítés gombjai (Leállítás / Még 10 perc)"
+    mode: queued
+    triggers:
+      - trigger: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: EBRESZTO_STOP
+        id: stop
+      - trigger: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: EBRESZTO_SZUNDI
+        id: szundi
+    actions:
+      - action: "script.{{ 'ebreszto_leallit' if trigger.id == 'stop' else 'ebreszto_szundi' }}"

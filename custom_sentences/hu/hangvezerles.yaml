@@ -13,7 +13,9 @@
     "riaszto": "(riasztót|riasztó|riasztórendszert|ajaxot)",
     "fokra": "(fokra|fok|fokosra|celsius fokra)",
     "mozgat": "(engedd|húzd|eresszd|ereszd|állítsd|tedd|nyisd|engedje|húzza|állítsa) [le|fel|ki|be]",
-    "szazalekra": "(százalékra|százalékosra|%-ra|%-re|%)"
+    "szazalekra": "(százalékra|százalékosra|%-ra|%-re|%)",
+    "ebreszt": "((állíts|állítsd|állítsál|tegyél|rakj|csinálj) [be] [egy] (ébresztőt|ébresztést)|ébressz fel|ébressz|keltsél fel|kelts fel|kelts|keltsél|ébresztő|ébresztés) [holnap] [reggel]",
+    "ebreszto": "(ébresztőt|ébresztő|ébresztést|riasztást reggel)"
   },
   "lists": {
     "irany": {
@@ -835,6 +837,9 @@
         "from": 0,
         "to": 100
       }
+    },
+    "ido": {
+      "wildcard": true
     }
   },
   "intents": {
@@ -853,6 +858,45 @@
         {
           "sentences": [
             "[<kerlek>] ({irany}; [a |az ][nappali ]{egyedi} [<redonyok>]) [<kerlek>]"
+          ]
+        }
+      ]
+    },
+    "EbresztoBeallit": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] <ebreszt> {ido}"
+          ]
+        }
+      ]
+    },
+    "EbresztoKi": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] (kapcsold ki|töröld|kapcsold le|állítsd le|állítsd meg|szüntesd meg|kapcsold ki a holnapi) [az |a ]<ebreszto> [<kerlek>]",
+            "[<kerlek>] (elég|jó|felkeltem|fent vagyok|állj|stop) [<kerlek>]"
+          ]
+        }
+      ]
+    },
+    "EbresztoSzundi": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] [még] (tíz|10) perc[et] [<kerlek>]",
+            "[<kerlek>] (szundi|szundizz|szundiztass) [<kerlek>]"
+          ]
+        }
+      ]
+    },
+    "EbresztoMikor": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] mikor (szól|csörög|csörög|ébresztesz|keltesz|van) [az |a ][<ebreszto>] [<kerlek>]",
+            "[<kerlek>] (be van állítva|van beállítva) [az |a ]<ebreszto> [<kerlek>]"
           ]
         }
       ]

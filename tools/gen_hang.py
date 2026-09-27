@@ -77,12 +77,15 @@ sentences = {
         "fokra": "(fokra|fok|fokosra|celsius fokra)",
         "mozgat": "(engedd|húzd|eresszd|ereszd|állítsd|tedd|nyisd|engedje|húzza|állítsa) [le|fel|ki|be]",
         "szazalekra": "(százalékra|százalékosra|%-ra|%-re|%)",
+        "ebreszt": "((állíts|állítsd|állítsál|tegyél|rakj|csinálj) [be] [egy] (ébresztőt|ébresztést)|ébressz fel|ébressz|keltsél fel|kelts fel|kelts|keltsél|ébresztő|ébresztés) [holnap] [reggel]",
+        "ebreszto": "(ébresztőt|ébresztő|ébresztést|riasztást reggel)",
     },
     "lists": {
         "irany": lst(IRANY), "szoba": lst(SZOBA), "egyedi": lst(EGYEDI), "psz": lst(PORSZIVO),
         "klima": lst(KLIMA), "kapcs": lst(KAPCS), "mod": lst(MOD), "homero": lst(HOMERO),
         "fok": {"range": {"from": 16, "to": 30}},
         "szazalek": {"range": {"from": 0, "to": 100}},
+        "ido": {"wildcard": True},
     },
     "intents": {
         "RedonySzoba": {"data": [{"sentences": [
@@ -92,6 +95,15 @@ sentences = {
         "RedonyEgyedi": {"data": [{"sentences": [
             "[<kerlek>] ({irany}; [a |az ][nappali ]{egyedi} [<redonyok>]) [<kerlek>]",
         ]}]},
+        "EbresztoBeallit": {"data": [{"sentences": ["[<kerlek>] <ebreszt> {ido}"]}]},
+        "EbresztoKi": {"data": [{"sentences": [
+            "[<kerlek>] (kapcsold ki|töröld|kapcsold le|állítsd le|állítsd meg|szüntesd meg|kapcsold ki a holnapi) [az |a ]<ebreszto> [<kerlek>]",
+            "[<kerlek>] (elég|jó|felkeltem|fent vagyok|állj|stop) [<kerlek>]"]}]},
+        "EbresztoSzundi": {"data": [{"sentences": [
+            "[<kerlek>] [még] (tíz|10) perc[et] [<kerlek>]", "[<kerlek>] (szundi|szundizz|szundiztass) [<kerlek>]"]}]},
+        "EbresztoMikor": {"data": [{"sentences": [
+            "[<kerlek>] mikor (szól|csörög|csörög|ébresztesz|keltesz|van) [az |a ][<ebreszto>] [<kerlek>]",
+            "[<kerlek>] (be van állítva|van beállítva) [az |a ]<ebreszto> [<kerlek>]"]}]},
         "RedonyPozicioSzoba": {"data": [
             {"sentences": ["[<kerlek>] (<mozgat>; [a |az ]<redonyok>; [a |az ]{szoba}; félig) [<kerlek>]",
                            "[<kerlek>] (<mozgat>; [a |az ]{szoba} <redonyok>; félig) [<kerlek>]"],
@@ -192,6 +204,27 @@ intent_script = {
     "RedonyEgyedi": {"async_action": True,
                      "action": [{"action": COVER_ACT, "target": {"entity_id": "cover.redony_{{ egyedi }}"}}],
                      "speech": {"text": RNEV + IGE + " {{ rnev[egyedi] }} redőnyt."}},
+    "EbresztoBeallit": {
+        "action": [{"action": "script.ebreszto_beallit", "data": {"ido": "{{ ido }}"}, "continue_on_error": True}],
+        "speech": {"text": ("{% from 'ido.jinja' import ido_ertelmez %}{% set h = ido_ertelmez(ido) %}"
+                            "{% if h == 'HIBA' %}Nem értettem az időpontot. Mondd például így: fél hétre, vagy hat harmincra."
+                            "{% else %}{% set t = ido | lower %}Rendben, az ébresztő {{ h | regex_replace('^0', '') }}-kor szól"
+                            "{{ ' minden hétköznap' if 'hétköznap' in t else (' minden nap' if ('minden nap' in t or 'naponta' in t) else '') }}.{% endif %}")}},
+    "EbresztoKi": {
+        "action": [{"choose": [
+            {"conditions": "{{ is_state('input_boolean.ebreszto_szol', 'on') or is_state('timer.ebreszto_szundi', 'active') }}",
+             "sequence": [{"action": "script.ebreszto_leallit"}]}],
+            "default": [{"action": "input_boolean.turn_off", "target": {"entity_id": "input_boolean.ebreszto_aktiv"}}]}],
+        "speech": {"text": ("{{ 'Leállítottam az ébresztőt. Jó reggelt!' if is_state('input_boolean.ebreszto_szol', 'on') "
+                            "or is_state('timer.ebreszto_szundi', 'active') else 'Kikapcsoltam az ébresztőt.' }}")}},
+    "EbresztoSzundi": {
+        "action": [{"action": "script.ebreszto_szundi"}],
+        "speech": {"text": "Rendben, tíz perc múlva újra szólok."}},
+    "EbresztoMikor": {
+        "speech": {"text": ("{% if is_state('input_boolean.ebreszto_aktiv', 'on') %}Az ébresztő "
+                            "{{ states('input_datetime.ebreszto_ido')[:5] | regex_replace('^0', '') }}-kor szól"
+                            "{{ {'Hétköznap': ' minden hétköznap', 'Minden nap': ' minden nap'}.get(states('input_select.ebreszto_ismetles'), '') }}."
+                            "{% else %}Most nincs beállítva ébresztő.{% endif %}")}},
     "RedonyPozicioSzoba": {"async_action": True,
                            "action": [{"action": "cover.set_cover_position", "target": {"area_id": "{{ szoba }}"},
                                        "data": {"position": "{{ szazalek | int }}"}}],

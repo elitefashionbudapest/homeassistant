@@ -30,6 +30,62 @@
         "text": "{% set rnev = {'nappali_terasz_1':'a nappali terasz 1','nappali_terasz_2':'a nappali terasz 2','nappali_ablak_1':'a nappali ablak 1','nappali_ablak_2':'a nappali ablak 2','haloszoba_1':'a hálószoba 1','haloszoba_2':'a hálószoba 2','gyerekszoba_1':'a gyerekszoba 1','gyerekszoba_2':'a gyerekszoba 2'} %}{{ {'fel':'Felhúzom','le':'Leengedem'}.get(irany, 'Megállítom') }} {{ rnev[egyedi] }} redőnyt."
       }
     },
+    "EbresztoBeallit": {
+      "action": [
+        {
+          "action": "script.ebreszto_beallit",
+          "data": {
+            "ido": "{{ ido }}"
+          },
+          "continue_on_error": true
+        }
+      ],
+      "speech": {
+        "text": "{% from 'ido.jinja' import ido_ertelmez %}{% set h = ido_ertelmez(ido) %}{% if h == 'HIBA' %}Nem értettem az időpontot. Mondd például így: fél hétre, vagy hat harmincra.{% else %}{% set t = ido | lower %}Rendben, az ébresztő {{ h | regex_replace('^0', '') }}-kor szól{{ ' minden hétköznap' if 'hétköznap' in t else (' minden nap' if ('minden nap' in t or 'naponta' in t) else '') }}.{% endif %}"
+      }
+    },
+    "EbresztoKi": {
+      "action": [
+        {
+          "choose": [
+            {
+              "conditions": "{{ is_state('input_boolean.ebreszto_szol', 'on') or is_state('timer.ebreszto_szundi', 'active') }}",
+              "sequence": [
+                {
+                  "action": "script.ebreszto_leallit"
+                }
+              ]
+            }
+          ],
+          "default": [
+            {
+              "action": "input_boolean.turn_off",
+              "target": {
+                "entity_id": "input_boolean.ebreszto_aktiv"
+              }
+            }
+          ]
+        }
+      ],
+      "speech": {
+        "text": "{{ 'Leállítottam az ébresztőt. Jó reggelt!' if is_state('input_boolean.ebreszto_szol', 'on') or is_state('timer.ebreszto_szundi', 'active') else 'Kikapcsoltam az ébresztőt.' }}"
+      }
+    },
+    "EbresztoSzundi": {
+      "action": [
+        {
+          "action": "script.ebreszto_szundi"
+        }
+      ],
+      "speech": {
+        "text": "Rendben, tíz perc múlva újra szólok."
+      }
+    },
+    "EbresztoMikor": {
+      "speech": {
+        "text": "{% if is_state('input_boolean.ebreszto_aktiv', 'on') %}Az ébresztő {{ states('input_datetime.ebreszto_ido')[:5] | regex_replace('^0', '') }}-kor szól{{ {'Hétköznap': ' minden hétköznap', 'Minden nap': ' minden nap'}.get(states('input_select.ebreszto_ismetles'), '') }}.{% else %}Most nincs beállítva ébresztő.{% endif %}"
+      }
+    },
     "RedonyPozicioSzoba": {
       "async_action": true,
       "action": [

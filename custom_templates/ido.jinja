@@ -1,0 +1,22 @@
+{#- Magyar időkifejezés → „HH:MM” (vagy „HIBA”).
+    Példák: „6:30-ra”, „fél hétre” (06:30), „negyed nyolcra” (07:15), „háromnegyed hétre” (06:45),
+    „hét órára”, „hatkor”, „hat harmincra”. Használat: {% from 'ido.jinja' import ido_ertelmez %} -#}
+{%- macro ido_ertelmez(ido) -%}
+{%- set ns = namespace(t=' ' ~ (ido | lower) ~ ' ') -%}
+{#- az ismétlést jelölő szavak ne zavarják az óraszámot (a „hétköznap” „hét” része 7 lenne) -#}
+{%- set ns.t = ns.t | regex_replace('hétköznap\w*|hétvég\w*|minden ?nap\w*|naponta', ' ') -%}
+{%- set ns.t = ns.t | regex_replace('háromnegyed', ' HN ') | regex_replace('negyed', ' NQ ') | regex_replace('fél', ' FL ') -%}
+{%- set ns.t = ns.t | regex_replace('negyvenöt', ' 45 ') | regex_replace('harminc', ' 30 ') | regex_replace('tizenöt', ' 15 ') -%}
+{%- for w, n in [('tizenkettő','12'),('tizenkét','12'),('tizenegy','11'),('tíz','10'),('kilenc','9'),('nyolc','8'),('hét','7'),('hat','6'),('öt','5'),('négy','4'),('három','3'),('kettő','2'),('két','2'),('egy','1')] -%}
+  {%- set ns.t = ns.t | regex_replace(w, ' ' ~ n ~ ' ') -%}
+{%- endfor -%}
+{%- set a = ns.t | regex_findall('(HN|NQ|FL)\\s*(\\d{1,2})') -%}
+{%- set b = ns.t | regex_findall('(\\d{1,2})\\s*[:.]?\\s*(\\d{2})\\b') -%}
+{%- set c = ns.t | regex_findall('(\\d{1,2})') -%}
+{%- if a -%}{%- set h = (a[0][1] | int) - 1 -%}{%- set m = {'HN': 45, 'NQ': 15, 'FL': 30}[a[0][0]] -%}
+{%- elif b -%}{%- set h = b[0][0] | int -%}{%- set m = b[0][1] | int -%}
+{%- elif c -%}{%- set h = c[0] | int -%}{%- set m = 0 -%}
+{%- else -%}{%- set h = -1 -%}{%- set m = 0 -%}{%- endif -%}
+{%- if h == 0 and a -%}{%- set h = 12 -%}{%- endif -%}
+{%- if 0 <= h <= 23 and 0 <= m <= 59 -%}{{ '%02d:%02d' | format(h, m) }}{%- else -%}HIBA{%- endif -%}
+{%- endmacro -%}
