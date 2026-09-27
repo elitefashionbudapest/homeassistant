@@ -480,3 +480,27 @@ script:
       - action: cover.close_cover
         target:
           entity_id: cover.redony_haloszoba_2
+
+# Esti lehúzás: napnyugta után 30 perccel minden redőny le, kivéve a nappali terasz 1-et.
+automation:
+  - id: redonyok_esti_lehuzas
+    alias: "Redőnyök – esti lehúzás (napnyugta + 30 perc)"
+    mode: single
+    triggers:
+      - trigger: sun
+        event: sunset
+        offset: "00:30:00"
+    actions:
+      - action: cover.close_cover
+        target:
+          entity_id:
+            - cover.redony_nappali_terasz_2
+            - cover.redony_nappali_ablak_1
+            - cover.redony_nappali_ablak_2
+            - cover.redony_konyha
+            - cover.redony_eloszoba
+            - cover.redony_furdo
+            - cover.redony_gyerekszoba_1
+            - cover.redony_gyerekszoba_2
+            - cover.redony_haloszoba_1
+            - cover.redony_haloszoba_2
