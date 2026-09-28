@@ -154,6 +154,10 @@ vagy hanggal kértétek (például: „Hey Mycroft, holnap ébreszd Csepikét f�
 ## 🏠 Távozás és hazaérkezés
 **Elmentünk.** Ha mindketten elmentek, és a telefonotok a Wi-Firől is lecsatlakozott, pusht kaptok: élesítés és takarítás, csak takarítás, vagy semmi. Ha valami arra utal, hogy valaki otthon maradt (bekapcsolt Xbox, tévé vagy Apple TV, azóta nyílt bejárati ajtó), előbb figyelmeztet.
 
+**Nappali takarítás.** A porszívó magától nem jut le, ezért a nappali parancsra előbb kimossa a felmosót, és a nappali Voice szól, \
+hogy le lehet vinni. Lent porszívóz és felmos, a szőnyeget erős szívással és mélytisztítással takarítja. \
+Ha közben elakad vagy lemerülőben van, a Voice szól, a végén pedig kéri, hogy vigyétek vissza a dokkolóra.
+
 **Hazaérkezés.** Ha takarítás közben hazaértek, a porszívó hazamegy, és ha a riasztó élesítve maradt, szól.
 
 ## 🌡️ Nyári hővédelem
