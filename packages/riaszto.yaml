@@ -1,6 +1,8 @@
 # Ajax riasztó (alarm_control_panel.vaskut14_otthon) – élesítés hanggal és gombbal.
 # Szándékosan csak élesítő szkriptek vannak: hatástalanítani csak az Ajax appban vagy a kezelőn lehet,
 # ezért a riasztópanel maga nincs kitéve a hangasszisztensnek, csak ezek a szkriptek.
+# Egyetlen kivétel Ádám kérésére: az iskolai reggel (packages/iskola.yaml) 6:30-kor kikapcsolja az éjszakai módot,
+# de csak éjszakai módból, és csak ha valamelyik szülő itthon van.
 script:
   riaszto_ejszakai:
     alias: "Riasztó – éjszakai mód"

@@ -1,5 +1,6 @@
 # Iskolai reggel: iskolanap előtti estén (vasárnap–csütörtök) 21:00-kor push a szülőknek: „Holnap megy Csepike iskolába?”
-# Csak az „Igen” válasz után húzza fel másnap 6:30-kor az összes redőnyt, a hálószobaiak kivételével; „Nem” vagy válasz nélkül nem nyúl semmihez.
+# Csak az „Igen” válasz után húzza fel másnap 6:30-kor az összes redőnyt, a hálószobaiak kivételével, és kikapcsolja
+# a riasztó éjszakai módját; „Nem” vagy válasz nélkül nem nyúl semmihez.
 
 input_boolean:
   iskola_holnap:
@@ -92,7 +93,7 @@ automation:
           valasz: "{{ trigger.id }}"
 
   - id: iskola_reggel
-    alias: "Iskola – 6:30 redőnyök fel (a hálószoba kivételével)"
+    alias: "Iskola – 6:30 éjszakai mód ki, redőnyök fel (a hálószoba kivételével)"
     mode: single
     triggers:
       - trigger: time
@@ -102,6 +103,32 @@ automation:
         entity_id: input_boolean.iskola_holnap
         state: "on"
     actions:
+      # Ádám kérése: az iskolai reggelen az éjszakai mód is kikapcsol. Csak éjszakai módból (a teljes, távol
+      # élesítéshez sosem nyúl), és csak ha a GPS szerint valamelyik szülő itthon van.
+      - if:
+          - condition: state
+            entity_id: alarm_control_panel.vaskut14_otthon
+            state: armed_night
+          - condition: or
+            conditions:
+              - condition: state
+                entity_id: person.vaskut14
+                state: home
+              - condition: state
+                entity_id: person.cerike
+                state: home
+        then:
+          - action: alarm_control_panel.alarm_disarm
+            target:
+              entity_id: alarm_control_panel.vaskut14_otthon
+          - wait_template: "{{ is_state('alarm_control_panel.vaskut14_otthon', 'disarmed') }}"
+            timeout: "00:00:30"
+          - action: notify.szulok
+            data:
+              title: "🎒 Jó reggelt!"
+              message: >-
+                {{ 'Kikapcsoltam a riasztó éjszakai módját, és felhúzom a redőnyöket (a hálószobaiak kivételével).'
+                   if wait.completed else 'Nem sikerült kikapcsolni a riasztó éjszakai módját, nézd meg az Ajax appban! A redőnyöket felhúzom.' }}
       - action: cover.open_cover
         target:
           entity_id:
