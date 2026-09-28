@@ -359,6 +359,16 @@
         "text": "A riasztót biztonsági okból nem hatástalaníthatom. Kérlek, az Ajax appban vagy a kezelőn tedd meg."
       }
     },
+    "ItthonVagyok": {
+      "action": [
+        {
+          "action": "script.elmentunk_leallit"
+        }
+      ],
+      "speech": {
+        "text": "{% set l = states.input_boolean.elmentunk_leallitva %}{{ 'Rendben, nem kapcsolom be a riasztót. Szóltam a szüleidnek, hogy itthon vagy.' if l is not none and l.state == 'on' and (now() - l.last_changed).total_seconds() < 20 else 'Rendben. Most nem készülök bekapcsolni a riasztót.' }}"
+      }
+    },
     "Homerseklet": {
       "speech": {
         "text": "{% if homero == 'kint' %}Kint most {{ state_attr('weather.forecast_otthon', 'temperature') | round(0) | int }} fok van.{% else %}{% set h = {'sensor.nappali_homerseklet':'A nappaliban','sensor.haloszoba_homerseklet':'A hálószobában','sensor.gyerekszoba_homerseklet':'A gyerekszobában','sensor.eloter_homerseklet':'Az előszobában'} %}{{ h[homero] }} most {{ states(homero) | round(0) | int }} fok van.{% endif %}"

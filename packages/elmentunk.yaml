@@ -1,9 +1,12 @@
-# „Elmentünk” rutin: ha Ádám és Cerike is elhagyta a házat (GPS-zóna ÉS az otthoni Wi-Fi is),
-# push értesítés mindkettőjüknek: Élesítés + takarítás / Csak takarítás / Semmi. Ha ma már volt takarítás,
-# csak a riasztóra kérdez rá (Élesítés / Semmi).
-# Magától soha nem élesít: a HA a gyereket nem látja, ezért kérdez, és ellenőrzi, hogy nincs-e jel arra,
-# hogy valaki otthon maradt (Xbox online, bekapcsolt Samsung tévé, lejátszó Apple TV, azóta nyílt bejárati ajtó).
-# A gombnyomáskor újra ellenőriz. Hazaérkezéskor: a porszívó haza, figyelmeztetés, ha a riasztó élesítve maradt.
+# „Elmentünk” rutin: ha Ádám és Cerike is elhagyta a házat (GPS-zóna, 100 m, ÉS az otthoni Wi-Fi is),
+# Ádám kérésére (2026-09-28) automatikusan élesít, 5 perces visszaszámlálással, hogy csak a kivételeknél kelljen
+# közbelépni (pl. Csepike itthon marad):
+#  - push mindkettőjüknek (koppintásra a dashboard „#elmentunk” panelje nyílik): Ne élesíts / Élesíts, de ne takaríts / Élesíts most;
+#  - a nappali Voice bemondja, és 1 perccel a vége előtt újra; itthonról „Hey Mycroft, itthon vagyok” leállítja;
+#  - a végén újra ellenőriz: ha közben valaki hazaért, vagy jel utal arra, hogy valaki otthon van, nem élesít.
+# Ha már induláskor van ilyen jel (Xbox online, bekapcsolt tévé, lejátszó Apple TV, azóta nyílt bejárati ajtó),
+# nem számol vissza, hanem rákérdez, mint korábban. Ha ma már volt takarítás, csak élesít, nem takarít.
+# Hazaérkezéskor: a porszívó haza, figyelmeztetés, ha a riasztó élesítve maradt.
 
 notify:
   - platform: group
@@ -16,6 +19,19 @@ input_boolean:
   elmentunk_kerdezve:
     name: "Elmentünk – már rákérdezett"
     icon: mdi:home-export-outline
+  elmentunk_ne_takarits:
+    name: "Elmentünk – most ne takarítson"
+    icon: mdi:robot-vacuum-off
+  elmentunk_leallitva:
+    name: "Elmentünk – az élesítést leállították"
+    icon: mdi:shield-off-outline
+
+timer:
+  elmentunk_elesites:
+    name: "Elmentünk – élesítés visszaszámlálás"
+    duration: "00:05:00"
+    restore: true
+    icon: mdi:shield-sync
 
 input_datetime:
   elmentunk_ideje:
@@ -56,6 +72,56 @@ template:
             {{ o | join(', ') }}
 
 script:
+  elmentunk_leallit:
+    alias: "Elmentünk – ne élesíts (valaki itthon van)"
+    icon: mdi:shield-off-outline
+    description: >-
+      Leállítja a távozás utáni automatikus riasztó-élesítést, mert valaki (pl. Csepike) itthon maradt.
+      Használd, ha azt mondják: „itthon vagyok”, „ne kapcsold be a riasztót”.
+    mode: queued
+    sequence:
+      - if: "{{ is_state('timer.elmentunk_elesites', 'active') }}"
+        then:
+          - action: timer.cancel
+            target:
+              entity_id: timer.elmentunk_elesites
+          - action: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.elmentunk_leallitva
+          - action: notify.szulok
+            data:
+              message: clear_notification
+              data:
+                tag: elmentunk
+          - action: notify.szulok
+            data:
+              title: "🏠 Nem élesítek"
+              message: "Rendben, nem kapcsolom be a riasztót, és nem takarítok, mert valaki itthon van."
+
+  elmentunk_ne_takarits:
+    alias: "Elmentünk – élesíts, de ne takaríts"
+    icon: mdi:robot-vacuum-off
+    mode: queued
+    sequence:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.elmentunk_ne_takarits
+      - action: notify.szulok
+        data:
+          title: "🏠 Rendben"
+          message: "A riasztót élesítem, de takarítást nem indítok."
+
+  elmentunk_most:
+    alias: "Elmentünk – élesíts most"
+    icon: mdi:shield-lock
+    mode: queued
+    sequence:
+      - if: "{{ is_state('timer.elmentunk_elesites', 'active') }}"
+        then:
+          - action: timer.finish
+            target:
+              entity_id: timer.elmentunk_elesites
+
   elmentunk_elesit_takarit:
     alias: "Elmentünk – élesítés és takarítás"
     icon: mdi:shield-home
@@ -66,7 +132,7 @@ script:
 
 automation:
   - id: elmentunk_kerdes
-    alias: "Elmentünk – rákérdezés (mindkét telefon távol, Wi-Fin sincs)"
+    alias: "Elmentünk – távozás: 5 perc múlva élesítés (mindkét telefon távol, Wi-Fin sincs)"
     mode: single
     triggers:
       - trigger: state
@@ -117,18 +183,123 @@ automation:
             {% else %}
             [{"action": "ELMENTUNK_ELESIT", "title": "Élesítés + takarítás"}, {"action": "ELMENTUNK_TAKARIT", "title": "Csak takarítás"}, {"action": "ELMENTUNK_SEMMI", "title": "Semmi"}]
             {% endif %}
-      - repeat:
-          for_each: [notify.mobile_app_adam_2, notify.mobile_app_noyaflage_iphone_keszuleke_2]
-          sequence:
-            - action: "{{ repeat.item }}"
-              data:
-                title: "🏠 Elmentetek"
-                message: "{{ uzenet }}"
+      - if: "{{ gyanus }}"
+        then:
+          # jel utal arra, hogy valaki otthon van: nem számol vissza, csak rákérdez
+          - repeat:
+              for_each: [notify.mobile_app_adam_2, notify.mobile_app_noyaflage_iphone_keszuleke_2]
+              sequence:
+                - action: "{{ repeat.item }}"
+                  data:
+                    title: "🏠 Elmentetek"
+                    message: "{{ uzenet }}"
+                    data:
+                      tag: elmentunk
+                      push:
+                        interruption-level: time-sensitive
+                      actions: "{{ gombok }}"
+        else:
+          - action: "input_boolean.turn_{{ 'on' if volt_takaritas else 'off' }}"
+            target:
+              entity_id: input_boolean.elmentunk_ne_takarits
+          - action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.elmentunk_leallitva
+          - action: timer.start
+            target:
+              entity_id: timer.elmentunk_elesites
+          - repeat:
+              for_each: [notify.mobile_app_adam_2, notify.mobile_app_noyaflage_iphone_keszuleke_2]
+              sequence:
+                - action: "{{ repeat.item }}"
+                  data:
+                    title: "🏠 Elmentetek – 5 perc múlva élesítek"
+                    message: >-
+                      5 perc múlva élesítem a riasztót{{ '' if volt_takaritas else ', és elindítom a takarítást' }}.
+                      Ha valaki itthon maradt, koppints ide, és nyomd meg a „Ne élesíts” gombot.
+                    data:
+                      tag: elmentunk
+                      url: /otthon-homerseklet/otthon#elmentunk
+                      push:
+                        interruption-level: time-sensitive
+                      actions: >-
+                        {% set g = [{"action": "ELMENTUNK_NE", "title": "Ne élesíts – valaki itthon van", "destructive": true}] %}
+                        {% if not volt_takaritas %}{% set g = g + [{"action": "ELMENTUNK_NE_TAKARITS", "title": "Élesíts, de ne takaríts"}] %}{% endif %}
+                        {{ g + [{"action": "ELMENTUNK_MOST", "title": "Élesíts most"}] }}
+          - action: assist_satellite.announce
+            target:
+              entity_id: assist_satellite.home_assistant_voice_0acc9e_assist_segedallomas
+            data:
+              message: "Figyelem! Mindenki elment, öt perc múlva bekapcsol a riasztó. Ha itthon vagy, mondd: Hey Mycroft, itthon vagyok."
+            continue_on_error: true
+          # egy perccel a vége előtt még egyszer szól
+          - wait_template: "{{ not is_state('timer.elmentunk_elesites', 'active') }}"
+            timeout: "00:04:00"
+          - if: "{{ not wait.completed and is_state('timer.elmentunk_elesites', 'active') }}"
+            then:
+              - action: assist_satellite.announce
+                target:
+                  entity_id: assist_satellite.home_assistant_voice_0acc9e_assist_segedallomas
                 data:
-                  tag: elmentunk
-                  push:
-                    interruption-level: time-sensitive
-                  actions: "{{ gombok }}"
+                  message: "Figyelem! Egy perc múlva bekapcsol a riasztó. Ha itthon vagy, mondd: Hey Mycroft, itthon vagyok."
+                continue_on_error: true
+
+  - id: elmentunk_automatikus_elesites
+    alias: "Elmentünk – automatikus élesítés a visszaszámlálás végén"
+    mode: single
+    triggers:
+      - trigger: event
+        event_type: timer.finished
+        event_data:
+          entity_id: timer.elmentunk_elesites
+    actions:
+      - action: notify.szulok
+        data:
+          message: clear_notification
+          data:
+            tag: elmentunk
+      - variables:
+          meg_tavol: "{{ is_state('person.vaskut14', 'not_home') and is_state('person.cerike', 'not_home') }}"
+          gyanus: "{{ is_state('binary_sensor.valaki_otthon_lehet', 'on') }}"
+          okok: "{{ state_attr('binary_sensor.valaki_otthon_lehet', 'okok') }}"
+          takarit: "{{ is_state('input_boolean.elmentunk_ne_takarits', 'off') }}"
+      - choose:
+          - conditions: "{{ not meg_tavol }}"
+            sequence:
+              - action: notify.szulok
+                data:
+                  title: "🏠 Nem élesítettem"
+                  message: "Közben valamelyikőtök hazaért, ezért nem élesítettem."
+          - conditions: "{{ gyanus }}"
+            sequence:
+              - repeat:
+                  for_each: [notify.mobile_app_adam_2, notify.mobile_app_noyaflage_iphone_keszuleke_2]
+                  sequence:
+                    - action: "{{ repeat.item }}"
+                      data:
+                        title: "🏠 Nem élesítettem"
+                        message: "⚠️ Lehet, hogy valaki otthon van: {{ okok }}. Biztosan élesítsek?"
+                        data:
+                          tag: elmentunk
+                          push:
+                            interruption-level: time-sensitive
+                          actions:
+                            - action: ELMENTUNK_SEMMI
+                              title: "Semmi"
+                            - action: "{{ 'ELMENTUNK_MEGIS' if takarit else 'ELMENTUNK_MEGIS_CSAK' }}"
+                              title: "{{ 'Mégis élesíts + takaríts' if takarit else 'Mégis élesíts' }}"
+                              destructive: true
+          - conditions: "{{ not is_state('alarm_control_panel.vaskut14_otthon', 'disarmed') }}"
+            sequence: []
+        default:
+          - action: script.riaszto_elesites
+          - if: "{{ takarit }}"
+            then:
+              - action: script.porszivo_minden
+          - action: notify.szulok
+            data:
+              title: "🏠 Kész"
+              message: "Élesítettem a riasztót{{ ', és elindult a takarítás' if takarit else '' }}."
 
   - id: elmentunk_valasz
     alias: "Elmentünk – válasz a push gombjaira"
@@ -158,7 +329,32 @@ automation:
         event_type: mobile_app_notification_action
         event_data: {action: ELMENTUNK_MEGIS_CSAK}
         id: megis_csak
+      - trigger: event
+        event_type: mobile_app_notification_action
+        event_data: {action: ELMENTUNK_NE}
+        id: ne
+      - trigger: event
+        event_type: mobile_app_notification_action
+        event_data: {action: ELMENTUNK_NE_TAKARITS}
+        id: ne_takarits
+      - trigger: event
+        event_type: mobile_app_notification_action
+        event_data: {action: ELMENTUNK_MOST}
+        id: most
     actions:
+      - choose:
+          - conditions: "{{ trigger.id == 'ne' }}"
+            sequence:
+              - action: script.elmentunk_leallit
+              - stop: "Leállítva"
+          - conditions: "{{ trigger.id == 'ne_takarits' }}"
+            sequence:
+              - action: script.elmentunk_ne_takarits
+              - stop: "Takarítás nélkül"
+          - conditions: "{{ trigger.id == 'most' }}"
+            sequence:
+              - action: script.elmentunk_most
+              - stop: "Élesítés most"
       # a másik telefonról eltűnik a kérdés
       - repeat:
           for_each: [notify.mobile_app_adam_2, notify.mobile_app_noyaflage_iphone_keszuleke_2]
@@ -216,16 +412,24 @@ automation:
                   message: "Elindult a takarítás."
 
   - id: elmentunk_hazaerkezes
-    alias: "Elmentünk – hazaérkezés (porszívó haza, riasztó-emlékeztető)"
+    alias: "Elmentünk – hazaérkezés üres házba (porszívó haza, riasztó-emlékeztető)"
     mode: single
     triggers:
       - trigger: state
         entity_id: [person.vaskut14, person.cerike]
         to: "home"
+    conditions:
+      # csak ha előtte senki nem volt itthon: a másik szülő sincs otthon
+      - condition: template
+        value_template: >-
+          {{ not is_state('person.cerike' if trigger.entity_id == 'person.vaskut14' else 'person.vaskut14', 'home') }}
     actions:
       - action: input_boolean.turn_off
         target:
           entity_id: input_boolean.elmentunk_kerdezve
+      - action: timer.cancel
+        target:
+          entity_id: timer.elmentunk_elesites
       - if: "{{ is_state('vacuum.porszivo', 'cleaning') }}"
         then:
           - action: vacuum.return_to_base

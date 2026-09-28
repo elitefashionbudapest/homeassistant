@@ -1108,6 +1108,16 @@
         }
       ]
     },
+    "ItthonVagyok": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] (itthon vagyok|itthon maradtam|itthon vagyunk|én itthon vagyok|valaki itthon van|én még itthon vagyok) [<kerlek>]",
+            "[<kerlek>] ne (kapcsold be|élesítsd|kapcsolja be) [a ]<riaszto> [mert] [itthon vagyok] [<kerlek>]"
+          ]
+        }
+      ]
+    },
     "Homerseklet": {
       "data": [
         {

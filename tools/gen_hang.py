@@ -177,6 +177,10 @@ sentences = {
         "RiasztoKi": {"data": [{"sentences": [
             "[<kerlek>] ((hatástalanítsd|hatástalanítsa|kapcsold ki|kapcsolja ki|kapcsold le|oldd fel); [a ]<riaszto>) [<kerlek>]",
         ]}]},
+        "ItthonVagyok": {"data": [{"sentences": [
+            "[<kerlek>] (itthon vagyok|itthon maradtam|itthon vagyunk|én itthon vagyok|valaki itthon van|én még itthon vagyok) [<kerlek>]",
+            "[<kerlek>] ne (kapcsold be|élesítsd|kapcsolja be) [a ]<riaszto> [mert] [itthon vagyok] [<kerlek>]",
+        ]}]},
         "Homerseklet": {"data": [{"sentences": [
             "[<kerlek>] (hány fok van|hány fok|mennyi a hőmérséklet|milyen meleg van|milyen hideg van|mennyi fok van) [most] [a |az ]{homero} [<kerlek>]",
             "[<kerlek>] [a |az ]{homero} (hány fok van|mennyi a hőmérséklet|milyen meleg van) [most] [<kerlek>]",
@@ -276,6 +280,12 @@ intent_script = {
                         "action": [{"action": "script.turn_on", "target": {"entity_id": "script.riaszto_elesites"}}],
                         "speech": {"text": "Élesítettem a riasztót."}},
     "RiasztoKi": {"speech": {"text": "A riasztót biztonsági okból nem hatástalaníthatom. Kérlek, az Ajax appban vagy a kezelőn tedd meg."}},
+    "ItthonVagyok": {
+        "action": [{"action": "script.elmentunk_leallit"}],
+        "speech": {"text": ("{% set l = states.input_boolean.elmentunk_leallitva %}"
+                            "{{ 'Rendben, nem kapcsolom be a riasztót. Szóltam a szüleidnek, hogy itthon vagy.' "
+                            "if l is not none and l.state == 'on' and (now() - l.last_changed).total_seconds() < 20 "
+                            "else 'Rendben. Most nem készülök bekapcsolni a riasztót.' }}")}},
     "Homerseklet": {"speech": {"text": (
         "{% if homero == 'kint' %}Kint most {{ state_attr('weather.forecast_otthon', 'temperature') | round(0) | int }} fok van."
         "{% else %}{% set h = {'sensor.nappali_homerseklet':'A nappaliban','sensor.haloszoba_homerseklet':'A hálószobában',"

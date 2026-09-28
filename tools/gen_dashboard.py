@@ -152,14 +152,17 @@ Most: **{% if is_state('input_boolean.ebreszto_aktiv','on') %}bekapcsolva, {{ st
 vagy hanggal kértétek (például: „Hey Mycroft, holnap ébreszd Csepikét fél hétkor”).
 
 ## 🏠 Távozás és hazaérkezés
-**Elmentünk.** Ha mindketten elmentek, és a telefonotok a Wi-Firől is lecsatlakozott, pusht kaptok: élesítés és takarítás, csak takarítás, vagy semmi. Ha ma már volt takarítás, csak a riasztóra kérdez rá. Ha valami arra utal, hogy valaki otthon maradt (bekapcsolt Xbox, tévé vagy Apple TV, azóta nyílt bejárati ajtó), előbb figyelmeztet.
+**Elmentünk.** Ha mindketten 100 méternél messzebb vagytok, és a telefonotok a Wi-Firől is lecsatlakozott, \
+5 perc múlva magától élesíti a riasztót, és ha ma még nem volt, elindítja a takarítást. Addig a pushra koppintva \
+leállíthatjátok („Ne élesíts”), itthonról pedig a nappali Voice-nak szólva: „Hey Mycroft, itthon vagyok”. \
+Ha valami arra utal, hogy valaki otthon van (Xbox, tévé, Apple TV, azóta nyílt bejárati ajtó), nem élesít, csak rákérdez.
 
 **Nappali takarítás.** A porszívó magától nem jut le, ezért a nappali parancsra előbb kimossa a felmosót, és a nappali Voice szól, \
 hogy le lehet vinni. Lent porszívóz és felmos, a szőnyeget erős szívással és mélytisztítással takarítja. \
 Ha közben elakad vagy lemerülőben van, a Voice szól, a végén pedig kéri, hogy vigyétek vissza a dokkolóra.
 
 **Hazaérkezés.** Ha Ádám vagy Cerike telefonja az otthoni Wi-Fire csatlakozik, és 100 méteren belül van, a távol módban \
-élesített riasztó magától kikapcsol (éjszakai módhoz nem nyúl). Ha takarítás közben hazaértek, a porszívó hazamegy, \
+élesített riasztó magától kikapcsol (éjszakai módhoz nem nyúl). Ha üres lakásba, takarítás közben értek haza, a porszívó hazamegy, \
 és ha a riasztó másfél perc múlva is élesítve van, szól.
 
 ## 🌡️ Nyári hővédelem
@@ -219,6 +222,19 @@ popupok = [
                           ".get(states('alarm_control_panel.vaskut14_otthon'), states('alarm_control_panel.vaskut14_otthon')) }}"},
         {**muvelet_gomb("Éjszakai mód bekapcsolása", "mdi:shield-moon", "script.riaszto_esti_bekapcsolas"),
          "grid_options": FULL},
+    ]),
+    # a távozás utáni push koppintásra ide nyílik (packages/elmentunk.yaml)
+    popup("#elmentunk", "Elmentetek", "mdi:home-export-outline", [
+        {"type": "custom:bubble-card", "card_type": "button", "button_type": "state", "card_layout": "large",
+         "entity": "timer.elmentunk_elesites", "name": "Riasztó", "icon": "mdi:shield-sync", "grid_options": FULL,
+         "state_content": "{% if is_state('timer.elmentunk_elesites', 'active') %}Élesítés "
+                          "{{ (state_attr('timer.elmentunk_elesites', 'finishes_at') | as_datetime | as_local).strftime('%H:%M') }}-kor"
+                          "{{ ', takarítás nélkül' if is_state('input_boolean.elmentunk_ne_takarits', 'on') else ', utána takarítás' }}"
+                          "{% else %}Most nincs folyamatban élesítés.{% endif %}"},
+        {**muvelet_gomb("Ne élesíts – valaki itthon van", "mdi:shield-off-outline", "script.elmentunk_leallit"),
+         "grid_options": FULL},
+        muvelet_gomb("Élesíts, de ne takaríts", "mdi:robot-vacuum-off", "script.elmentunk_ne_takarits"),
+        muvelet_gomb("Élesíts most", "mdi:shield-lock", "script.elmentunk_most"),
     ]),
     popup("#automatizmusok", "Automatizmusok", "mdi:robot-happy", [
         {"type": "markdown", "content": AUTOMATIZMUSOK, "grid_options": FULL},
