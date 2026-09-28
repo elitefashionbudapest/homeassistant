@@ -170,6 +170,10 @@ automation:
         for: "00:02:00"
       - trigger: state
         entity_id: [sensor.adam_2_ssid, sensor.noyaflage_iphone_keszuleke_2_ssid]
+      # az autó elhagyta a házat (az i3 ritkán jelent, ezért ez csak kiegészítő jel)
+      - trigger: state
+        entity_id: device_tracker.i3_94_location
+        from: home
     conditions:
       - condition: state
         entity_id: [person.vaskut14, person.cerike]
@@ -177,11 +181,16 @@ automation:
       - condition: state
         entity_id: input_boolean.elmentunk_kerdezve
         state: "off"
-      # Mindkét telefon ténylegesen lecsatlakozott az otthoni Wi-Fi-ről (ismeretlen állapot NEM elég).
+      # Mindkét telefon ténylegesen lecsatlakozott az otthoni Wi-Fi-ről (ismeretlen állapot NEM elég) –
+      # kivéve, ha az autó is elhagyta a házat: akkor elég, ha egyik telefon sincs az otthoni Wi-Fin.
       - condition: template
         value_template: >-
           {% set s = [states('sensor.adam_2_ssid'), states('sensor.noyaflage_iphone_keszuleke_2_ssid')] %}
-          {{ s | select('in', ['unknown', 'unavailable', 'Vaskut14']) | list | count == 0 }}
+          {% if states('device_tracker.i3_94_location') not in ['home', 'unknown', 'unavailable'] %}
+            {{ 'Vaskut14' not in s }}
+          {% else %}
+            {{ s | select('in', ['unknown', 'unavailable', 'Vaskut14']) | list | count == 0 }}
+          {% endif %}
     actions:
       - action: input_boolean.turn_on
         target:

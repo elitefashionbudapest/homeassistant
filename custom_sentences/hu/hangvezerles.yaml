@@ -1108,6 +1108,20 @@
         }
       ]
     },
+    "AutoAllapot": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] (mennyi|hány százalék|hány százalékon áll) [a] (töltöttség|akku|akkumulátor|töltés|töltésen) [az autóban|az autónak|a kocsiban|a kocsinak|a bmw-ben|a bmw-nek] [<kerlek>]",
+            "[<kerlek>] (mennyi|hány százalék) [van] [az autóban|a kocsiban] [<kerlek>]",
+            "[<kerlek>] (mekkora|mennyi) [a] hatótáv [az autónak|a kocsinak|a bmw-nek] [<kerlek>]",
+            "[<kerlek>] hány (kilométert|km-t|kilométer) (mehetek|megy|bír|tud menni) [még] [az autó|a kocsi|az autóval|a kocsival] [<kerlek>]",
+            "[<kerlek>] (hogy áll|mi van) [az autó|a kocsi|a bmw] [<kerlek>]",
+            "[<kerlek>] (be van zárva|bezártam) [az autó|a kocsi|az autót|a kocsit] [<kerlek>]"
+          ]
+        }
+      ]
+    },
     "CsepikeItthon": {
       "data": [
         {

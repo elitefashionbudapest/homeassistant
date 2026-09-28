@@ -359,6 +359,11 @@
         "text": "A riasztót biztonsági okból nem hatástalaníthatom. Kérlek, az Ajax appban vagy a kezelőn tedd meg."
       }
     },
+    "AutoAllapot": {
+      "speech": {
+        "text": "{% set soc = states('sensor.i3_94_battery_ev_state_of_charge') | float(-1) %}{% if soc < 0 %}Most nincs friss adatom az autóról.{% else %}Az autó {{ soc | round(0) | int }} százalékon áll, még körülbelül {{ states('sensor.vaskut14_i3_94_range_ev_remaining_range') | float(0) | round(0) | int }} kilométert tudsz vele menni.{% if is_state('sensor.vaskut14_i3_94_charging_port_plug_state', 'CONNECTED') %} Be van dugva a töltőre.{% endif %}{% set z = states('sensor.vaskut14_i3_94_doors_overall_state') %}{% if z in ['SECURED', 'LOCKED'] %} Be van zárva.{% elif z not in ['unknown', 'unavailable'] %} Figyelem, nincs bezárva!{% endif %}{% endif %}"
+      }
+    },
     "CsepikeItthon": {
       "action": [
         {

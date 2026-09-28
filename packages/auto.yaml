@@ -1,0 +1,237 @@
+# BMW i3 (HACS kvanbiesen/bmw-cardata-ha, entitások: sensor.i3_94_*, sensor.vaskut14_i3_94_*, device_tracker.i3_94_location).
+# Az i3 ritkán küld adatot: zárás/nyitás, parkolás után; töltés közben nem. Ezért minden itt az utolsó ismert állapotból dolgozik.
+#  - 21:30 esti ellenőrzés Ádámnak: töltési emlékeztető (40% alatt, nincs bedugva, otthon áll) és hideg reggel → előfűtés a MyBMW appban;
+#  - alacsony töltöttség (20% vagy 30 km alatt) Ádámnak;
+#  - heti összefoglaló vasárnap 18:00 Ádámnak: megtett km, töltött energia, becsült költség;
+#  - nincs bezárva / nyitva maradt ablak: annak, aki a kocsi mellett volt és eltávolodott tőle.
+
+input_number:
+  i3_heti_toltes:
+    name: "i3 – e heti töltés"
+    min: 0
+    max: 1000
+    step: 0.1
+    unit_of_measurement: kWh
+    mode: box
+    icon: mdi:ev-station
+  aram_ar:
+    name: "Áramár (töltéshez)"
+    min: 0
+    max: 200
+    step: 0.5
+    unit_of_measurement: Ft/kWh
+    mode: box
+    icon: mdi:cash
+
+utility_meter:
+  i3_heti_km:
+    name: "i3 – e heti km"
+    source: sensor.i3_94_vehicle_mileage
+    cycle: weekly
+
+automation:
+  - id: auto_esti_ellenorzes
+    alias: "Autó – esti ellenőrzés 21:30 (töltés, hideg reggel)"
+    mode: single
+    triggers:
+      - trigger: time
+        at: "21:30:00"
+    actions:
+      - action: weather.get_forecasts
+        target:
+          entity_id: weather.forecast_otthon
+        data:
+          type: hourly
+        response_variable: elorejelzes
+      - variables:
+          soc: "{{ states('sensor.i3_94_battery_ev_state_of_charge') | float(-1) }}"
+          km: "{{ states('sensor.vaskut14_i3_94_range_ev_remaining_range') | float(0) | round(0) | int }}"
+          bedugva: "{{ is_state('sensor.vaskut14_i3_94_charging_port_plug_state', 'CONNECTED') }}"
+          otthon: "{{ is_state('device_tracker.i3_94_location', 'home') }}"
+          # holnap reggel 5 és 9 óra közötti legalacsonyabb hőmérséklet
+          reggel_min: >-
+            {% set holnap = (now() + timedelta(days=1)).date() %}
+            {% set t = elorejelzes['weather.forecast_otthon'].forecast
+                 | selectattr('datetime', 'defined')
+                 | list %}
+            {% set ns = namespace(v=[]) %}
+            {% for f in t %}
+              {% set d = f.datetime | as_datetime | as_local %}
+              {% if d.date() == holnap and 5 <= d.hour <= 9 %}{% set ns.v = ns.v + [f.temperature] %}{% endif %}
+            {% endfor %}
+            {{ (ns.v | min) if ns.v else 99 }}
+          uzenetek: >-
+            {% set u = [] %}
+            {% if 0 <= soc < 40 and not bedugva and otthon %}
+              {% set u = u + ['Az autó csak ' ~ (soc | round(0) | int) ~ '%-on áll (kb. ' ~ km ~ ' km). Dugd be éjszakára.'] %}
+            {% endif %}
+            {% if reggel_min | float(99) < 3 %}
+              {% set u = u + ['Holnap reggel ' ~ (reggel_min | float | round(0) | int) ~ ' °C lesz. Állítsd be a MyBMW appban az előfűtést az indulás idejére.'] %}
+            {% endif %}
+            {{ u }}
+      - if: "{{ uzenetek | count > 0 }}"
+        then:
+          - action: notify.mobile_app_adam_2
+            data:
+              title: "🚗 Autó"
+              message: "{{ uzenetek | join(' ') }}"
+              data:
+                tag: auto_este
+                url: /otthon-homerseklet/otthon#auto
+
+  - id: auto_alacsony_toltottseg
+    alias: "Autó – alacsony töltöttség (20% vagy 30 km alatt)"
+    mode: single
+    triggers:
+      - trigger: numeric_state
+        entity_id: sensor.i3_94_battery_ev_state_of_charge
+        below: 20
+      - trigger: numeric_state
+        entity_id: sensor.vaskut14_i3_94_range_ev_remaining_range
+        below: 30
+    conditions:
+      - condition: template
+        value_template: "{{ not is_state('sensor.vaskut14_i3_94_charging_port_plug_state', 'CONNECTED') }}"
+    actions:
+      - action: notify.mobile_app_adam_2
+        data:
+          title: "🔋 Lemerülőben az autó"
+          message: >-
+            Az autó {{ states('sensor.i3_94_battery_ev_state_of_charge') | float(0) | round(0) | int }}%-on áll,
+            kb. {{ states('sensor.vaskut14_i3_94_range_ev_remaining_range') | float(0) | round(0) | int }} km-re elég. Érdemes feltölteni.
+          data:
+            tag: auto_akku
+            url: /otthon-homerseklet/otthon#auto
+            push:
+              interruption-level: time-sensitive
+      # ne szóljon kétszer, ha a két feltétel egyszerre teljesül
+      - delay: "00:05:00"
+
+  # a heti összefoglalóhoz: ha az akkuban lévő energia nőtt, azt töltésnek vesszük (az i3 töltés közben nem küld adatot,
+  # ezért a töltés utáni első jelentésnél látszik a különbség)
+  - id: auto_toltes_rogzitese
+    alias: "Autó – töltött energia rögzítése"
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id: sensor.i3_94_battery_hv_energy_content
+    conditions:
+      - condition: template
+        value_template: >-
+          {{ trigger.from_state is not none and trigger.from_state.state | is_number and trigger.to_state.state | is_number
+             and (trigger.to_state.state | float - trigger.from_state.state | float) > 0.3 }}
+    actions:
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.i3_heti_toltes
+        data:
+          value: >-
+            {{ (states('input_number.i3_heti_toltes') | float(0)
+                + trigger.to_state.state | float - trigger.from_state.state | float) | round(1) }}
+
+  - id: auto_heti_osszefoglalo
+    alias: "Autó – heti összefoglaló (vasárnap 18:00)"
+    mode: single
+    triggers:
+      - trigger: time
+        at: "18:00:00"
+    conditions:
+      - condition: time
+        weekday: [sun]
+    actions:
+      - variables:
+          km: "{{ states('sensor.i3_heti_km') | float(0) | round(0) | int }}"
+          kwh: "{{ states('input_number.i3_heti_toltes') | float(0) | round(1) }}"
+          # a hálózatból vett áram kb. 12%-kal több, mint ami az akkuba jut (töltési veszteség)
+          ft: "{{ (kwh * 1.12 * states('input_number.aram_ar') | float(0)) | round(-1) | int }}"
+      - action: notify.mobile_app_adam_2
+        data:
+          title: "🚗 Az autó heti összefoglalója"
+          message: >-
+            Ezen a héten {{ km }} km-t mentél.
+            {% if kwh > 0 %}Töltöttél {{ kwh | replace('.', ',') }} kWh-t, ez kb. {{ '{:,}'.format(ft).replace(',', ' ') }} Ft.{% else %}Töltést nem láttam.{% endif %}
+            Most {{ states('sensor.i3_94_battery_ev_state_of_charge') | float(0) | round(0) | int }}%-on áll,
+            kb. {{ states('sensor.vaskut14_i3_94_range_ev_remaining_range') | float(0) | round(0) | int }} km-re elég.
+          data:
+            tag: auto_heti
+            url: /otthon-homerseklet/otthon#auto
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.i3_heti_toltes
+        data:
+          value: 0
+
+  # Nincs bezárva / nyitva maradt ablak: aki az autó mellett volt (150 m-en belül), és eltávolodott tőle (200 m-nél
+  # messzebb), az kap pusht. Ha 15 percen belül senki nem távolodik el, de az autó még mindig nyitva van, a közelben
+  # lévőknek szól; ha senki nem volt a közelében, mindkettőjüknek.
+  - id: auto_nincs_bezarva
+    alias: "Autó – nincs bezárva: szól annak, aki eltávolodott tőle"
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: sensor.vaskut14_i3_94_doors_overall_state
+      - trigger: state
+        entity_id:
+          - binary_sensor.vaskut14_i3_94_window_open_front_driver
+          - binary_sensor.vaskut14_i3_94_window_open_front_passenger
+        to: "on"
+    variables:
+      auto: device_tracker.i3_94_location
+      nyitott_sablon: >-
+        {{ states('sensor.vaskut14_i3_94_doors_overall_state') not in ['SECURED', 'LOCKED', 'unknown', 'unavailable']
+           or is_state('binary_sensor.vaskut14_i3_94_window_open_front_driver', 'on')
+           or is_state('binary_sensor.vaskut14_i3_94_window_open_front_passenger', 'on') }}
+    conditions:
+      - condition: template
+        value_template: "{{ nyitott_sablon }}"
+      - condition: state
+        entity_id: binary_sensor.vaskut14_i3_94_vehicle_motion_state
+        state: "off"
+    actions:
+      - variables:
+          kozel: >-
+            {% set ns = namespace(p=[]) %}
+            {% for p in ['person.vaskut14', 'person.cerike'] %}
+              {% set d = distance(p, 'device_tracker.i3_94_location') %}
+              {% if d is not none and d < 0.15 %}{% set ns.p = ns.p + [p] %}{% endif %}
+            {% endfor %}
+            {{ ns.p }}
+      - wait_template: >-
+          {% set nyitott = states('sensor.vaskut14_i3_94_doors_overall_state') not in ['SECURED', 'LOCKED', 'unknown', 'unavailable']
+             or is_state('binary_sensor.vaskut14_i3_94_window_open_front_driver', 'on')
+             or is_state('binary_sensor.vaskut14_i3_94_window_open_front_passenger', 'on') %}
+          {% set ns = namespace(tavol=false) %}
+          {% for p in kozel %}{% if (distance(p, 'device_tracker.i3_94_location') or 0) > 0.2 %}{% set ns.tavol = true %}{% endif %}{% endfor %}
+          {{ not nyitott or ns.tavol }}
+        timeout: "00:15:00"
+      - variables:
+          meg_nyitott: >-
+            {{ states('sensor.vaskut14_i3_94_doors_overall_state') not in ['SECURED', 'LOCKED', 'unknown', 'unavailable']
+               or is_state('binary_sensor.vaskut14_i3_94_window_open_front_driver', 'on')
+               or is_state('binary_sensor.vaskut14_i3_94_window_open_front_passenger', 'on') }}
+          cimzettek: >-
+            {% set ns = namespace(t=[]) %}
+            {% for p in kozel %}{% if (distance(p, 'device_tracker.i3_94_location') or 0) > 0.2 %}{% set ns.t = ns.t + [p] %}{% endif %}{% endfor %}
+            {% set lista = ns.t if ns.t else (kozel if kozel else ['person.vaskut14', 'person.cerike']) %}
+            {{ lista | map('replace', 'person.vaskut14', 'notify.mobile_app_adam_2')
+                     | map('replace', 'person.cerike', 'notify.mobile_app_noyaflage_iphone_keszuleke_2') | list }}
+          mi: >-
+            {% set m = [] %}
+            {% if states('sensor.vaskut14_i3_94_doors_overall_state') not in ['SECURED', 'LOCKED', 'unknown', 'unavailable'] %}{% set m = m + ['az autó nincs bezárva'] %}{% endif %}
+            {% if is_state('binary_sensor.vaskut14_i3_94_window_open_front_driver', 'on') %}{% set m = m + ['nyitva maradt a vezető oldali ablak'] %}{% endif %}
+            {% if is_state('binary_sensor.vaskut14_i3_94_window_open_front_passenger', 'on') %}{% set m = m + ['nyitva maradt az utas oldali ablak'] %}{% endif %}
+            {% set s = m | join(', és ') %}{{ s[:1] | upper ~ s[1:] }}
+      - if: "{{ meg_nyitott }}"
+        then:
+          - repeat:
+              for_each: "{{ cimzettek }}"
+              sequence:
+                - action: "{{ repeat.item }}"
+                  data:
+                    title: "🚗 Figyelj az autóra!"
+                    message: "{{ mi }}. Zárd be a kulccsal vagy a MyBMW appban."
+                    data:
+                      tag: auto_nyitva
+                      url: /otthon-homerseklet/otthon#auto
+                      push:
+                        interruption-level: time-sensitive

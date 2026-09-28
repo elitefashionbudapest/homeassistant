@@ -177,6 +177,14 @@ sentences = {
         "RiasztoKi": {"data": [{"sentences": [
             "[<kerlek>] ((hatástalanítsd|hatástalanítsa|kapcsold ki|kapcsolja ki|kapcsold le|oldd fel); [a ]<riaszto>) [<kerlek>]",
         ]}]},
+        "AutoAllapot": {"data": [{"sentences": [
+            "[<kerlek>] (mennyi|hány százalék|hány százalékon áll) [a] (töltöttség|akku|akkumulátor|töltés|töltésen) [az autóban|az autónak|a kocsiban|a kocsinak|a bmw-ben|a bmw-nek] [<kerlek>]",
+            "[<kerlek>] (mennyi|hány százalék) [van] [az autóban|a kocsiban] [<kerlek>]",
+            "[<kerlek>] (mekkora|mennyi) [a] hatótáv [az autónak|a kocsinak|a bmw-nek] [<kerlek>]",
+            "[<kerlek>] hány (kilométert|km-t|kilométer) (mehetek|megy|bír|tud menni) [még] [az autó|a kocsi|az autóval|a kocsival] [<kerlek>]",
+            "[<kerlek>] (hogy áll|mi van) [az autó|a kocsi|a bmw] [<kerlek>]",
+            "[<kerlek>] (be van zárva|bezártam) [az autó|a kocsi|az autót|a kocsit] [<kerlek>]",
+        ]}]},
         "CsepikeItthon": {"data": [{"sentences": [
             "[<kerlek>] (csepike|a gyerek|domi|a kicsi) itthon (marad|maradt|van|lesz) [ma] [<kerlek>]",
         ]}]},
@@ -283,6 +291,15 @@ intent_script = {
                         "action": [{"action": "script.turn_on", "target": {"entity_id": "script.riaszto_elesites"}}],
                         "speech": {"text": "Élesítettem a riasztót."}},
     "RiasztoKi": {"speech": {"text": "A riasztót biztonsági okból nem hatástalaníthatom. Kérlek, az Ajax appban vagy a kezelőn tedd meg."}},
+    "AutoAllapot": {"speech": {"text": (
+        "{% set soc = states('sensor.i3_94_battery_ev_state_of_charge') | float(-1) %}"
+        "{% if soc < 0 %}Most nincs friss adatom az autóról.{% else %}"
+        "Az autó {{ soc | round(0) | int }} százalékon áll, még körülbelül "
+        "{{ states('sensor.vaskut14_i3_94_range_ev_remaining_range') | float(0) | round(0) | int }} kilométert tudsz vele menni."
+        "{% if is_state('sensor.vaskut14_i3_94_charging_port_plug_state', 'CONNECTED') %} Be van dugva a töltőre.{% endif %}"
+        "{% set z = states('sensor.vaskut14_i3_94_doors_overall_state') %}"
+        "{% if z in ['SECURED', 'LOCKED'] %} Be van zárva.{% elif z not in ['unknown', 'unavailable'] %} Figyelem, nincs bezárva!{% endif %}"
+        "{% endif %}")}},
     "CsepikeItthon": {
         "action": [{"action": "input_boolean.turn_on", "target": {"entity_id": "input_boolean.csepike_itthon"}}],
         "speech": {"text": "Rendben, megjegyeztem, hogy Csepike itthon van. Amíg itthon van, nem élesítem magamtól a riasztót."}},

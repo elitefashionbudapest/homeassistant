@@ -184,6 +184,21 @@ Ha közben elakad vagy lemerülőben van, a Voice szól, a végén pedig kéri, 
 Májustól szeptemberig, ha kint legalább 28 °C van, azokat a redőnyöket, amelyekre éppen süt a nap, 70%-ban lehúzza. Ha a nap továbbvonult, vagy kint 26 °C alá hűlt, visszahúzza őket. A „Hővédelem ma” kapcsolóval bármelyik napon bekapcsolható, éjfélkor pedig magától kikapcsol.
 Ma: **{{ 'bekapcsolva' if is_state('input_boolean.redony_hovedelem_ma','on') else 'automatikus' }}**.
 
+## 🚗 Autó (BMW i3)
+**Esti ellenőrzés (21:30, Ádámnak).** Ha az autó otthon áll, 40% alatt van, és nincs bedugva, szól, hogy dugd be. \
+Ha holnap reggel fagyos idő lesz, emlékeztet, hogy állítsd be a MyBMW appban az előfűtést.
+
+**Alacsony töltöttség (Ádámnak).** Ha 20% vagy 30 km alá esik, és nincs bedugva, szól.
+
+**Heti összefoglaló (vasárnap 18:00, Ádámnak).** Hány kilométert mentél, mennyit töltöttél, és ez nagyjából mennyibe került \
+(az áramár az autó ablakában állítható).
+
+**Nincs bezárva.** Ha az autó nincs bezárva, vagy nyitva maradt egy ablaka, annak szól, aki mellette volt, és eltávolodott tőle.
+
+**Távozás.** Ha az autó elhagyja a házat, az is jel az „Elmentünk” rutinnak. Hanggal is megkérdezheted: „Hey Mycroft, mennyi a töltöttség?”
+
+Az i3 ritkán küld adatot (zárás után, parkoláskor, töltés közben nem), ezért az értesítések késhetnek.
+
 ## 🎙️ Egyéb
 **Mycroft.** A „Hey Mycroft” után magyarul irányíthatod a redőnyöket, a klímákat, a fűtést, a porszívót, az ébresztőt és a riasztó élesítését. Hatástalanítani csak az Ajax appban vagy a kezelőn lehet.
 
@@ -284,6 +299,10 @@ popupok = [
                   ".get(states('sensor.vaskut14_i3_94_doors_overall_state'), states('sensor.vaskut14_i3_94_doors_overall_state') | lower) }}"),
         auto_info("sensor.vaskut14_i3_94_charging_port_plug_state", "Töltőkábel", "mdi:ev-plug-type2",
                   "{{ 'bedugva' if states('sensor.vaskut14_i3_94_charging_port_plug_state') == 'CONNECTED' else 'nincs bedugva' }}"),
+        auto_info("sensor.i3_heti_km", "E heti km", "mdi:road-variant",
+                  "{{ states('sensor.i3_heti_km') | float(0) | round(0) | int }} km"),
+        auto_info("input_number.aram_ar", "Áramár", "mdi:cash",
+                  "{{ states('input_number.aram_ar') | float(0) | round(1) | replace('.', ',') }} Ft/kWh"),
         {"type": "map", "entities": ["device_tracker.i3_94_location"], "default_zoom": 15, "grid_options": FULL},
     ]),
     popup("#automatizmusok", "Automatizmusok", "mdi:robot-happy", [
