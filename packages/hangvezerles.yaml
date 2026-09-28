@@ -271,8 +271,17 @@
       }
     },
     "PorszivoNappali": {
+      "async_action": true,
+      "action": [
+        {
+          "action": "script.turn_on",
+          "target": {
+            "entity_id": "script.porszivo_nappali"
+          }
+        }
+      ],
       "speech": {
-        "text": "A nappaliba sajnos nem tudok lemenni a lépcső miatt. Takarítsak másik szobában?"
+        "text": "{{ 'Előbb vidd le a porszívót a nappaliba, és utána szólj újra.' if is_state('vacuum.porszivo', 'docked') else 'Rendben, indul a takarítás a nappaliban.' }}"
       }
     },
     "PorszivoMind": {

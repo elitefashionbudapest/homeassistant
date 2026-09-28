@@ -1,8 +1,28 @@
 # Dreame L40 Ultra AE (vacuum.porszivo) – szobánkénti takarítás.
 # A szobák a robot térképének szegmensei (Map 1, a Dreamehome appban szerkesztve):
 # 1 = Fürdő, 2 = jobb szélső terület (név egyeztetés alatt), 3 = Gyerekszoba, 4 = Hálószoba, 5 = Előszoba (dokkoló), 6 = Konyha.
-# A nappaliba a lépcső miatt nem jut le, ezért ott nincs szegmens.
+# A nappaliba a lépcső miatt nem jut le magától: oda le kell vinni, és ott a script.porszivo_nappali indítja.
+# A többszintes térkép be van kapcsolva, így a lenti szintnek saját térképe lesz (az első futás építi fel).
 script:
+  porszivo_nappali:
+    alias: "Porszívó – Nappali (előbb le kell vinni)"
+    icon: mdi:sofa
+    description: >-
+      Elindítja a takarítást a nappaliban. A porszívó magától nem jut le a lépcső miatt, ezért előbb
+      le kell vinni. Ha még a dokkolón van, nem indul el, csak szól, hogy vigyék le.
+    mode: single
+    sequence:
+      - if: "{{ is_state('vacuum.porszivo', 'docked') }}"
+        then:
+          - action: notify.mobile_app_adam_2
+            data:
+              title: "🧹 Porszívó"
+              message: "A porszívó még a dokkolón van. Vidd le a nappaliba, és utána indítsd újra a nappali takarítását."
+          - stop: "A porszívó még a dokkolón van"
+      - action: vacuum.start
+        target:
+          entity_id: vacuum.porszivo
+
   porszivo_gyerekszoba:
     alias: "Porszívó – Gyerekszoba"
     icon: mdi:teddy-bear

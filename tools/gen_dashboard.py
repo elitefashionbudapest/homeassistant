@@ -176,6 +176,7 @@ popupok = [
         redony("nappali_ablak_1", "Ablak 1"), redony("nappali_ablak_2", "Ablak 2"),
         cim("Érzékelők"),
         info("sensor.nappali_homerseklet", "Hőmérséklet"), info("binary_sensor.vaskut14_terasz_ajto_ajto", "Teraszajtó"),
+        takaritas("script.porszivo_nappali", "Takarítás itt (előbb vidd le)"),
     ]),
     popup("#haloszoba", "Hálószoba", "mdi:bed-king", [
         klima("climate.haloszoba_klima"),
@@ -222,7 +223,8 @@ popupok = [
         cim("Takarítás szobánként"),
         *[{**takaritas(f"script.porszivo_{s}", n), "grid_options": HALF} for s, n in
           [("gyerekszoba", "Gyerekszoba"), ("haloszoba", "Hálószoba"), ("konyha", "Konyha"),
-           ("eloszoba", "Előszoba"), ("furdo", "Fürdő"), ("minden", "Mindenhol")]],
+           ("eloszoba", "Előszoba"), ("furdo", "Fürdő"), ("nappali", "Nappali (levinni)"),
+           ("minden", "Mindenhol (fent)")]],
         {"type": "picture-entity", "entity": "camera.porszivo_terkep", "camera_view": "auto",
          "show_name": False, "show_state": False, "grid_options": FULL},
     ]),

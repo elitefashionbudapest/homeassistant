@@ -256,7 +256,10 @@ intent_script = {
     "PorszivoSzoba": {"async_action": True,
                       "action": [{"action": "script.turn_on", "target": {"entity_id": "script.porszivo_{{ psz }}"}}],
                       "speech": {"text": PNEV + "Rendben, elindítottam a takarítást {{ pnev[psz] }}."}},
-    "PorszivoNappali": {"speech": {"text": "A nappaliba sajnos nem tudok lemenni a lépcső miatt. Takarítsak másik szobában?"}},
+    "PorszivoNappali": {"async_action": True,
+                        "action": [{"action": "script.turn_on", "target": {"entity_id": "script.porszivo_nappali"}}],
+                        "speech": {"text": "{{ 'Előbb vidd le a porszívót a nappaliba, és utána szólj újra.' "
+                                           "if is_state('vacuum.porszivo', 'docked') else 'Rendben, indul a takarítás a nappaliban.' }}"}},
     "PorszivoMind": {"async_action": True,
                      "action": [{"action": "script.turn_on", "target": {"entity_id": "script.porszivo_minden"}}],
                      "speech": {"text": "Rendben, elindítottam a takarítást az egész lakásban."}},
