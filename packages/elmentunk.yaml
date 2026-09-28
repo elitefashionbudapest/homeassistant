@@ -4,7 +4,7 @@
 #  - push mindkettőjüknek (koppintásra a dashboard „#elmentunk” panelje nyílik): Ne élesíts / Élesíts, de ne takaríts / Élesíts most;
 #  - a nappali Voice bemondja, és 1 perccel a vége előtt újra; itthonról „Hey Mycroft, itthon vagyok” leállítja;
 #  - a végén újra ellenőriz: ha közben valaki hazaért, vagy jel utal arra, hogy valaki otthon van, nem élesít.
-# Ha már induláskor van ilyen jel (Xbox online, bekapcsolt tévé, lejátszó Apple TV, azóta nyílt bejárati ajtó),
+# Ha már induláskor van ilyen jel (Xbox online, bekapcsolt tévé, lejátszó Apple TV, forgalmazó iPad, azóta nyílt bejárati ajtó),
 # nem számol vissza, hanem rákérdez, mint korábban. Ha ma már volt takarítás, csak élesít, nem takarít.
 # A „Csepike itthon maradt” kapcsoló (dashboard, hang) ugyanilyen jel: amíg be van kapcsolva, nem élesít magától;
 # éjjel 3-kor magától kikapcsol.
@@ -46,7 +46,27 @@ input_datetime:
     icon: mdi:clock-out
 
 template:
+  - sensor:
+      # Csepike iPadjének forgalma a TP-Link Deco szerint (a HACS amosyuen/ha-tplink-deco 30 mp-enként frissít)
+      - name: "Csepike iPad forgalom"
+        unique_id: csepike_ipad_forgalom
+        default_entity_id: sensor.csepike_ipad_forgalom
+        unit_of_measurement: "kB/s"
+        state_class: measurement
+        icon: mdi:tablet
+        state: >-
+          {{ ((state_attr('device_tracker.csepike_ipad', 'down_kilobytes_per_s') | float(0))
+              + (state_attr('device_tracker.csepike_ipad', 'up_kilobytes_per_s') | float(0))) | round(1) }}
   - binary_sensor:
+      # használatban: legalább 1 percig 50 kB/s feletti forgalom (videó, játék); 5 percig még annak számít
+      - name: "Csepike iPad használatban"
+        unique_id: csepike_ipad_hasznalatban
+        default_entity_id: binary_sensor.csepike_ipad_hasznalatban
+        icon: mdi:tablet-cellphone
+        delay_on: "00:01:00"
+        delay_off: "00:05:00"
+        state: >-
+          {{ is_state('device_tracker.csepike_ipad', 'home') and states('sensor.csepike_ipad_forgalom') | float(0) > 50 }}
       - name: "Valaki otthon lehet"
         unique_id: valaki_otthon_lehet
         default_entity_id: binary_sensor.valaki_otthon_lehet
@@ -54,6 +74,7 @@ template:
         icon: mdi:account-question
         state: >-
           {{ is_state('input_boolean.csepike_itthon', 'on')
+             or is_state('binary_sensor.csepike_ipad_hasznalatban', 'on')
              or is_state('binary_sensor.domi20181210', 'on')
              or is_state('media_player.nappali_nappali_tv', 'on')
              or is_state('media_player.samsung_5_series_32_ue32k5500', 'on')
@@ -67,6 +88,7 @@ template:
           okok: >-
             {% set o = [] %}
             {% if is_state('input_boolean.csepike_itthon', 'on') %}{% set o = o + ['Csepike itthon maradt'] %}{% endif %}
+            {% if is_state('binary_sensor.csepike_ipad_hasznalatban', 'on') %}{% set o = o + ['Csepike iPadjét éppen használják'] %}{% endif %}
             {% if is_state('binary_sensor.domi20181210', 'on') %}{% set o = o + ['az Xbox online'] %}{% endif %}
             {% if is_state('media_player.nappali_nappali_tv', 'on') %}{% set o = o + ['a nappali tévé be van kapcsolva'] %}{% endif %}
             {% if is_state('media_player.samsung_5_series_32_ue32k5500', 'on') %}{% set o = o + ['a gyerekszobai tévé be van kapcsolva'] %}{% endif %}

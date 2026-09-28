@@ -159,7 +159,7 @@ vagy hanggal kértétek (például: „Hey Mycroft, holnap ébreszd Csepikét f�
 **Elmentünk.** Ha mindketten 100 méternél messzebb vagytok, és a telefonotok a Wi-Firől is lecsatlakozott, \
 5 perc múlva magától élesíti a riasztót, és ha ma még nem volt, elindítja a takarítást. Addig a pushra koppintva \
 leállíthatjátok („Ne élesíts”), itthonról pedig a nappali Voice-nak szólva: „Hey Mycroft, itthon vagyok”. \
-Ha valami arra utal, hogy valaki otthon van (Xbox, tévé, Apple TV, azóta nyílt bejárati ajtó, \
+Ha valami arra utal, hogy valaki otthon van (Xbox, tévé, Apple TV, Csepike iPadjének forgalma, azóta nyílt bejárati ajtó, \
 vagy be van kapcsolva a „Csepike itthon maradt” kapcsoló), nem élesít, csak rákérdez. A kapcsoló éjjel magától kikapcsol.
 
 **Nappali takarítás.** A porszívó magától nem jut le, ezért a nappali parancsra előbb kimossa a felmosót, és a nappali Voice szól, \
