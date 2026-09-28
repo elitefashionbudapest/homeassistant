@@ -200,6 +200,9 @@ Ha holnap reggel fagyos idő lesz, emlékeztet, hogy állítsd be a MyBMW appban
 Az i3 ritkán küld adatot (zárás után, parkoláskor, töltés közben nem), ezért az értesítések késhetnek.
 
 ## 🎙️ Egyéb
+**Rádió.** „Hey Mycroft, kapcsolj rádiót” → a House Nation UK szól a nappali Voice-on, 80%-os hangerőn; \
+„Hey Mycroft, kapcsold be a Rádió 1-et” → a magyar Rádió 1; „Hey Mycroft, kapcsold ki a rádiót” → csend.
+
 **Mycroft.** A „Hey Mycroft” után magyarul irányíthatod a redőnyöket, a klímákat, a fűtést, a porszívót, az ébresztőt és a riasztó élesítését. Hatástalanítani csak az Ajax appban vagy a kezelőn lehet.
 
 **Tanulás.** Vasárnap 18:00-kor összefoglalót kapsz a meg nem értett parancsokról. Újat csak a jóváhagyásod után tanul meg.

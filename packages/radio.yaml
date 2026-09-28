@@ -1,0 +1,46 @@
+# Internetes rádió a nappali Home Assistant Voice-on, 80%-os hangerőn (Ádám kérése, 2026-09-28).
+# Hanggal: „kapcsolj rádiót” → House Nation UK; „kapcsold be a Rádió 1-et” → Rádió 1 (Budapest); „kapcsold ki a rádiót”.
+# A hangparancsok a tools/gen_hang.py-ban vannak (RadioBe, RadioKi).
+
+script:
+  radio_inditas:
+    alias: "Rádió – indítás a nappali Voice-on"
+    icon: mdi:radio
+    description: >-
+      Elindít egy internetes rádiót a nappali Voice hangszóróján, 80%-os hangerőn. Az állomás: house_nation
+      (House Nation UK, ez az alapértelmezett, ha csak „rádiót” kérnek) vagy radio1 (a magyar Rádió 1).
+    mode: restart
+    fields:
+      allomas:
+        description: "house_nation vagy radio1"
+        example: radio1
+        default: house_nation
+        selector:
+          select:
+            options: ["house_nation", "radio1"]
+    sequence:
+      - variables:
+          allomasok:
+            house_nation: "https://streaming.radio.co/s06bd9d805/listen"
+            radio1: "https://icast.connectmedia.hu/5201/live.mp3"
+          url: "{{ allomasok.get(allomas | default('house_nation'), allomasok.house_nation) }}"
+      - action: media_player.volume_set
+        target:
+          entity_id: media_player.home_assistant_voice_0acc9e_media_player
+        data:
+          volume_level: 0.8
+      - action: media_player.play_media
+        target:
+          entity_id: media_player.home_assistant_voice_0acc9e_media_player
+        data:
+          media_content_id: "{{ url }}"
+          media_content_type: music
+
+  radio_leallitas:
+    alias: "Rádió – leállítás"
+    icon: mdi:radio-off
+    mode: single
+    sequence:
+      - action: media_player.media_stop
+        target:
+          entity_id: media_player.home_assistant_voice_0acc9e_media_player

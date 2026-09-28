@@ -3,6 +3,7 @@
 {
   "language": "hu",
   "expansion_rules": {
+    "radio_ige": "(kapcsolj|kapcsold be|kapcsolja be|indíts|indítsd el|indítsd|tegyél be|tedd be|tegyen be|szóljon|játssz|játszd)",
     "kerlek": "(kérlek|kérem|légyszi|légy szíves|légyszíves|mycroft|hey mycroft|hé mycroft|szia mycroft|hé majkroft|majkroft)",
     "redonyok": "(redőny|redőnyt|redőnyök|redőnyöket|redőnyeit|redőnyét|redőnyöt|árnyékolót|árnyékolókat|rolót|rolókat)",
     "osszes": "(az összes|minden|mindegyik|összes)",
@@ -1118,6 +1119,38 @@
             "[<kerlek>] hány (kilométert|km-t|kilométer) (mehetek|megy|bír|tud menni) [még] [az autó|a kocsi|az autóval|a kocsival] [<kerlek>]",
             "[<kerlek>] (hogy áll|mi van) [az autó|a kocsi|a bmw] [<kerlek>]",
             "[<kerlek>] (be van zárva|bezártam) [az autó|a kocsi|az autót|a kocsit] [<kerlek>]"
+          ]
+        }
+      ]
+    },
+    "RadioBe": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] (<radio_ige>; [a ]rádió (1|egy|egyet|1-et|egyes|egyest|one)) [<kerlek>]",
+            "[<kerlek>] [a ]rádió (1|egy|egyet|1-et|egyes|egyest|one) [<kerlek>]"
+          ],
+          "slots": {
+            "allomas": "radio1"
+          }
+        },
+        {
+          "sentences": [
+            "[<kerlek>] (<radio_ige>; [egy ][a ](rádiót|rádió|zenét|house nation[ rádiót]|house zenét|house-t)) [<kerlek>]",
+            "[<kerlek>] (rádiót|zenét) (kérek|szeretnék) [<kerlek>]"
+          ],
+          "slots": {
+            "allomas": "house_nation"
+          }
+        }
+      ]
+    },
+    "RadioKi": {
+      "data": [
+        {
+          "sentences": [
+            "[<kerlek>] ((kapcsold ki|állítsd le|állítsd meg|állítsa le|kapcsolja ki|halkítsd el|némítsd el); [a ](rádiót|zenét|rádió 1-et)) [<kerlek>]",
+            "[<kerlek>] (elég|elég volt) [a ](rádióból|zenéből) [<kerlek>]"
           ]
         }
       ]

@@ -66,6 +66,7 @@ HOMERO = {
 sentences = {
     "language": "hu",
     "expansion_rules": {
+        "radio_ige": "(kapcsolj|kapcsold be|kapcsolja be|indíts|indítsd el|indítsd|tegyél be|tedd be|tegyen be|szóljon|játssz|játszd)",
         "kerlek": "(kérlek|kérem|légyszi|légy szíves|légyszíves|mycroft|hey mycroft|hé mycroft|szia mycroft|hé majkroft|majkroft)",
         "redonyok": "(redőny|redőnyt|redőnyök|redőnyöket|redőnyeit|redőnyét|redőnyöt|árnyékolót|árnyékolókat|rolót|rolókat)",
         "osszes": "(az összes|minden|mindegyik|összes)",
@@ -185,6 +186,20 @@ sentences = {
             "[<kerlek>] (hogy áll|mi van) [az autó|a kocsi|a bmw] [<kerlek>]",
             "[<kerlek>] (be van zárva|bezártam) [az autó|a kocsi|az autót|a kocsit] [<kerlek>]",
         ]}]},
+        "RadioBe": {"data": [
+            {"sentences": [
+                "[<kerlek>] (<radio_ige>; [a ]rádió (1|egy|egyet|1-et|egyes|egyest|one)) [<kerlek>]",
+                "[<kerlek>] [a ]rádió (1|egy|egyet|1-et|egyes|egyest|one) [<kerlek>]",
+            ], "slots": {"allomas": "radio1"}},
+            {"sentences": [
+                "[<kerlek>] (<radio_ige>; [egy ][a ](rádiót|rádió|zenét|house nation[ rádiót]|house zenét|house-t)) [<kerlek>]",
+                "[<kerlek>] (rádiót|zenét) (kérek|szeretnék) [<kerlek>]",
+            ], "slots": {"allomas": "house_nation"}},
+        ]},
+        "RadioKi": {"data": [{"sentences": [
+            "[<kerlek>] ((kapcsold ki|állítsd le|állítsd meg|állítsa le|kapcsolja ki|halkítsd el|némítsd el); [a ](rádiót|zenét|rádió 1-et)) [<kerlek>]",
+            "[<kerlek>] (elég|elég volt) [a ](rádióból|zenéből) [<kerlek>]",
+        ]}]},
         "CsepikeItthon": {"data": [{"sentences": [
             "[<kerlek>] (csepike|a gyerek|domi|a kicsi) itthon (marad|maradt|van|lesz) [ma] [<kerlek>]",
         ]}]},
@@ -300,6 +315,13 @@ intent_script = {
         "{% set z = states('sensor.vaskut14_i3_94_doors_overall_state') %}"
         "{% if z in ['SECURED', 'LOCKED'] %} Be van zárva.{% elif z not in ['unknown', 'unavailable'] %} Figyelem, nincs bezárva!{% endif %}"
         "{% endif %}")}},
+    "RadioBe": {"async_action": True,
+                "action": [{"action": "script.turn_on", "target": {"entity_id": "script.radio_inditas"},
+                            "data": {"variables": {"allomas": "{{ allomas }}"}}}],
+                "speech": {"text": "{{ 'Indítom a Rádió 1-et.' if allomas == 'radio1' else 'Indítom a House Nation rádiót.' }}"}},
+    "RadioKi": {"async_action": True,
+                "action": [{"action": "script.turn_on", "target": {"entity_id": "script.radio_leallitas"}}],
+                "speech": {"text": "Kikapcsoltam a rádiót."}},
     "CsepikeItthon": {
         "action": [{"action": "input_boolean.turn_on", "target": {"entity_id": "input_boolean.csepike_itthon"}}],
         "speech": {"text": "Rendben, megjegyeztem, hogy Csepike itthon van. Amíg itthon van, nem élesítem magamtól a riasztót."}},

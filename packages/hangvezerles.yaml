@@ -364,6 +364,39 @@
         "text": "{% set soc = states('sensor.i3_94_battery_ev_state_of_charge') | float(-1) %}{% if soc < 0 %}Most nincs friss adatom az autóról.{% else %}Az autó {{ soc | round(0) | int }} százalékon áll, még körülbelül {{ states('sensor.vaskut14_i3_94_range_ev_remaining_range') | float(0) | round(0) | int }} kilométert tudsz vele menni.{% if is_state('sensor.vaskut14_i3_94_charging_port_plug_state', 'CONNECTED') %} Be van dugva a töltőre.{% endif %}{% set z = states('sensor.vaskut14_i3_94_doors_overall_state') %}{% if z in ['SECURED', 'LOCKED'] %} Be van zárva.{% elif z not in ['unknown', 'unavailable'] %} Figyelem, nincs bezárva!{% endif %}{% endif %}"
       }
     },
+    "RadioBe": {
+      "async_action": true,
+      "action": [
+        {
+          "action": "script.turn_on",
+          "target": {
+            "entity_id": "script.radio_inditas"
+          },
+          "data": {
+            "variables": {
+              "allomas": "{{ allomas }}"
+            }
+          }
+        }
+      ],
+      "speech": {
+        "text": "{{ 'Indítom a Rádió 1-et.' if allomas == 'radio1' else 'Indítom a House Nation rádiót.' }}"
+      }
+    },
+    "RadioKi": {
+      "async_action": true,
+      "action": [
+        {
+          "action": "script.turn_on",
+          "target": {
+            "entity_id": "script.radio_leallitas"
+          }
+        }
+      ],
+      "speech": {
+        "text": "Kikapcsoltam a rádiót."
+      }
+    },
     "CsepikeItthon": {
       "action": [
         {
