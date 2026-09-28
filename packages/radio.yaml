@@ -1,14 +1,51 @@
-# Internetes rádió a nappali Home Assistant Voice-on, 80%-os hangerőn (Ádám kérése, 2026-09-28).
+# Internetes rádió a nappali tévén (Ádám kérése, 2026-09-28): a nappali One TV box (Chromecast, media_player.one_minibox)
+# játssza le, a Samsung tévé bekapcsol, HDMI1-re vált, és 8-as hangerőre áll.
 # Hanggal: „kapcsolj rádiót” → House Nation UK; „kapcsold be a Rádió 1-et” → Rádió 1 (Budapest); „kapcsold ki a rádiót”.
 # A hangparancsok a tools/gen_hang.py-ban vannak (RadioBe, RadioKi).
+# A tévé készenlétből csak a KEY_POWER gombjellel ébred (a Wake-on-LAN-ra nem); ehhez a tévén a hálózati készenlétnek
+# bekapcsolva kell maradnia.
 
 script:
+  nappali_tv_bekapcsolas:
+    alias: "Nappali tévé – bekapcsolás, HDMI1, 8-as hangerő"
+    icon: mdi:television
+    mode: single
+    sequence:
+      - if: "{{ not is_state('media_player.nappali_nappali_tv', 'on') }}"
+        then:
+          - action: remote.send_command
+            target:
+              entity_id: remote.nappali_nappali_tv
+            data:
+              command: KEY_POWER
+            continue_on_error: true
+          - action: media_player.turn_on
+            target:
+              entity_id: media_player.nappali_nappali_tv
+            continue_on_error: true
+          - wait_template: "{{ is_state('media_player.nappali_nappali_tv', 'on') }}"
+            timeout: "00:00:40"
+          - delay: "00:00:05"
+      - action: remote.send_command
+        target:
+          entity_id: remote.nappali_nappali_tv
+        data:
+          command: KEY_HDMI1
+        continue_on_error: true
+      - delay: "00:00:02"
+      - action: media_player.volume_set
+        target:
+          entity_id: media_player.nappali_nappali_tv
+        data:
+          volume_level: 0.08
+        continue_on_error: true
+
   radio_inditas:
-    alias: "Rádió – indítás a nappali Voice-on"
+    alias: "Rádió – indítás a nappali tévén"
     icon: mdi:radio
     description: >-
-      Elindít egy internetes rádiót a nappali Voice hangszóróján, 80%-os hangerőn. Az állomás: house_nation
-      (House Nation UK, ez az alapértelmezett, ha csak „rádiót” kérnek) vagy radio1 (a magyar Rádió 1).
+      Elindít egy internetes rádiót a nappali tévén (bekapcsolja a One TV boxot és a tévét, HDMI1, 8-as hangerő).
+      Az állomás: house_nation (House Nation UK, ez az alapértelmezett, ha csak „rádiót” kérnek) vagy radio1 (a magyar Rádió 1).
     mode: restart
     fields:
       allomas:
@@ -21,26 +58,38 @@ script:
     sequence:
       - variables:
           allomasok:
-            house_nation: "https://streaming.radio.co/s06bd9d805/listen"
-            radio1: "https://icast.connectmedia.hu/5201/live.mp3"
-          url: "{{ allomasok.get(allomas | default('house_nation'), allomasok.house_nation) }}"
-      - action: media_player.volume_set
+            house_nation: {url: "https://streaming.radio.co/s06bd9d805/listen", nev: "House Nation UK"}
+            radio1: {url: "https://icast.connectmedia.hu/5201/live.mp3", nev: "Rádió 1"}
+          valasztott: "{{ allomasok.get(allomas | default('house_nation'), allomasok.house_nation) }}"
+      - action: media_player.turn_on
         target:
-          entity_id: media_player.home_assistant_voice_0acc9e_media_player
-        data:
-          volume_level: 0.8
+          entity_id: media_player.nappali_nappali_one_tv
+        continue_on_error: true
+      - action: script.nappali_tv_bekapcsolas
       - action: media_player.play_media
         target:
-          entity_id: media_player.home_assistant_voice_0acc9e_media_player
+          entity_id: media_player.one_minibox
         data:
-          media_content_id: "{{ url }}"
-          media_content_type: music
+          media_content_id: "{{ valasztott.url }}"
+          media_content_type: audio/mpeg
+          extra:
+            title: "{{ valasztott.nev }}"
+            metadata:
+              metadataType: 3
+              title: "{{ valasztott.nev }}"
 
   radio_leallitas:
-    alias: "Rádió – leállítás"
+    alias: "Rádió – leállítás (a tévé és a box is kikapcsol)"
     icon: mdi:radio-off
     mode: single
     sequence:
       - action: media_player.media_stop
         target:
-          entity_id: media_player.home_assistant_voice_0acc9e_media_player
+          entity_id: media_player.one_minibox
+        continue_on_error: true
+      - action: media_player.turn_off
+        target:
+          entity_id:
+            - media_player.nappali_nappali_one_tv
+            - media_player.nappali_nappali_tv
+        continue_on_error: true

@@ -318,10 +318,10 @@ intent_script = {
     "RadioBe": {"async_action": True,
                 "action": [{"action": "script.turn_on", "target": {"entity_id": "script.radio_inditas"},
                             "data": {"variables": {"allomas": "{{ allomas }}"}}}],
-                "speech": {"text": "{{ 'Indítom a Rádió 1-et.' if allomas == 'radio1' else 'Indítom a House Nation rádiót.' }}"}},
+                "speech": {"text": "{{ 'Bekapcsolom a tévét, és indítom a Rádió 1-et.' if allomas == 'radio1' else 'Bekapcsolom a tévét, és indítom a House Nation rádiót.' }}"}},
     "RadioKi": {"async_action": True,
                 "action": [{"action": "script.turn_on", "target": {"entity_id": "script.radio_leallitas"}}],
-                "speech": {"text": "Kikapcsoltam a rádiót."}},
+                "speech": {"text": "Kikapcsoltam a rádiót és a tévét."}},
     "CsepikeItthon": {
         "action": [{"action": "input_boolean.turn_on", "target": {"entity_id": "input_boolean.csepike_itthon"}}],
         "speech": {"text": "Rendben, megjegyeztem, hogy Csepike itthon van. Amíg itthon van, nem élesítem magamtól a riasztót."}},

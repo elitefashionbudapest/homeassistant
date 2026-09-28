@@ -380,7 +380,7 @@
         }
       ],
       "speech": {
-        "text": "{{ 'Indítom a Rádió 1-et.' if allomas == 'radio1' else 'Indítom a House Nation rádiót.' }}"
+        "text": "{{ 'Bekapcsolom a tévét, és indítom a Rádió 1-et.' if allomas == 'radio1' else 'Bekapcsolom a tévét, és indítom a House Nation rádiót.' }}"
       }
     },
     "RadioKi": {
@@ -394,7 +394,7 @@
         }
       ],
       "speech": {
-        "text": "Kikapcsoltam a rádiót."
+        "text": "Kikapcsoltam a rádiót és a tévét."
       }
     },
     "CsepikeItthon": {
