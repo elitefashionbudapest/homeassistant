@@ -24,6 +24,13 @@ script:
             timeout: "00:01:00"
           - wait_template: "{{ not is_state('sensor.vaskut_14_self_wash_base_status', 'washing') }}"
             timeout: "00:10:00"
+          # a nappali Voice bemondja, a telefonra pedig push is megy
+          - action: assist_satellite.announce
+            target:
+              entity_id: assist_satellite.home_assistant_voice_0acc9e_assist_segedallomas
+            data:
+              message: "A porszívó készen áll. Most leviheted a nappaliba, és ha lent van, szólj, hogy takarítsa a nappalit."
+            continue_on_error: true
           - action: notify.mobile_app_adam_2
             data:
               title: "🧹 Porszívó"
