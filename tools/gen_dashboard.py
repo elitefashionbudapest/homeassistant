@@ -90,6 +90,12 @@ def cim(nev: str) -> dict:
     return {"type": "custom:bubble-card", "card_type": "separator", "name": nev, "grid_options": FULL}
 
 
+# a BMW i3 töltési állapota magyarul
+TOLT = ("{% set t = states('sensor.i3_94_charging_ev_charging_state') %}"
+        "{{ {'NOCHARGING':'nem tölt','CHARGINGACTIVE':'tölt','CHARGINGENDED':'töltés vége','CHARGINGPAUSED':'töltés szünetel',"
+        "'FINISHED_FULLY_CHARGED':'feltöltve','FINISHED_NOT_FULL':'töltés befejezve','WAITING_FOR_CHARGING':'töltésre vár',"
+        "'CHARGINGERROR':'töltési hiba'}.get(t, t | lower) }}")
+
 fo = [
     {"type": "heading", "heading": "Otthon", "heading_style": "title", "icon": "mdi:home-heart",
      "badges": [
@@ -118,6 +124,10 @@ fo = [
     szoba_gomb("Porszívó", "mdi:robot-vacuum", "#porszivo",
                "{{ states('sensor.porszivo_akkumulator') }}% · {{ {'docked':'dokkolva','cleaning':'takarít','returning':'hazamegy',"
                "'paused':'szünetel','idle':'áll','error':'hiba'}.get(states('vacuum.porszivo'), states('vacuum.porszivo')) }}", None),
+    {**szoba_gomb("BMW i3", "mdi:car-electric", "#auto",
+                  "{{ states('sensor.i3_94_battery_ev_state_of_charge') | float(0) | round(0) | int }}% · "
+                  "{{ states('sensor.i3_94_range_ev_estimate_during_charging') }} km · " + TOLT, None),
+     "grid_options": FULL},
     cim("Gyors műveletek"),
     muvelet_gomb("Redőnyök le", "mdi:window-shutter", "script.redonyok_mind_le"),
     muvelet_gomb("Redőnyök fel", "mdi:window-shutter-open", "script.redonyok_mind_fel"),
@@ -182,6 +192,14 @@ Ma: **{{ 'bekapcsolva' if is_state('input_boolean.redony_hovedelem_ma','on') els
 **Mentés.** Minden éjjel 3:30-kor titkosított mentés készül a NAS-ra, és az utolsó 14 megmarad.
 """
 
+def auto_info(entity: str, nev: str, ikon: str, tartalom: str | None = None) -> dict:
+    c = {"type": "custom:bubble-card", "card_type": "button", "button_type": "state", "entity": entity, "name": nev,
+         "icon": ikon, "grid_options": HALF}
+    if tartalom:
+        c["state_content"] = tartalom
+    return c
+
+
 popupok = [
     popup("#nappali", "Nappali", "mdi:sofa", [
         klima("climate.nappali_klima"),
@@ -244,6 +262,23 @@ popupok = [
          "grid_options": FULL},
         muvelet_gomb("Ne takaríts", "mdi:robot-vacuum-off", "script.elmentunk_ne_takarits"),
         muvelet_gomb("Élesíts most", "mdi:shield-lock", "script.elmentunk_most"),
+    ]),
+    # BMW i3 (HACS kvanbiesen/bmw-cardata-ha): az i3 ritkán küld adatot, jellemzően csak leállításkor
+    popup("#auto", "BMW i3", "mdi:car-electric", [
+        {"type": "picture-entity", "entity": "image.i3_94_vehicle_image", "show_name": False, "show_state": False,
+         "grid_options": FULL},
+        auto_info("sensor.i3_94_battery_ev_state_of_charge", "Töltöttség", "mdi:battery-high",
+                  "{{ states('sensor.i3_94_battery_ev_state_of_charge') | float(0) | round(0) | int }}%"),
+        auto_info("sensor.i3_94_range_ev_estimate_during_charging", "Hatótáv", "mdi:map-marker-distance"),
+        auto_info("sensor.i3_94_charging_ev_charging_state", "Töltés", "mdi:ev-station", TOLT),
+        auto_info("sensor.i3_94_battery_ev_target_state_of_charge", "Töltési cél", "mdi:battery-charging-high"),
+        auto_info("sensor.i3_94_charging_ev_predicted_state_of_charge", "Becsült", "mdi:battery-sync",
+                  "{{ states('sensor.i3_94_charging_ev_predicted_state_of_charge') | float(0) | round(0) | int }}%"),
+        auto_info("sensor.i3_94_vehicle_mileage", "Kilométeróra", "mdi:counter",
+                  "{{ '{:,}'.format(states('sensor.i3_94_vehicle_mileage') | float(0) | int).replace(',', ' ') }} km"),
+        auto_info("sensor.vaskut14_i3_94ah_last_telematics_api_call", "Utolsó adat", "mdi:clock-outline",
+                  "{{ as_timestamp(states('sensor.vaskut14_i3_94ah_last_telematics_api_call')) | timestamp_custom('%m.%d. %H:%M') }}"),
+        auto_info("sensor.i3_94_battery_hv_energy_content", "Akku energia", "mdi:lightning-bolt"),
     ]),
     popup("#automatizmusok", "Automatizmusok", "mdi:robot-happy", [
         {"type": "markdown", "content": AUTOMATIZMUSOK, "grid_options": FULL},
