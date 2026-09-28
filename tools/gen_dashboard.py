@@ -126,7 +126,7 @@ fo = [
                "'paused':'szünetel','idle':'áll','error':'hiba'}.get(states('vacuum.porszivo'), states('vacuum.porszivo')) }}", None),
     {**szoba_gomb("BMW i3", "mdi:car-electric", "#auto",
                   "{{ states('sensor.i3_94_battery_ev_state_of_charge') | float(0) | round(0) | int }}% · "
-                  "{{ states('sensor.i3_94_range_ev_estimate_during_charging') }} km · " + TOLT, None),
+                  "{{ states('sensor.vaskut14_i3_94_range_ev_remaining_range') }} km · " + TOLT, None),
      "grid_options": FULL},
     cim("Gyors műveletek"),
     muvelet_gomb("Redőnyök le", "mdi:window-shutter", "script.redonyok_mind_le"),
@@ -269,7 +269,7 @@ popupok = [
          "grid_options": FULL},
         auto_info("sensor.i3_94_battery_ev_state_of_charge", "Töltöttség", "mdi:battery-high",
                   "{{ states('sensor.i3_94_battery_ev_state_of_charge') | float(0) | round(0) | int }}%"),
-        auto_info("sensor.i3_94_range_ev_estimate_during_charging", "Hatótáv", "mdi:map-marker-distance"),
+        auto_info("sensor.vaskut14_i3_94_range_ev_remaining_range", "Hatótáv", "mdi:map-marker-distance"),
         auto_info("sensor.i3_94_charging_ev_charging_state", "Töltés", "mdi:ev-station", TOLT),
         auto_info("sensor.i3_94_battery_ev_target_state_of_charge", "Töltési cél", "mdi:battery-charging-high"),
         auto_info("sensor.i3_94_charging_ev_predicted_state_of_charge", "Becsült", "mdi:battery-sync",
@@ -279,6 +279,12 @@ popupok = [
         auto_info("sensor.vaskut14_i3_94ah_last_telematics_api_call", "Utolsó adat", "mdi:clock-outline",
                   "{{ as_timestamp(states('sensor.vaskut14_i3_94ah_last_telematics_api_call')) | timestamp_custom('%m.%d. %H:%M') }}"),
         auto_info("sensor.i3_94_battery_hv_energy_content", "Akku energia", "mdi:lightning-bolt"),
+        auto_info("sensor.vaskut14_i3_94_doors_overall_state", "Zár", "mdi:car-door-lock",
+                  "{{ {'SECURED':'bezárva','LOCKED':'bezárva','UNLOCKED':'nincs bezárva','SELECTIVE_LOCKED':'részben zárva'}"
+                  ".get(states('sensor.vaskut14_i3_94_doors_overall_state'), states('sensor.vaskut14_i3_94_doors_overall_state') | lower) }}"),
+        auto_info("sensor.vaskut14_i3_94_charging_port_plug_state", "Töltőkábel", "mdi:ev-plug-type2",
+                  "{{ 'bedugva' if states('sensor.vaskut14_i3_94_charging_port_plug_state') == 'CONNECTED' else 'nincs bedugva' }}"),
+        {"type": "map", "entities": ["device_tracker.i3_94_location"], "default_zoom": 15, "grid_options": FULL},
     ]),
     popup("#automatizmusok", "Automatizmusok", "mdi:robot-happy", [
         {"type": "markdown", "content": AUTOMATIZMUSOK, "grid_options": FULL},
