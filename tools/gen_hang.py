@@ -188,8 +188,8 @@ sentences = {
         ]}]},
         "RadioBe": {"data": [
             {"sentences": [
-                "[<kerlek>] (<radio_ige>; [a ]rádió (1|egy|egyet|1-et|egyes|egyest|one)) [<kerlek>]",
-                "[<kerlek>] [a ]rádió (1|egy|egyet|1-et|egyes|egyest|one) [<kerlek>]",
+                "[<kerlek>] (<radio_ige>; [a ]rádió (1|egy|egyet|1-et|1et|1 et|egyes|egyest|one)) [<kerlek>]",
+                "[<kerlek>] [a ]rádió (1|egy|egyet|1-et|1et|1 et|egyes|egyest|one) [<kerlek>]",
             ], "slots": {"allomas": "radio1"}},
             {"sentences": [
                 "[<kerlek>] (<radio_ige>; [egy ][a ](rádiót|rádió|zenét|house nation[ rádiót]|house zenét|house-t)) [<kerlek>]",
