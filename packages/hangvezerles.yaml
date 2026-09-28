@@ -359,6 +359,19 @@
         "text": "A riasztót biztonsági okból nem hatástalaníthatom. Kérlek, az Ajax appban vagy a kezelőn tedd meg."
       }
     },
+    "CsepikeItthon": {
+      "action": [
+        {
+          "action": "input_boolean.turn_on",
+          "target": {
+            "entity_id": "input_boolean.csepike_itthon"
+          }
+        }
+      ],
+      "speech": {
+        "text": "Rendben, megjegyeztem, hogy Csepike itthon van. Amíg itthon van, nem élesítem magamtól a riasztót."
+      }
+    },
     "ItthonVagyok": {
       "action": [
         {

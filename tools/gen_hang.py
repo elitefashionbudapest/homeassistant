@@ -177,6 +177,9 @@ sentences = {
         "RiasztoKi": {"data": [{"sentences": [
             "[<kerlek>] ((hatástalanítsd|hatástalanítsa|kapcsold ki|kapcsolja ki|kapcsold le|oldd fel); [a ]<riaszto>) [<kerlek>]",
         ]}]},
+        "CsepikeItthon": {"data": [{"sentences": [
+            "[<kerlek>] (csepike|a gyerek|domi|a kicsi) itthon (marad|maradt|van|lesz) [ma] [<kerlek>]",
+        ]}]},
         "ItthonVagyok": {"data": [{"sentences": [
             "[<kerlek>] (itthon vagyok|itthon maradtam|itthon vagyunk|én itthon vagyok|valaki itthon van|én még itthon vagyok) [<kerlek>]",
             "[<kerlek>] ne (kapcsold be|élesítsd|kapcsolja be) [a ]<riaszto> [mert] [itthon vagyok] [<kerlek>]",
@@ -280,6 +283,9 @@ intent_script = {
                         "action": [{"action": "script.turn_on", "target": {"entity_id": "script.riaszto_elesites"}}],
                         "speech": {"text": "Élesítettem a riasztót."}},
     "RiasztoKi": {"speech": {"text": "A riasztót biztonsági okból nem hatástalaníthatom. Kérlek, az Ajax appban vagy a kezelőn tedd meg."}},
+    "CsepikeItthon": {
+        "action": [{"action": "input_boolean.turn_on", "target": {"entity_id": "input_boolean.csepike_itthon"}}],
+        "speech": {"text": "Rendben, megjegyeztem, hogy Csepike itthon van. Amíg itthon van, nem élesítem magamtól a riasztót."}},
     "ItthonVagyok": {
         "action": [{"action": "script.elmentunk_leallit"}],
         "speech": {"text": ("{% set l = states.input_boolean.elmentunk_leallitva %}"

@@ -6,6 +6,8 @@
 #  - a végén újra ellenőriz: ha közben valaki hazaért, vagy jel utal arra, hogy valaki otthon van, nem élesít.
 # Ha már induláskor van ilyen jel (Xbox online, bekapcsolt tévé, lejátszó Apple TV, azóta nyílt bejárati ajtó),
 # nem számol vissza, hanem rákérdez, mint korábban. Ha ma már volt takarítás, csak élesít, nem takarít.
+# A „Csepike itthon maradt” kapcsoló (dashboard, hang) ugyanilyen jel: amíg be van kapcsolva, nem élesít magától;
+# éjjel 3-kor magától kikapcsol.
 # Hazaérkezéskor: a porszívó haza, figyelmeztetés, ha a riasztó élesítve maradt.
 
 notify:
@@ -19,6 +21,9 @@ input_boolean:
   elmentunk_kerdezve:
     name: "Elmentünk – már rákérdezett"
     icon: mdi:home-export-outline
+  csepike_itthon:
+    name: "Csepike itthon maradt"
+    icon: mdi:human-child
   elmentunk_ne_takarits:
     name: "Elmentünk – most ne takarítson"
     icon: mdi:robot-vacuum-off
@@ -48,7 +53,8 @@ template:
         device_class: occupancy
         icon: mdi:account-question
         state: >-
-          {{ is_state('binary_sensor.domi20181210', 'on')
+          {{ is_state('input_boolean.csepike_itthon', 'on')
+             or is_state('binary_sensor.domi20181210', 'on')
              or is_state('media_player.nappali_nappali_tv', 'on')
              or is_state('media_player.samsung_5_series_32_ue32k5500', 'on')
              or is_state('media_player.nappali_nappali', 'playing')
@@ -60,6 +66,7 @@ template:
         attributes:
           okok: >-
             {% set o = [] %}
+            {% if is_state('input_boolean.csepike_itthon', 'on') %}{% set o = o + ['Csepike itthon maradt'] %}{% endif %}
             {% if is_state('binary_sensor.domi20181210', 'on') %}{% set o = o + ['az Xbox online'] %}{% endif %}
             {% if is_state('media_player.nappali_nappali_tv', 'on') %}{% set o = o + ['a nappali tévé be van kapcsolva'] %}{% endif %}
             {% if is_state('media_player.samsung_5_series_32_ue32k5500', 'on') %}{% set o = o + ['a gyerekszobai tévé be van kapcsolva'] %}{% endif %}
@@ -410,6 +417,33 @@ automation:
                 data:
                   title: "🏠 Kész"
                   message: "Elindult a takarítás."
+
+  # ha visszaszámlálás közben kapcsolják be, azonnal leállítja az élesítést
+  - id: csepike_itthon_bekapcsolva
+    alias: "Elmentünk – Csepike itthon maradt: élesítés leállítása"
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: input_boolean.csepike_itthon
+        to: "on"
+    actions:
+      - action: script.elmentunk_leallit
+
+  # minden éjjel magától kikapcsol, hogy másnap ne maradjon bent véletlenül
+  - id: csepike_itthon_ejjel_ki
+    alias: "Elmentünk – „Csepike itthon maradt” kikapcsolása éjjel"
+    mode: single
+    triggers:
+      - trigger: time
+        at: "03:00:00"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.csepike_itthon
+        state: "on"
+    actions:
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.csepike_itthon
 
   - id: elmentunk_hazaerkezes
     alias: "Elmentünk – hazaérkezés üres házba (porszívó haza, riasztó-emlékeztető)"

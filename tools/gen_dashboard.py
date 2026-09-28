@@ -127,6 +127,10 @@ fo = [
      "entity": "input_boolean.redony_hovedelem_ma", "name": "Hővédelem ma", "icon": "mdi:sun-thermometer",
      "state_content": "{{ 'Be – ma árnyékolok, ha süt a nap' if is_state('input_boolean.redony_hovedelem_ma','on') else 'Ki – koppints, ha ma meleg lesz' }}",
      "grid_options": FULL},
+    {"type": "custom:bubble-card", "card_type": "button", "button_type": "switch", "card_layout": "large",
+     "entity": "input_boolean.csepike_itthon", "name": "Csepike itthon maradt", "icon": "mdi:human-child",
+     "state_content": "{{ 'Be – amíg itthon van, nem élesítek magamtól' if is_state('input_boolean.csepike_itthon','on') else 'Ki – koppints, ha itthon marad' }}",
+     "grid_options": FULL},
     {**szoba_gomb("Automatizmusok", "mdi:robot-happy", "#automatizmusok", "Mi történik magától, és mikor"),
      "grid_options": FULL},
 ]
@@ -155,7 +159,8 @@ vagy hanggal kértétek (például: „Hey Mycroft, holnap ébreszd Csepikét f�
 **Elmentünk.** Ha mindketten 100 méternél messzebb vagytok, és a telefonotok a Wi-Firől is lecsatlakozott, \
 5 perc múlva magától élesíti a riasztót, és ha ma még nem volt, elindítja a takarítást. Addig a pushra koppintva \
 leállíthatjátok („Ne élesíts”), itthonról pedig a nappali Voice-nak szólva: „Hey Mycroft, itthon vagyok”. \
-Ha valami arra utal, hogy valaki otthon van (Xbox, tévé, Apple TV, azóta nyílt bejárati ajtó), nem élesít, csak rákérdez.
+Ha valami arra utal, hogy valaki otthon van (Xbox, tévé, Apple TV, azóta nyílt bejárati ajtó, \
+vagy be van kapcsolva a „Csepike itthon maradt” kapcsoló), nem élesít, csak rákérdez. A kapcsoló éjjel magától kikapcsol.
 
 **Nappali takarítás.** A porszívó magától nem jut le, ezért a nappali parancsra előbb kimossa a felmosót, és a nappali Voice szól, \
 hogy le lehet vinni. Lent porszívóz és felmos, a szőnyeget erős szívással és mélytisztítással takarítja. \
@@ -231,6 +236,10 @@ popupok = [
                           "{{ (state_attr('timer.elmentunk_elesites', 'finishes_at') | as_datetime | as_local).strftime('%H:%M') }}-kor"
                           "{{ ', takarítás nélkül' if is_state('input_boolean.elmentunk_ne_takarits', 'on') else ', utána takarítás' }}"
                           "{% else %}Most nincs folyamatban élesítés.{% endif %}"},
+        {"type": "custom:bubble-card", "card_type": "button", "button_type": "switch", "card_layout": "large",
+         "entity": "input_boolean.csepike_itthon", "name": "Csepike itthon maradt", "icon": "mdi:human-child",
+         "state_content": "{{ 'Be – amíg itthon van, nem élesítek magamtól' if is_state('input_boolean.csepike_itthon','on') else 'Ki – koppints, ha itthon marad' }}",
+         "grid_options": FULL},
         {**muvelet_gomb("Ne élesíts – valaki itthon van", "mdi:shield-off-outline", "script.elmentunk_leallit"),
          "grid_options": FULL},
         muvelet_gomb("Ne takaríts", "mdi:robot-vacuum-off", "script.elmentunk_ne_takarits"),
