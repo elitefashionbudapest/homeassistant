@@ -158,7 +158,7 @@ vagy hanggal kértétek (például: „Hey Mycroft, holnap ébreszd Csepikét f�
 hogy le lehet vinni. Lent porszívóz és felmos, a szőnyeget erős szívással és mélytisztítással takarítja. \
 Ha közben elakad vagy lemerülőben van, a Voice szól, a végén pedig kéri, hogy vigyétek vissza a dokkolóra.
 
-**Hazaérkezés.** Ha Ádám telefonja az otthoni Wi-Fire csatlakozik, és 100 méteren belül van, a távol módban \
+**Hazaérkezés.** Ha Ádám vagy Cerike telefonja az otthoni Wi-Fire csatlakozik, és 100 méteren belül van, a távol módban \
 élesített riasztó magától kikapcsol (éjszakai módhoz nem nyúl). Ha takarítás közben hazaértek, a porszívó hazamegy, \
 és ha a riasztó másfél perc múlva is élesítve van, szól.
 

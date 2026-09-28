@@ -3,7 +3,7 @@
 # ezért a riasztópanel maga nincs kitéve a hangasszisztensnek, csak ezek a szkriptek.
 # Egyetlen kivétel Ádám kérésére: az iskolai reggel (packages/iskola.yaml) 6:30-kor kikapcsolja az éjszakai módot,
 # de csak éjszakai módból, és csak ha valamelyik szülő itthon van.
-# Második kivétel Ádám kérésére: hazaérkezéskor kikapcsol, ha Ádám telefonja az otthoni Wi-Fin van ÉS a GPS szerint
+# Második kivétel Ádám kérésére: hazaérkezéskor kikapcsol, ha Ádám vagy Cerike telefonja az otthoni Wi-Fin van ÉS a GPS szerint
 # 100 m-en belül (home zóna) van – de csak távol (armed_away) módból, éjszakai módhoz sosem nyúl.
 script:
   riaszto_ejszakai:
@@ -107,22 +107,22 @@ automation:
       - action: script.riaszto_esti_bekapcsolas
 
   - id: riaszto_hazaerkezes_kikapcsol
-    alias: "Riasztó – kikapcsolás, ha Ádám hazaért (Wi-Fi + 100 m)"
+    alias: "Riasztó – kikapcsolás hazaérkezéskor (Wi-Fi + 100 m)"
     mode: single
     triggers:
       - trigger: state
-        entity_id: sensor.adam_2_ssid
+        entity_id: [sensor.adam_2_ssid, sensor.noyaflage_iphone_keszuleke_2_ssid]
         to: Vaskut14
       - trigger: state
-        entity_id: person.vaskut14
+        entity_id: [person.vaskut14, person.cerike]
         to: home
+    variables:
+      # aki a Wi-Fin van ÉS a GPS szerint 100 m-en belül (home zóna)
+      adam_itthon: "{{ is_state('sensor.adam_2_ssid', 'Vaskut14') and is_state('person.vaskut14', 'home') }}"
+      cerike_itthon: "{{ is_state('sensor.noyaflage_iphone_keszuleke_2_ssid', 'Vaskut14') and is_state('person.cerike', 'home') }}"
     conditions:
-      - condition: state
-        entity_id: sensor.adam_2_ssid
-        state: Vaskut14
-      - condition: state
-        entity_id: person.vaskut14
-        state: home
+      - condition: template
+        value_template: "{{ adam_itthon or cerike_itthon }}"
       - condition: state
         entity_id: alarm_control_panel.vaskut14_otthon
         state: armed_away
@@ -132,11 +132,12 @@ automation:
           entity_id: alarm_control_panel.vaskut14_otthon
       - wait_template: "{{ is_state('alarm_control_panel.vaskut14_otthon', 'disarmed') }}"
         timeout: "00:00:30"
-      - action: notify.mobile_app_adam_2
+      - action: notify.szulok
         data:
           title: "🏠 Üdv itthon!"
           message: >-
-            {{ 'Kikapcsoltam a riasztót.' if wait.completed
+            {% set ki = 'Ádám' if adam_itthon else 'Cerike' %}
+            {{ ('Kikapcsoltam a riasztót, mert ' ~ ki ~ ' hazaért.') if wait.completed
                else 'Nem sikerült kikapcsolni a riasztót! Kapcsold ki az Ajax appban vagy a kezelőn.' }}
           data:
             push:
