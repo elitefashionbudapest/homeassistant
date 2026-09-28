@@ -281,7 +281,7 @@
         }
       ],
       "speech": {
-        "text": "{{ 'Előbb vidd le a porszívót a nappaliba, és utána szólj újra.' if is_state('vacuum.porszivo', 'docked') else 'Rendben, indul a takarítás a nappaliban.' }}"
+        "text": "{{ 'Előbb kimosom a felmosót. Ha kész, szólok a telefonodon, akkor vidd le a nappaliba, és szólj újra.' if is_state('vacuum.porszivo', 'docked') else 'Rendben, indul a takarítás a nappaliban.' }}"
       }
     },
     "PorszivoMind": {

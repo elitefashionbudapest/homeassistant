@@ -258,7 +258,7 @@ intent_script = {
                       "speech": {"text": PNEV + "Rendben, elindítottam a takarítást {{ pnev[psz] }}."}},
     "PorszivoNappali": {"async_action": True,
                         "action": [{"action": "script.turn_on", "target": {"entity_id": "script.porszivo_nappali"}}],
-                        "speech": {"text": "{{ 'Előbb vidd le a porszívót a nappaliba, és utána szólj újra.' "
+                        "speech": {"text": "{{ 'Előbb kimosom a felmosót. Ha kész, szólok a telefonodon, akkor vidd le a nappaliba, és szólj újra.' "
                                            "if is_state('vacuum.porszivo', 'docked') else 'Rendben, indul a takarítás a nappaliban.' }}"}},
     "PorszivoMind": {"async_action": True,
                      "action": [{"action": "script.turn_on", "target": {"entity_id": "script.porszivo_minden"}}],

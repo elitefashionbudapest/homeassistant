@@ -8,17 +8,28 @@ script:
     alias: "Porszívó – Nappali (előbb le kell vinni)"
     icon: mdi:sofa
     description: >-
-      Elindítja a takarítást a nappaliban. A porszívó magától nem jut le a lépcső miatt, ezért előbb
-      le kell vinni. Ha még a dokkolón van, nem indul el, csak szól, hogy vigyék le.
+      Takarítás (porszívózás és felmosás) a nappaliban. A porszívó magától nem jut le a lépcső miatt.
+      Ha még a dokkolón van, előbb kimossa és benedvesíti a felmosót, és szól, hogy most vigyék le;
+      ha már lent van, elindítja a takarítást.
     mode: single
     sequence:
       - if: "{{ is_state('vacuum.porszivo', 'docked') }}"
         then:
+          # felmosó kimosása a dokkolóban, hogy lent nedves kendővel induljon
+          - action: button.press
+            target:
+              entity_id: button.vaskut_14_self_clean
+          - wait_template: "{{ is_state('sensor.vaskut_14_self_wash_base_status', 'washing') }}"
+            timeout: "00:01:00"
+          - wait_template: "{{ not is_state('sensor.vaskut_14_self_wash_base_status', 'washing') }}"
+            timeout: "00:10:00"
           - action: notify.mobile_app_adam_2
             data:
               title: "🧹 Porszívó"
-              message: "A porszívó még a dokkolón van. Vidd le a nappaliba, és utána indítsd újra a nappali takarítását."
-          - stop: "A porszívó még a dokkolón van"
+              message: >-
+                Kimostam és benedvesítettem a felmosót. Most vidd le a porszívót a nappaliba, és indítsd el
+                („Hey Mycroft, takarítsd a nappalit”, vagy a dashboardon a Nappali → Takarítás itt).
+          - stop: "Felmosó kimosva, le kell vinni"
       - action: vacuum.start
         target:
           entity_id: vacuum.porszivo
