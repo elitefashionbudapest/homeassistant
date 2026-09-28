@@ -147,7 +147,8 @@ Most: **{{ {'disarmed':'kikapcsolva','armed_night':'éjszakai mód','armed_home'
 **Ébresztő.** Hanggal vagy a dashboardon állítható. Ébredéskor pusht kapsz (Leállítás vagy Még 10 perc), a hálószoba redőnyei előbb félig, 3 perc múlva teljesen felmennek, fűtési szezonban pedig a termosztát 21 °C-ra áll.
 Most: **{% if is_state('input_boolean.ebreszto_aktiv','on') %}bekapcsolva, {{ states('input_datetime.ebreszto_ido')[:5] }} ({{ states('input_select.ebreszto_ismetles') | lower }}){% else %}kikapcsolva{% endif %}**.
 
-**Iskolai reggel (6:30).** Csak akkor mennek fel a redőnyök, ha előző este igent nyomtatok.
+**Iskolai reggel (6:30).** Csak akkor mennek fel a redőnyök, ha előző este igent nyomtatok, \
+vagy hanggal kértétek (például: „Hey Mycroft, holnap ébreszd Csepikét fél hétkor”).
 
 ## 🏠 Távozás és hazaérkezés
 **Elmentünk.** Ha mindketten elmentek, és a telefonotok a Wi-Firől is lecsatlakozott, pusht kaptok: élesítés és takarítás, csak takarítás, vagy semmi. Ha valami arra utal, hogy valaki otthon maradt (bekapcsolt Xbox, tévé vagy Apple TV, azóta nyílt bejárati ajtó), előbb figyelmeztet.

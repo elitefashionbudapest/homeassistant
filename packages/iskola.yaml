@@ -9,13 +9,21 @@ input_boolean:
 # A válasz a push gombjairól és a dashboard „#iskola” paneljéről is ide fut be.
 script:
   iskola_valasz:
-    alias: "Iskola – válasz rögzítése"
+    alias: "Iskola – Csepike holnapi reggele"
     icon: mdi:school
+    description: >-
+      Csepike (a gyerek) iskolai reggele: „igen” esetén holnap 6:30-kor felhúzza a gyerekszoba és a nappali
+      redőnyeit, „nem” esetén nem nyúl hozzájuk. Ezt használd, ha a gyerek ébresztését, iskolába indulását
+      vagy a gyerekszoba 6:30-as redőnyét kérik (pl. „holnap ébreszd a gyereket fél hétkor”).
     mode: queued
     fields:
       valasz:
-        description: "igen vagy nem"
+        description: "igen (holnap iskola, 6:30-kor redőny fel) vagy nem"
         example: igen
+        required: true
+        selector:
+          select:
+            options: ["igen", "nem"]
     sequence:
       - action: "input_boolean.turn_{{ 'on' if valasz == 'igen' else 'off' }}"
         target:
@@ -44,16 +52,18 @@ automation:
       - condition: time
         weekday: [sun, mon, tue, wed, thu]
     actions:
-      - action: input_boolean.turn_off
-        target:
-          entity_id: input_boolean.iskola_holnap
+      # ha napközben (pl. hanggal) már beállították, nem kérdez rá újra, csak emlékeztet, hogy le lehet mondani
+      - variables:
+          mar_be: "{{ is_state('input_boolean.iskola_holnap', 'on') }}"
       - repeat:
           for_each: [notify.mobile_app_adam_2, notify.mobile_app_noyaflage_iphone_keszuleke_2]
           sequence:
             - action: "{{ repeat.item }}"
               data:
                 title: "🎒 Holnap iskola?"
-                message: "Holnap megy Csepike iskolába? Ha igen, 6:30-kor felhúzom a gyerekszoba és a nappali redőnyeit."
+                message: >-
+                  {{ 'Holnapra már be van állítva: 6:30-kor felhúzom a gyerekszoba és a nappali redőnyeit. Ha mégsem kell, nyomd meg a Nem gombot.'
+                     if mar_be else 'Holnap megy Csepike iskolába? Ha igen, 6:30-kor felhúzom a gyerekszoba és a nappali redőnyeit.' }}
                 data:
                   tag: iskola
                   # koppintásra a HA app a dashboard nagy Igen / Nem gombos paneljén nyílik meg

@@ -41,6 +41,8 @@ script:
     description: >-
       Beállítja és bekapcsolja a hálószobai ébresztőt. Az időpontot magyarul vagy számmal is
       megadhatod (pl. „06:30”, „fél hét”, „negyed nyolc”). Az ismétlés: Egyszer, Hétköznap vagy Minden nap.
+      Ez Ádám (a szülők) saját ébresztője a hálószobában. Ha a gyerek (Csepike) ébresztéséről vagy iskolai
+      reggeléről van szó, NE ezt használd, hanem az „Iskola – Csepike holnapi reggele” szkriptet.
     mode: single
     fields:
       ido:
