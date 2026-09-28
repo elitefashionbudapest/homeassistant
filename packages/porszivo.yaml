@@ -8,7 +8,8 @@ script:
     alias: "Porszívó – Nappali (előbb le kell vinni)"
     icon: mdi:sofa
     description: >-
-      Takarítás (porszívózás és felmosás) a nappaliban. A porszívó magától nem jut le a lépcső miatt.
+      Takarítás (porszívózás és felmosás) a nappaliban, a nagy szőnyeget erős szívással és mélytisztítással.
+      A porszívó magától nem jut le a lépcső miatt.
       Ha még a dokkolón van, előbb kimossa és benedvesíti a felmosót, és szól, hogy most vigyék le;
       ha már lent van, elindítja a takarítást.
     mode: single
@@ -30,9 +31,28 @@ script:
                 Kimostam és benedvesítettem a felmosót. Most vidd le a porszívót a nappaliba, és indítsd el
                 („Hey Mycroft, takarítsd a nappalit”, vagy a dashboardon a Nappali → Takarítás itt).
           - stop: "Felmosó kimosva, le kell vinni"
+      # a nagy szőnyeg miatt: szőnyegen maximális szívás és mélytisztítás, a felmosó felemelve (szőnyeg-adaptáció);
+      # a mélytisztítás csak a nappalira szól, a takarítás végén visszakapcsol
+      - action: switch.turn_on
+        target:
+          entity_id:
+            - switch.vaskut_14_carpet_boost
+            - switch.vaskut_14_intensive_carpet_cleaning
+      - action: select.select_option
+        target:
+          entity_id: select.vaskut_14_carpet_cleaning
+        data:
+          option: adaptation
       - action: vacuum.start
         target:
           entity_id: vacuum.porszivo
+      - wait_template: "{{ is_state('vacuum.porszivo', 'cleaning') }}"
+        timeout: "00:02:00"
+      - wait_template: "{{ states('vacuum.porszivo') not in ['cleaning', 'paused', 'returning'] }}"
+        timeout: "04:00:00"
+      - action: switch.turn_off
+        target:
+          entity_id: switch.vaskut_14_intensive_carpet_cleaning
 
   porszivo_gyerekszoba:
     alias: "Porszívó – Gyerekszoba"
