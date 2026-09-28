@@ -233,7 +233,7 @@ popupok = [
                           "{% else %}Most nincs folyamatban élesítés.{% endif %}"},
         {**muvelet_gomb("Ne élesíts – valaki itthon van", "mdi:shield-off-outline", "script.elmentunk_leallit"),
          "grid_options": FULL},
-        muvelet_gomb("Élesíts, de ne takaríts", "mdi:robot-vacuum-off", "script.elmentunk_ne_takarits"),
+        muvelet_gomb("Ne takaríts", "mdi:robot-vacuum-off", "script.elmentunk_ne_takarits"),
         muvelet_gomb("Élesíts most", "mdi:shield-lock", "script.elmentunk_most"),
     ]),
     popup("#automatizmusok", "Automatizmusok", "mdi:robot-happy", [
