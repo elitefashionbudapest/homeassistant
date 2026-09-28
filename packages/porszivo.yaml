@@ -62,7 +62,8 @@ script:
           entity_id: vacuum.porszivo
       - wait_template: "{{ is_state('vacuum.porszivo', 'cleaning') }}"
         timeout: "00:02:00"
-      - wait_template: "{{ states('vacuum.porszivo') not in ['cleaning', 'paused', 'returning'] }}"
+      # csak a valódi végéig vár (álló vagy dokkolt robot); hibánál (elakadás, felemelés) tovább vár
+      - wait_template: "{{ states('vacuum.porszivo') in ['idle', 'docked'] }}"
         timeout: "04:00:00"
       - action: switch.turn_off
         target:
@@ -140,10 +141,14 @@ automation:
     alias: "Porszívó – takarítás idejének rögzítése"
     mode: single
     triggers:
+      # a dokkolóban a felmosó mosása alatt a vacuum is „cleaning”, ezért a robot saját állapotát figyeljük
       - trigger: state
-        entity_id: vacuum.porszivo
-        from: docked
-        to: cleaning
+        entity_id: sensor.vaskut_14_state
+        to: [sweeping, mopping, sweeping_and_mopping]
+    conditions:
+      - condition: state
+        entity_id: script.porszivo_nappali
+        state: "off"
     actions:
       - action: input_datetime.set_datetime
         target:
@@ -212,7 +217,7 @@ automation:
     conditions:
       # a mosás utáni „vidd le” ágnál a porszívó még a dokkolón van, ott nem kell
       - condition: template
-        value_template: "{{ not is_state('vacuum.porszivo', 'docked') }}"
+        value_template: "{{ states('vacuum.porszivo') not in ['docked', 'error'] }}"
     actions:
       - action: assist_satellite.announce
         target:
@@ -226,3 +231,24 @@ automation:
           message: "Végzett a nappaliban. Vidd vissza a dokkolóra, hogy fel tudjon töltődni."
           data:
             tag: porszivo_nappali
+
+  # ha a nappali szkript nem tudta visszakapcsolni (pl. hiba közben), a dokkolóra visszatéréskor kikapcsolja
+  - id: porszivo_melytisztitas_ki
+    alias: "Porszívó – szőnyeg-mélytisztítás ki a dokkolón"
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: vacuum.porszivo
+        to: docked
+        for: "00:00:30"
+    conditions:
+      - condition: state
+        entity_id: switch.vaskut_14_intensive_carpet_cleaning
+        state: "on"
+      - condition: state
+        entity_id: script.porszivo_nappali
+        state: "off"
+    actions:
+      - action: switch.turn_off
+        target:
+          entity_id: switch.vaskut_14_intensive_carpet_cleaning
