@@ -154,12 +154,12 @@ Holnap: **{{ 'igen, 6:30-kor felmennek a redőnyök' if is_state('input_boolean.
 
 **Riasztó-emlékeztető (21:30).** Ha valaki itthon van, de a riasztó nincs éjszakai vagy távol módban, kritikus pusht kapsz, amely a Ne zavarjanak módon is átjön. \
 Ha rákoppintasz, megnyílik egy ablak, ahol egy gombbal éjszakai módba kapcsolhatod.
-Most: **{{ {'disarmed':'kikapcsolva','armed_night':'éjszakai mód','armed_home':'otthon mód','armed_away':'élesítve (távol)',
+Az emlékeztető: **{{ 'bekapcsolva' if is_state('automation.riaszto_22_00_emlekezteto_ha_nincs_ejszakai_modban', 'on') else 'kikapcsolva' }}**. A riasztó most: **{{ {'disarmed':'kikapcsolva','armed_night':'éjszakai mód','armed_home':'otthon mód','armed_away':'élesítve (távol)',
 'arming':'élesítés folyamatban','triggered':'RIASZT'}.get(states('alarm_control_panel.vaskut14_otthon'), states('alarm_control_panel.vaskut14_otthon')) }}**.
 
 ## ☀️ Reggel
 **Ébresztő.** Hanggal vagy a dashboardon állítható. Ébredéskor pusht kapsz (Leállítás vagy Még 10 perc), a hálószoba redőnyei előbb félig, 3 perc múlva teljesen felmennek, fűtési szezonban pedig a termosztát 21 °C-ra áll.
-Most: **{% if is_state('input_boolean.ebreszto_aktiv','on') %}bekapcsolva, {{ states('input_datetime.ebreszto_ido')[:5] }} ({{ states('input_select.ebreszto_ismetles') | lower }}){% else %}kikapcsolva{% endif %}**.
+Az ébresztő most: **{% if is_state('input_boolean.ebreszto_aktiv','on') %}bekapcsolva, {{ states('input_datetime.ebreszto_ido')[:5] }} ({{ states('input_select.ebreszto_ismetles') | lower }}){% else %}kikapcsolva{% endif %}**.
 
 **Iskolai reggel (6:30).** Kikapcsol a riasztó éjszakai módja (ha valamelyikőtök itthon van), \
 és felmennek a redőnyök, a hálószobaiak kivételével. Csak akkor fut le, ha előző este igent nyomtatok, \
