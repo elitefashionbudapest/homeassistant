@@ -124,3 +124,82 @@ script:
       - action: vacuum.start
         target:
           entity_id: vacuum.porszivo
+
+# Nappali takarítás közben (amíg a script.porszivo_nappali fut) a nappali Voice bemondja, ha a porszívónak
+# gondja van, és a végén azt is, hogy vissza lehet vinni. A telefonra push is megy.
+automation:
+  - id: porszivo_nappali_hiba
+    alias: "Porszívó – nappali takarítás: hiba bemondása"
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: sensor.vaskut_14_error
+        not_to: [no_error, unavailable, unknown]
+      - trigger: state
+        entity_id: vacuum.porszivo
+        to: error
+      - trigger: numeric_state
+        entity_id: sensor.porszivo_akkumulator
+        below: 15
+        id: akku
+    conditions:
+      - condition: state
+        entity_id: script.porszivo_nappali
+        state: "on"
+    actions:
+      - variables:
+          kod: "{{ states('sensor.vaskut_14_error') }}"
+          hiba: >-
+            {% set m = {'drop': 'leesésveszélyt érzékel, lehet, hogy a lépcső szélén áll',
+                        'cliff': 'leesésveszélyt érzékel, lehet, hogy a lépcső szélén áll',
+                        'bumper': 'beakadt az ütközője', 'bumper_repeat': 'beakadt az ütközője',
+                        'brush': 'elakadt a főkeféje', 'side_brush': 'elakadt az oldalkeféje',
+                        'left_wheel_motor': 'elakadt a kereke', 'right_wheel_motor': 'elakadt a kereke',
+                        'turn_suffocate': 'elakadt, nem tud továbbmenni', 'forward_suffocate': 'elakadt, nem tud továbbmenni',
+                        'blocked': 'elakadt, nem tud továbbmenni', 'robot_stuck': 'elakadt, nem tud továbbmenni',
+                        'carpet': 'nem tud továbbhaladni a szőnyegen', 'battery_low': 'lemerülőben van az akkumulátora',
+                        'waterbox_empty': 'kifogyott a vize', 'filter_blocked': 'eltömődött a szűrője',
+                        'mop_removed': 'leesett a felmosókendője', 'mop_removed_2': 'leesett a felmosókendője'} %}
+            {% if trigger.id == 'akku' %}lemerülőben van az akkumulátora, már csak {{ states('sensor.porszivo_akkumulator') }} százalékon áll
+            {%- elif kod in m %}{{ m[kod] }}
+            {%- else %}valami gondja van (hibakód: {{ kod }}){% endif %}
+      - action: assist_satellite.announce
+        target:
+          entity_id: assist_satellite.home_assistant_voice_0acc9e_assist_segedallomas
+        data:
+          message: "Figyelem! A porszívónak a nappaliban {{ hiba }}. Nézd meg, kérlek."
+        continue_on_error: true
+      - action: notify.mobile_app_adam_2
+        data:
+          title: "🧹 Porszívó – gond van"
+          message: "A porszívónak a nappaliban {{ hiba }}."
+          data:
+            tag: porszivo_nappali
+      # ugyanaz a hiba ne szóljon percenként többször
+      - delay: "00:02:00"
+
+  - id: porszivo_nappali_kesz
+    alias: "Porszívó – nappali takarítás: vége"
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: script.porszivo_nappali
+        from: "on"
+        to: "off"
+    conditions:
+      # a mosás utáni „vidd le” ágnál a porszívó még a dokkolón van, ott nem kell
+      - condition: template
+        value_template: "{{ not is_state('vacuum.porszivo', 'docked') }}"
+    actions:
+      - action: assist_satellite.announce
+        target:
+          entity_id: assist_satellite.home_assistant_voice_0acc9e_assist_segedallomas
+        data:
+          message: "Végeztem a nappaliban. Vidd vissza a porszívót a dokkolóra, hogy fel tudjon töltődni."
+        continue_on_error: true
+      - action: notify.mobile_app_adam_2
+        data:
+          title: "🧹 Porszívó"
+          message: "Végzett a nappaliban. Vidd vissza a dokkolóra, hogy fel tudjon töltődni."
+          data:
+            tag: porszivo_nappali
