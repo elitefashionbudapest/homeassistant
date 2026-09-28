@@ -1,9 +1,9 @@
 # Iskolai reggel: iskolanap előtti estén (vasárnap–csütörtök) 21:00-kor push a szülőknek: „Holnap megy Csepike iskolába?”
-# Csak az „Igen” válasz után húzza fel másnap 6:30-kor a gyerekszoba és a nappali redőnyeit; „Nem” vagy válasz nélkül nem nyúl semmihez.
+# Csak az „Igen” válasz után húzza fel másnap 6:30-kor az összes redőnyt, a hálószobaiak kivételével; „Nem” vagy válasz nélkül nem nyúl semmihez.
 
 input_boolean:
   iskola_holnap:
-    name: "Holnap iskola (6:30 redőny fel a gyerekszobában és a nappaliban)"
+    name: "Holnap iskola (6:30 redőnyök fel, a hálószoba kivételével)"
     icon: mdi:school
 
 # A válasz a push gombjairól és a dashboard „#iskola” paneljéről is ide fut be.
@@ -12,8 +12,8 @@ script:
     alias: "Iskola – Csepike holnapi reggele"
     icon: mdi:school
     description: >-
-      Csepike (a gyerek) iskolai reggele: „igen” esetén holnap 6:30-kor felhúzza a gyerekszoba és a nappali
-      redőnyeit, „nem” esetén nem nyúl hozzájuk. Ezt használd, ha a gyerek ébresztését, iskolába indulását
+      Csepike (a gyerek) iskolai reggele: „igen” esetén holnap 6:30-kor felhúzza az összes redőnyt
+      a hálószobaiak kivételével, „nem” esetén nem nyúl hozzájuk. Ezt használd, ha a gyerek ébresztését, iskolába indulását
       vagy a gyerekszoba 6:30-as redőnyét kérik (pl. „holnap ébreszd a gyereket fél hétkor”).
     mode: queued
     fields:
@@ -38,7 +38,7 @@ script:
         data:
           title: "🎒 Iskola"
           message: >-
-            {{ 'Rendben, holnap 6:30-kor felhúzom a gyerekszoba és a nappali redőnyeit.' if valasz == 'igen'
+            {{ 'Rendben, holnap 6:30-kor felhúzom az összes redőnyt, a hálószobaiak kivételével.' if valasz == 'igen'
                else 'Rendben, holnap reggel nem nyúlok a redőnyökhöz.' }}
 
 automation:
@@ -62,8 +62,8 @@ automation:
               data:
                 title: "🎒 Holnap iskola?"
                 message: >-
-                  {{ 'Holnapra már be van állítva: 6:30-kor felhúzom a gyerekszoba és a nappali redőnyeit. Ha mégsem kell, nyomd meg a Nem gombot.'
-                     if mar_be else 'Holnap megy Csepike iskolába? Ha igen, 6:30-kor felhúzom a gyerekszoba és a nappali redőnyeit.' }}
+                  {{ 'Holnapra már be van állítva: 6:30-kor felhúzom az összes redőnyt, a hálószobaiak kivételével. Ha mégsem kell, nyomd meg a Nem gombot.'
+                     if mar_be else 'Holnap megy Csepike iskolába? Ha igen, 6:30-kor felhúzom az összes redőnyt, a hálószobaiak kivételével.' }}
                 data:
                   tag: iskola
                   # koppintásra a HA app a dashboard nagy Igen / Nem gombos paneljén nyílik meg
@@ -92,7 +92,7 @@ automation:
           valasz: "{{ trigger.id }}"
 
   - id: iskola_reggel
-    alias: "Iskola – 6:30 gyerekszoba és nappali redőnyök fel"
+    alias: "Iskola – 6:30 redőnyök fel (a hálószoba kivételével)"
     mode: single
     triggers:
       - trigger: time
@@ -111,6 +111,9 @@ automation:
             - cover.redony_nappali_terasz_2
             - cover.redony_nappali_ablak_1
             - cover.redony_nappali_ablak_2
+            - cover.redony_eloszoba
+            - cover.redony_furdo
+            - cover.redony_konyha
       - action: input_boolean.turn_off
         target:
           entity_id: input_boolean.iskola_holnap

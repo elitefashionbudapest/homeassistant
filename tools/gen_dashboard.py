@@ -135,7 +135,7 @@ fo = [
 AUTOMATIZMUSOK = """## 🌙 Este
 **Redőnyök lehúzása.** Napnyugta után fél órával minden redőny lemegy, kivéve a terasz 1-et, mert arra jártok ki.
 
-**Iskolai kérdés (vasárnaptól csütörtökig, 21:00).** Pusht kaptok, hogy megy-e holnap Csepike iskolába. Ha rákoppintasz, megnyílik a válaszpanel. Ha igen, reggel 6:30-kor felmennek a gyerekszoba és a nappali redőnyei.
+**Iskolai kérdés (vasárnaptól csütörtökig, 21:00).** Pusht kaptok, hogy megy-e holnap Csepike iskolába. Ha rákoppintasz, megnyílik a válaszpanel. Ha igen, reggel 6:30-kor felmennek a redőnyök, a hálószobaiak kivételével.
 Holnap: **{{ 'igen, 6:30-kor felmennek a redőnyök' if is_state('input_boolean.iskola_holnap','on') else 'nincs redőnyhúzás' }}**.
 
 **Riasztó-emlékeztető (21:30).** Ha valaki itthon van, de a riasztó nincs éjszakai vagy távol módban, kritikus pusht kapsz, amely a Ne zavarjanak módon is átjön. \
