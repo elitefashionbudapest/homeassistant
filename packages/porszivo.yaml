@@ -3,6 +3,13 @@
 # 1 = Fürdő, 2 = jobb szélső terület (név egyeztetés alatt), 3 = Gyerekszoba, 4 = Hálószoba, 5 = Előszoba (dokkoló), 6 = Konyha.
 # A nappaliba a lépcső miatt nem jut le magától: oda le kell vinni, és ott a script.porszivo_nappali indítja.
 # A többszintes térkép be van kapcsolva, így a lenti szintnek saját térképe lesz (az első futás építi fel).
+input_datetime:
+  porszivo_utolso_takaritas:
+    name: "Porszívó – utolsó takarítás (dokkolóról indulva)"
+    has_date: true
+    has_time: true
+    icon: mdi:robot-vacuum
+
 script:
   porszivo_nappali:
     alias: "Porszívó – Nappali (előbb le kell vinni)"
@@ -128,6 +135,22 @@ script:
 # Nappali takarítás közben (amíg a script.porszivo_nappali fut) a nappali Voice bemondja, ha a porszívónak
 # gondja van, és a végén azt is, hogy vissza lehet vinni. A telefonra push is megy.
 automation:
+  # az „Elmentünk” rutin ebből tudja, hogy ma volt-e már takarítás (a lent, levitt porszívóval indított nem számít)
+  - id: porszivo_takaritas_ideje
+    alias: "Porszívó – takarítás idejének rögzítése"
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: vacuum.porszivo
+        from: docked
+        to: cleaning
+    actions:
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.porszivo_utolso_takaritas
+        data:
+          datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+
   - id: porszivo_nappali_hiba
     alias: "Porszívó – nappali takarítás: hiba bemondása"
     mode: single

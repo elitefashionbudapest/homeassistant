@@ -1,5 +1,6 @@
 # „Elmentünk” rutin: ha Ádám és Cerike is elhagyta a házat (GPS-zóna ÉS az otthoni Wi-Fi is),
-# push értesítés mindkettőjüknek: Élesítés + takarítás / Csak takarítás / Semmi.
+# push értesítés mindkettőjüknek: Élesítés + takarítás / Csak takarítás / Semmi. Ha ma már volt takarítás,
+# csak a riasztóra kérdez rá (Élesítés / Semmi).
 # Magától soha nem élesít: a HA a gyereket nem látja, ezért kérdez, és ellenőrzi, hogy nincs-e jel arra,
 # hogy valaki otthon maradt (Xbox online, bekapcsolt Samsung tévé, lejátszó Apple TV, azóta nyílt bejárati ajtó).
 # A gombnyomáskor újra ellenőriz. Hazaérkezéskor: a porszívó haza, figyelmeztetés, ha a riasztó élesítve maradt.
@@ -98,11 +99,21 @@ automation:
       - variables:
           gyanus: "{{ is_state('binary_sensor.valaki_otthon_lehet', 'on') }}"
           okok: "{{ state_attr('binary_sensor.valaki_otthon_lehet', 'okok') }}"
+          # ha ma már volt (fenti, dokkolóról induló) takarítás, csak a riasztóra kérdez rá
+          volt_takaritas: >-
+            {% set t = states('input_datetime.porszivo_utolso_takaritas') %}
+            {{ t not in ['unknown', 'unavailable'] and (t | as_datetime | as_local).date() == now().date() }}
           uzenet: >-
-            {% if gyanus %}⚠️ Lehet, hogy valaki otthon van: {{ okok }}. Biztosan élesítsek?{% else %}Mindketten elmentetek. Élesítsem a riasztót, és indítsam a takarítást?{% endif %}
+            {% if gyanus %}⚠️ Lehet, hogy valaki otthon van: {{ okok }}. Biztosan élesítsek?
+            {%- elif volt_takaritas %}Mindketten elmentetek, és ma már volt takarítás. Élesítsem a riasztót?
+            {%- else %}Mindketten elmentetek. Élesítsem a riasztót, és indítsam a takarítást?{% endif %}
           gombok: >-
-            {% if gyanus %}
+            {% if gyanus and volt_takaritas %}
+            [{"action": "ELMENTUNK_SEMMI", "title": "Semmi"}, {"action": "ELMENTUNK_MEGIS_CSAK", "title": "Mégis élesíts", "destructive": true}]
+            {% elif gyanus %}
             [{"action": "ELMENTUNK_SEMMI", "title": "Semmi"}, {"action": "ELMENTUNK_MEGIS", "title": "Mégis élesíts + takaríts", "destructive": true}]
+            {% elif volt_takaritas %}
+            [{"action": "ELMENTUNK_CSAK_ELESIT", "title": "Élesítés"}, {"action": "ELMENTUNK_SEMMI", "title": "Semmi"}]
             {% else %}
             [{"action": "ELMENTUNK_ELESIT", "title": "Élesítés + takarítás"}, {"action": "ELMENTUNK_TAKARIT", "title": "Csak takarítás"}, {"action": "ELMENTUNK_SEMMI", "title": "Semmi"}]
             {% endif %}
@@ -139,6 +150,14 @@ automation:
         event_type: mobile_app_notification_action
         event_data: {action: ELMENTUNK_SEMMI}
         id: semmi
+      - trigger: event
+        event_type: mobile_app_notification_action
+        event_data: {action: ELMENTUNK_CSAK_ELESIT}
+        id: csak_elesit
+      - trigger: event
+        event_type: mobile_app_notification_action
+        event_data: {action: ELMENTUNK_MEGIS_CSAK}
+        id: megis_csak
     actions:
       # a másik telefonról eltűnik a kérdés
       - repeat:
@@ -162,12 +181,19 @@ automation:
                 data:
                   title: "🏠 Elmentetek"
                   message: "Nem csináltam semmit, mert közben valamelyikőtök hazaért."
-          - conditions: "{{ trigger.id == 'elesit' and gyanus }}"
+          - conditions: "{{ trigger.id in ['elesit', 'csak_elesit'] and gyanus }}"
             sequence:
               - action: notify.szulok
                 data:
                   title: "🏠 Nem élesítettem"
                   message: "Azóta jel jött, hogy valaki otthon lehet: {{ okok }}. Semmit nem indítottam."
+          - conditions: "{{ trigger.id in ['csak_elesit', 'megis_csak'] }}"
+            sequence:
+              - action: script.riaszto_elesites
+              - action: notify.szulok
+                data:
+                  title: "🏠 Kész"
+                  message: "Élesítettem a riasztót."
           - conditions: "{{ trigger.id in ['elesit', 'megis'] }}"
             sequence:
               - action: script.elmentunk_elesit_takarit
@@ -205,6 +231,7 @@ automation:
           - action: vacuum.return_to_base
             target:
               entity_id: vacuum.porszivo
+      - delay: "00:01:30"
       - if: "{{ states('alarm_control_panel.vaskut14_otthon') in ['armed_away', 'armed_home'] }}"
         then:
           - action: "notify.mobile_app_{{ 'adam_2' if trigger.entity_id == 'person.vaskut14' else 'noyaflage_iphone_keszuleke_2' }}"

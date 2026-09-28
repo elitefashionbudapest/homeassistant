@@ -152,13 +152,15 @@ Most: **{% if is_state('input_boolean.ebreszto_aktiv','on') %}bekapcsolva, {{ st
 vagy hanggal kértétek (például: „Hey Mycroft, holnap ébreszd Csepikét fél hétkor”).
 
 ## 🏠 Távozás és hazaérkezés
-**Elmentünk.** Ha mindketten elmentek, és a telefonotok a Wi-Firől is lecsatlakozott, pusht kaptok: élesítés és takarítás, csak takarítás, vagy semmi. Ha valami arra utal, hogy valaki otthon maradt (bekapcsolt Xbox, tévé vagy Apple TV, azóta nyílt bejárati ajtó), előbb figyelmeztet.
+**Elmentünk.** Ha mindketten elmentek, és a telefonotok a Wi-Firől is lecsatlakozott, pusht kaptok: élesítés és takarítás, csak takarítás, vagy semmi. Ha ma már volt takarítás, csak a riasztóra kérdez rá. Ha valami arra utal, hogy valaki otthon maradt (bekapcsolt Xbox, tévé vagy Apple TV, azóta nyílt bejárati ajtó), előbb figyelmeztet.
 
 **Nappali takarítás.** A porszívó magától nem jut le, ezért a nappali parancsra előbb kimossa a felmosót, és a nappali Voice szól, \
 hogy le lehet vinni. Lent porszívóz és felmos, a szőnyeget erős szívással és mélytisztítással takarítja. \
 Ha közben elakad vagy lemerülőben van, a Voice szól, a végén pedig kéri, hogy vigyétek vissza a dokkolóra.
 
-**Hazaérkezés.** Ha takarítás közben hazaértek, a porszívó hazamegy, és ha a riasztó élesítve maradt, szól.
+**Hazaérkezés.** Ha Ádám telefonja az otthoni Wi-Fire csatlakozik, és 100 méteren belül van, a távol módban \
+élesített riasztó magától kikapcsol (éjszakai módhoz nem nyúl). Ha takarítás közben hazaértek, a porszívó hazamegy, \
+és ha a riasztó másfél perc múlva is élesítve van, szól.
 
 ## 🌡️ Nyári hővédelem
 Májustól szeptemberig, ha kint legalább 28 °C van, azokat a redőnyöket, amelyekre éppen süt a nap, 70%-ban lehúzza. Ha a nap továbbvonult, vagy kint 26 °C alá hűlt, visszahúzza őket. A „Hővédelem ma” kapcsolóval bármelyik napon bekapcsolható, éjfélkor pedig magától kikapcsol.
