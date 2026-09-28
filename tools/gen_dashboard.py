@@ -193,7 +193,7 @@ Ha holnap reggel fagyos idő lesz, emlékeztet, hogy állítsd be a MyBMW appban
 **Heti összefoglaló (vasárnap 18:00, Ádámnak).** Hány kilométert mentél, mennyit töltöttél, és ez nagyjából mennyibe került \
 (az áramár az autó ablakában állítható).
 
-**Nincs bezárva.** Ha az autó nincs bezárva, vagy nyitva maradt egy ablaka, annak szól, aki mellette volt, és eltávolodott tőle.
+**Nincs bezárva.** Ha az autó nincs bezárva, vagy kívülről bezártátok, de nyitva maradt egy ablaka, annak szól, \naki mellette volt, és eltávolodott tőle. Ha valaki benne ül vagy vezeti, nem szól.
 
 **Távozás.** Ha az autó elhagyja a házat, az is jel az „Elmentünk” rutinnak. Hanggal is megkérdezheted: „Hey Mycroft, mennyi a töltöttség?”
 

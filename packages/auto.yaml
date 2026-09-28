@@ -3,7 +3,7 @@
 #  - 21:30 esti ellenőrzés Ádámnak: töltési emlékeztető (40% alatt, nincs bedugva, otthon áll) és hideg reggel → előfűtés a MyBMW appban;
 #  - alacsony töltöttség (20% vagy 30 km alatt) Ádámnak;
 #  - heti összefoglaló vasárnap 18:00 Ádámnak: megtett km, töltött energia, becsült költség;
-#  - nincs bezárva / nyitva maradt ablak: annak, aki a kocsi mellett volt és eltávolodott tőle.
+#  - nincs bezárva / nyitva maradt ablak (kívülről zárt autónál): annak, aki a kocsi mellett volt és eltávolodott tőle.
 
 input_number:
   i3_heti_toltes:
@@ -161,12 +161,14 @@ automation:
         data:
           value: 0
 
-  # Nincs bezárva / nyitva maradt ablak: aki az autó mellett volt (150 m-en belül), és eltávolodott tőle (200 m-nél
-  # messzebb), az kap pusht. Ha 15 percen belül senki nem távolodik el, de az autó még mindig nyitva van, a közelben
-  # lévőknek szól; ha senki nem volt a közelében, mindkettőjüknek.
+  # Nincs bezárva / nyitva maradt ablak. A zár állapota: SECURED = kívülről bezárva (parkol), LOCKED = belülről zárva,
+  # ahogy vezetés közben is (az i3 induláskor magától bezár) – ilyenkor valaki az autóban ül, ezért soha nem szól.
+  # Szól, ha az autó nincs bezárva, vagy kívülről be van zárva, de nyitva maradt egy ablak; és csak annak, aki az autó
+  # mellett volt (150 m-en belül), majd eltávolodott tőle (200 m-nél messzebb). Az i3 menet közben nem jelent, ezért
+  # ha az autó közben új helyről jelentkezik, vagy LOCKED lesz, a figyelés leáll.
   - id: auto_nincs_bezarva
     alias: "Autó – nincs bezárva: szól annak, aki eltávolodott tőle"
-    mode: single
+    mode: restart
     triggers:
       - trigger: state
         entity_id: sensor.vaskut14_i3_94_doors_overall_state
@@ -175,20 +177,15 @@ automation:
           - binary_sensor.vaskut14_i3_94_window_open_front_driver
           - binary_sensor.vaskut14_i3_94_window_open_front_passenger
         to: "on"
-    variables:
-      auto: device_tracker.i3_94_location
-      nyitott_sablon: >-
-        {{ states('sensor.vaskut14_i3_94_doors_overall_state') not in ['SECURED', 'LOCKED', 'unknown', 'unavailable']
-           or is_state('binary_sensor.vaskut14_i3_94_window_open_front_driver', 'on')
-           or is_state('binary_sensor.vaskut14_i3_94_window_open_front_passenger', 'on') }}
     conditions:
       - condition: template
-        value_template: "{{ nyitott_sablon }}"
-      - condition: state
-        entity_id: binary_sensor.vaskut14_i3_94_vehicle_motion_state
-        state: "off"
+        value_template: >-
+          {% set z = states('sensor.vaskut14_i3_94_doors_overall_state') %}{% set ablak = is_state('binary_sensor.vaskut14_i3_94_window_open_front_driver', 'on') or is_state('binary_sensor.vaskut14_i3_94_window_open_front_passenger', 'on') %}
+          {{ z != 'LOCKED' and (z not in ['SECURED', 'unknown', 'unavailable'] or (z == 'SECURED' and ablak)) }}
     actions:
       - variables:
+          auto_lat: "{{ state_attr('device_tracker.i3_94_location', 'latitude') }}"
+          auto_lon: "{{ state_attr('device_tracker.i3_94_location', 'longitude') }}"
           kozel: >-
             {% set ns = namespace(p=[]) %}
             {% for p in ['person.vaskut14', 'person.cerike'] %}
@@ -196,32 +193,33 @@ automation:
               {% if d is not none and d < 0.15 %}{% set ns.p = ns.p + [p] %}{% endif %}
             {% endfor %}
             {{ ns.p }}
+      - condition: template
+        value_template: "{{ kozel | count > 0 and auto_lat is not none }}"
       - wait_template: >-
-          {% set nyitott = states('sensor.vaskut14_i3_94_doors_overall_state') not in ['SECURED', 'LOCKED', 'unknown', 'unavailable']
-             or is_state('binary_sensor.vaskut14_i3_94_window_open_front_driver', 'on')
-             or is_state('binary_sensor.vaskut14_i3_94_window_open_front_passenger', 'on') %}
+          {% set z = states('sensor.vaskut14_i3_94_doors_overall_state') %}{% set ablak = is_state('binary_sensor.vaskut14_i3_94_window_open_front_driver', 'on') or is_state('binary_sensor.vaskut14_i3_94_window_open_front_passenger', 'on') %}
+          {% set nyitott = z != 'LOCKED' and (z not in ['SECURED', 'unknown', 'unavailable'] or (z == 'SECURED' and ablak)) %}
+          {% set elment = (distance(auto_lat, auto_lon, 'device_tracker.i3_94_location') or 0) > 0.1 %}
           {% set ns = namespace(tavol=false) %}
           {% for p in kozel %}{% if (distance(p, 'device_tracker.i3_94_location') or 0) > 0.2 %}{% set ns.tavol = true %}{% endif %}{% endfor %}
-          {{ not nyitott or ns.tavol }}
-        timeout: "00:15:00"
+          {{ not nyitott or elment or ns.tavol }}
+        timeout: "00:30:00"
       - variables:
           meg_nyitott: >-
-            {{ states('sensor.vaskut14_i3_94_doors_overall_state') not in ['SECURED', 'LOCKED', 'unknown', 'unavailable']
-               or is_state('binary_sensor.vaskut14_i3_94_window_open_front_driver', 'on')
-               or is_state('binary_sensor.vaskut14_i3_94_window_open_front_passenger', 'on') }}
+            {% set z = states('sensor.vaskut14_i3_94_doors_overall_state') %}{% set ablak = is_state('binary_sensor.vaskut14_i3_94_window_open_front_driver', 'on') or is_state('binary_sensor.vaskut14_i3_94_window_open_front_passenger', 'on') %}
+            {% set elment = (distance(auto_lat, auto_lon, 'device_tracker.i3_94_location') or 0) > 0.1 %}
+            {{ not elment and z != 'LOCKED' and (z not in ['SECURED', 'unknown', 'unavailable'] or (z == 'SECURED' and ablak)) }}
           cimzettek: >-
             {% set ns = namespace(t=[]) %}
             {% for p in kozel %}{% if (distance(p, 'device_tracker.i3_94_location') or 0) > 0.2 %}{% set ns.t = ns.t + [p] %}{% endif %}{% endfor %}
-            {% set lista = ns.t if ns.t else (kozel if kozel else ['person.vaskut14', 'person.cerike']) %}
-            {{ lista | map('replace', 'person.vaskut14', 'notify.mobile_app_adam_2')
-                     | map('replace', 'person.cerike', 'notify.mobile_app_noyaflage_iphone_keszuleke_2') | list }}
+            {{ ns.t | map('replace', 'person.vaskut14', 'notify.mobile_app_adam_2')
+                    | map('replace', 'person.cerike', 'notify.mobile_app_noyaflage_iphone_keszuleke_2') | list }}
           mi: >-
             {% set m = [] %}
             {% if states('sensor.vaskut14_i3_94_doors_overall_state') not in ['SECURED', 'LOCKED', 'unknown', 'unavailable'] %}{% set m = m + ['az autó nincs bezárva'] %}{% endif %}
             {% if is_state('binary_sensor.vaskut14_i3_94_window_open_front_driver', 'on') %}{% set m = m + ['nyitva maradt a vezető oldali ablak'] %}{% endif %}
             {% if is_state('binary_sensor.vaskut14_i3_94_window_open_front_passenger', 'on') %}{% set m = m + ['nyitva maradt az utas oldali ablak'] %}{% endif %}
             {% set s = m | join(', és ') %}{{ s[:1] | upper ~ s[1:] }}
-      - if: "{{ meg_nyitott }}"
+      - if: "{{ meg_nyitott and cimzettek | count > 0 }}"
         then:
           - repeat:
               for_each: "{{ cimzettek }}"
